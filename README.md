@@ -8,6 +8,12 @@ Angeles: 3,008 hexes, 6.5M residents.
 Every input except the US redlining overlay is global (Landsat, Sentinel-2,
 OpenStreetMap, a population grid), so the same pipeline runs on any city.
 
+**Live: <https://advikar.github.io/coolequity/>** — served by GitHub Pages from
+`master`. Pages serves the repo root, which is the same thing `python3 -m
+http.server` does locally, so `app/` finds `../data/` unchanged. The root
+`index.html` is only a redirect into `app/`; `.nojekyll` stops Pages' Jekyll
+step from dropping underscore-prefixed paths like `data/_cache/`.
+
 ---
 
 ## Run it

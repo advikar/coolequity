@@ -298,6 +298,14 @@ README.md and DEMO.md are updated for Phases 8 and 9: seven presets, the fifth
 weight at zero, the cost-provenance answer, the "your scale is relative"
 objection, the ramp darkening, and the home button.
 
+### Deployed
+
+Live at <https://advikar.github.io/coolequity/> (Pages, `master`, root path).
+Verified after the first build: the deployed `app/index.html` is byte-identical
+to the local file, `data/la.geojson` serves as 1.39 MB `application/geo+json`,
+and the vendored MapLibre and the root redirect both return 200. Publishing is
+just a `git push` now — there is no build step to forget.
+
 **Still open:** the 60s screen capture (steps at the bottom of DEMO.md) is still
 unrecorded — it is the fallback if the laptop dies and someone else presents.
 Ranks #1 and #2 both display `100` in the list because scores round to 0 dp
