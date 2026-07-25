@@ -208,6 +208,30 @@ in other than being dropped on a map.
 4. **`README.md` written** — run instructions, pipeline order, score and ROI
    formulas, provenance, and an explicit "what's estimated" section.
 
+## Phase 8 — presets, city search, and two bugs the UI was telling on itself
+
+1. **Landing screen names the product** and the city chips became a type-to-search
+   combobox over 20 cities. `have` on a `CITIES` entry is still the only thing
+   that decides whether the CTA opens a dataset, so the list can grow without
+   ever implying data exists. Enter/Escape inside the field are stopped from
+   bubbling to the global handler that launches the map.
+2. **Weights lead with six presets**; the four sliders and the normalisation
+   explainer moved behind an "Adjust the weights yourself" disclosure.
+3. **Fixed: "changing the weights changes nothing."** Not a wiring bug — the
+   weights are renormalised to 100%, so dragging one input to the old slider
+   ceiling of 60 landed near 40% once the other three rescaled. Enough to swap
+   two adjacent hexes, not enough to look like an effect. Presets set all four at
+   once; the ceiling also went 60 → 100. Verified: *Protect seniors* moves
+   Westlake S #1 → #5 and Holmby Hills ~2,100th → 27th.
+4. **Fixed: ROI "residents cooled" looked dead.** It printed the hex's whole
+   population regardless of the slider, including at the minimum where cost is
+   $0 and cooling is 0.00 °C. Now 0 until there is planting to price. Beat 4's
+   numbers at 15% are unchanged ($1.2M, $78/resident, −0.36 °C, 2,470 trees).
+5. **Caught in review:** the *Protect seniors* preset copy first claimed it makes
+   Holmby Hills #1. It is #27 there; #1 needs a pure 100% age weighting. Copy,
+   README and DEMO.md all now state the true figures. Any claim of this shape
+   must be re-checked against `LIVE.rank` before it ships — the model moved.
+
 ### Phase 7 browser verification — all clear
 
 Everything in Phase 7 has now been checked in a real browser: console clean,

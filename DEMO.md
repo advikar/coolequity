@@ -14,11 +14,13 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
 - Window at ~1440×860 or full screen. Below ~700px the 366px panel eats the map.
 - You land on the **intro screen**; the map is already booted behind it, so the
   button is a fade, not a load. `?go=1` skips it if you'd rather open on the map.
+  The city field is a real search — typing "delhi" finds it, and selecting it
+  tells you what building Delhi takes rather than pretending to load it.
 - Priority layer selected, all four cooling-site categories on, weights at
-  **pipeline defaults**, detail panel closed. That's the default state on a
-  fresh load — just reload rather than clicking back to it. If you have been
-  playing with the sliders, **hit Reset** (it greys out when you're back at the
-  shipped weights, so you can see at a glance that you are).
+  **Pipeline default**, detail panel closed. That's the default state on a fresh
+  load — just reload rather than clicking back to it. If you have been playing
+  with the model, click the **Pipeline default** preset (the state chip beside
+  "What should count most" reads `pipeline defaults` when you're back).
 - **No Wi-Fi?** Nothing to do. MapLibre is vendored and all data is local; the map
   loses only the CARTO street basemap and draws the county outline instead.
   Rehearse that look with `http://localhost:8000/app/?flat=1`.
@@ -42,16 +44,25 @@ Then click **Explore Los Angeles**.
 > canopy, population, age, and walking distance to the nearest cooling centre.
 > Nothing here is drawn by hand. The darker it is, the more help it needs."
 
-**2b · The model is not a black box (20s)** — drag **Surface heat** down and
-**Age 65+** up to about 60%, let the map and the list re-order, then hit
-**Reset**.
+**2b · The model is not a black box (20s)** — click the **Protect seniors**
+preset, let the map and the list re-order, then click **Pipeline default**.
 
-> "And the weights aren't buried in a config file — they're right here. This is
-> the whole model recomputing across all three thousand hexes, live. Weight it
-> purely toward protecting seniors and LA's number one stops being Westlake and
-> becomes **Holmby Hills** — one of the wealthiest zip codes in America. That's
-> the argument for making this visible: the answer depends on what you decided
-> to care about, so you should be able to see the decision."
+> "The weights aren't buried in a config file — they're right here. Ask a
+> different question and the whole model recomputes across all three thousand
+> hexes, live. Ask 'who is most likely to *die* of this?' and Westlake drops
+> from first to fifth, while **Holmby Hills** — one of the wealthiest zip codes
+> in America — climbs from about two thousandth to the high twenties. That's the
+> argument for making this visible: the answer depends on what you decided to
+> care about, so you should be able to see the decision."
+
+Two things to say correctly here, both checked against the live model:
+
+- Westlake S goes **#1 → #5**. Holmby Hills goes **~2,100th → 27th**. Holmby
+  Hills does **not** become #1 under this preset — it only reaches #1 at a pure
+  100% age weighting, which no preset uses.
+- If a judge asks for the real sliders, open **Adjust the weights yourself**. The
+  presets are just four numbers being set at once; the disclosure shows them and
+  they stay live.
 
 Reset, then click any hex to show the breakdown:
 
@@ -138,14 +149,21 @@ hexes in the same neighborhood — and the same Westlake / Historic Filipinotown
 Koreatown blocks still lead. **Say "the leaders swap places", not "nothing
 changes"**; a judge watching the list will see the swap.
 
-**"Are those sliders really running the model, or a rough approximation?"** The
-model. Same arithmetic as `pipeline/05_score.py`, min-max normalised within the
-city. At the shipped weights it reproduces the committed `la.geojson` to a max
-of **0.156 points**, mean 0.039, with ranks #1–#6 identical — the residual is
-the geojson storing temperatures at one decimal place. Reset restores the exact
+**"Are those presets really running the model, or a rough approximation?"** The
+model. A preset just sets the four weights at once — open **Adjust the weights
+yourself** and you can see and move them. Same arithmetic as
+`pipeline/05_score.py`, min-max normalised within the city. At the shipped
+weights it reproduces the committed `la.geojson` to a max of **0.156 points**,
+mean 0.039, with ranks #1–#6 identical — the residual is the geojson storing
+temperatures at one decimal place. **Pipeline default** restores the exact
 shipped weights, and the pipeline's own `score`/`rank` fields are never
 overwritten. You can check it live in the console; the one-liner is in
 `STATUS.md`.
+
+**"Why presets instead of just sliders?"** Because the weights are normalised to
+100%, so moving one slider alone barely moves the answer — the other three
+absorb it. A preset changes all four, which is what makes the map visibly
+repaint. The sliders are still there, one click away.
 
 **"Can I look at my city?"** Not today, and the picker says so rather than
 loading LA's numbers under another name. Every input except the US redlining

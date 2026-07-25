@@ -73,11 +73,19 @@ priority  = base_risk · (0.55 + 0.45 · population)
 score     = 100 · minmax(priority)
 ```
 
-**The weights are not buried in a config file.** They are four sliders in the
-app, and moving one re-scores and re-ranks all 3,008 hexes in the browser — map,
-ranked list, legend copy and ROI all follow. That is the answer to "why 35%?":
-try 60% and watch where the money would go instead. Weighting only age 65+, for
-example, moves LA's top priority from Westlake to Holmby Hills.
+**The weights are not buried in a config file.** The app opens on six named
+presets — *Pipeline default*, *Heat first*, *Shade gap*, *Protect seniors*, *A/C
+poverty*, *Most people* — and each one re-scores and re-ranks all 3,008 hexes in
+the browser, with the map, ranked list, legend copy and ROI all following. The
+four sliders are one click away under **Adjust the weights yourself**.
+
+Presets lead rather than sliders because the weights are normalised to 100%:
+moving a single slider is largely absorbed by the other three, so it reorders a
+pair of neighbours instead of visibly changing the answer. Setting all four at
+once is what makes the question legible. *Protect seniors* drops Westlake from
+#1 to #5 and lifts Holmby Hills — one of the wealthiest zip codes in America —
+from roughly 2,100th to 27th. (Holmby Hills only reaches #1 under a pure 100%
+age weighting, which no preset uses.)
 
 It is the same model, not a demo approximation. Checked in-page against the
 committed `data/la.geojson` at the shipped weights: **max absolute difference
@@ -85,9 +93,10 @@ committed `data/la.geojson` at the shipped weights: **max absolute difference
 residual is the geojson storing `lst`/`green`/`ac` rounded to 1 dp. The
 pipeline's own `score` and `rank` are never overwritten, so Reset is exact.
 
-Defaults live in `pipeline/config.py` and are mirrored in the app's `DEFAULT_W`;
-keep those two in sync. The legend prose is generated from the weights in force,
-so it cannot drift.
+Defaults live in `pipeline/config.py` and are mirrored in the app's `DEFAULT_W`
+and in the `default` entry of `PRESETS`; keep those in sync. The legend prose and
+the preset state chip are generated from the weights in force, so they cannot
+drift.
 
 Selecting a hex shows the arithmetic term by term — what each input measured,
 where that sits on the city's 0–1 scale, what the weight turns it into, and how
@@ -128,8 +137,10 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
 - **Coverage is the LA basin, not LA County** — 6.5M of the county's 9.85M. The
   hard straight edge near El Monte is the bbox, not missing data.
 - **Only Los Angeles has been through the pipeline.** The landing screen's city
-  picker says so: the other cities are marked *pipeline-ready* and show what
-  building one takes, rather than loading LA's numbers under another name.
+  search says so: every other city is marked *pipeline-ready* and shows what
+  building it takes, rather than loading LA's numbers under another name. The
+  `have` field on a `CITIES` entry is the single thing that decides whether the
+  button opens a dataset, so adding a city to the search list cannot fake data.
 - **"Cooling site" means the four OpenStreetMap categories `04_overlays.py`
   queries** — libraries, community centres, public pools, senior centres and
   shelters. It is not a list of sites a city has formally designated as cooling
