@@ -208,22 +208,44 @@ in other than being dropped on a map.
 4. **`README.md` written** — run instructions, pipeline order, score and ROI
    formulas, provenance, and an explicit "what's estimated" section.
 
-### Still open after Phase 7 — verify these two before presenting
+### Phase 7 browser verification — all clear
 
-Everything else in Phase 7 was checked in a real browser (console clean, layer
-toggles confirmed to repaint the map via `queryRenderedFeatures` and not just the
-legend, live model checked against `la.geojson`, units checked including the
-temperature *delta*). These two landed after the last browser pass:
+Everything in Phase 7 has now been checked in a real browser: console clean,
+layer toggles confirmed to repaint the map via `queryRenderedFeatures` and not
+just the legend, live model checked against `la.geojson`, units checked
+including the temperature *delta*. The two items that had landed after the
+previous browser pass were closed on the pass after that:
 
-1. **The intro canvas backdrop.** First render came out as a horizontal smear —
-   mercator y was in radians against longitude in degrees (fixed bug 14). The
-   `180/π` fix and the switch to a cover-fit pushed right of centre are **not yet
-   seen on screen.** Open `/app/` and check LA is a recognisable city shape
-   behind the card, not a band.
-2. **`?flat=1` still at zero off-host requests.** Audited statically — the only
-   external URL left in the page is CARTO's style, and both typefaces are local —
-   but confirm in the Network tab, because that property is the whole answer to
-   "what if the venue Wi-Fi dies".
+1. **The intro canvas backdrop is a city, not a band.** The `180/π` fix for
+   fixed bug 14 renders correctly. Measured off the canvas pixels rather than
+   eyeballed, because the smear it replaced was only ~60px tall and a thumbnail
+   would not have settled it: ink spans 99.9% of canvas height and 85% of its
+   width, and the left edge of the ink marches from x=0.16 at the top to x=0.69
+   at the bottom — that diagonal is the LA coastline running NW→SE. A regression
+   would flatten `vertFrac` toward zero. Re-measure with:
+
+   ```js
+   (()=>{const c=document.getElementById('intro-canvas'),g=c.getContext('2d');
+     const d=g.getImageData(0,0,c.width,c.height).data;
+     let minY=1e9,maxY=-1;
+     for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2)
+       if(d[(y*c.width+x)*4+3]>8){if(y<minY)minY=y;if(y>maxY)maxY=y;}
+     return {vertFrac:+((maxY-minY)/c.height).toFixed(3)};})()   // expect ~0.999
+   ```
+
+2. **`?flat=1` makes zero off-host requests** — confirmed in the Network tab, not
+   just statically audited. Every request is `localhost:8000`, a `data:` URI, or
+   the MapLibre worker `blob:`. The flat path also *draws*: hexes plus the county
+   outline, no basemap. That property is the whole answer to "what if the venue
+   Wi-Fi dies", so re-check it in the Network tab after any change that touches
+   `basemapStyle()` or adds an asset.
+
+**A blank map screenshot during this pass was fixed bug 9 again, not a
+regression.** The Browser pane backgrounds its tabs, `document.hidden` goes
+true, rAF is suspended and the WebGL framebuffer is never repainted before
+capture — while `queryRenderedFeatures({layers:['fill']})` returned 3,084. Trust
+that query over a screenshot; front the tab (click into it) before believing a
+blank frame.
 
 Revert path if any of Phase 7 is unwanted: `git checkout pre-redesign -- app/`
 (tag `pre-redesign` is the last pre-rebuild commit).
