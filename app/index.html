@@ -65,6 +65,22 @@
   .toggle.on .sw::after{transform:translateX(15px);background:var(--accent)}
   .toggle .tt{font-size:12.5px}
   .toggle .ts{font-size:11px;color:var(--muted2)}
+  /* ---- cooling relief sites ---- */
+  .cnt{font-size:10px;color:var(--muted2);font-weight:500;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+  .kind{display:flex;align-items:flex-start;gap:9px;padding:7px 9px;margin:0 -9px;border-radius:9px;
+    cursor:pointer;transition:background .14s,opacity .14s;user-select:none}
+  .kind:hover{background:#0e1620}
+  .kind.off{opacity:.38}
+  .kind .kdot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex:none;transition:background .14s}
+  .kind.off .kdot{background:#46535f!important}
+  .kind .kb{flex:1;min-width:0}
+  .kind .khd{display:flex;align-items:baseline;gap:8px}
+  .kind .kn{font-size:12.5px;color:var(--txt)}
+  .kind .kc{margin-left:auto;font-size:11px;color:var(--muted2);font-variant-numeric:tabular-nums}
+  .kind .kw{font-size:10.5px;color:var(--muted2);line-height:1.45;margin-top:2px}
+  .tt-kind{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;color:var(--txt)}
+  .tt-kind i{width:8px;height:8px;border-radius:50%;flex:none}
+  .tt-what{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:4px}
   /* ---- model weights ---- */
   .hint{font-size:11px;color:var(--muted);line-height:1.5;margin:-4px 0 12px}
   .wrow{margin-bottom:11px}
@@ -206,10 +222,14 @@
           <div class="sw"></div>
           <div><div class="tt">Cooling-access gap</div><div class="ts">walk-time to nearest relief</div></div>
         </div>
-        <div class="toggle on" id="tg-centers" data-layer="centers">
-          <div class="sw"></div>
-          <div><div class="tt">Show cooling centers</div><div class="ts">pools · libraries · shelters</div></div>
-        </div>
+      </div>
+
+      <div class="section">
+        <p class="lbl">Cooling relief sites <span class="cnt" id="ct-n">—</span></p>
+        <p class="hint">A place a resident with no air conditioning can <b>walk to and sit in the
+          cool, for free</b>. These are the four OpenStreetMap categories the pipeline counts as
+          relief — switch one off to see how thin the network gets without it.</p>
+        <div id="kinds"></div>
       </div>
 
       <div class="section legend">
@@ -578,7 +598,7 @@ async function boot(){
   // CDN can never leave the demo staring at an empty screen.
   // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
   // so the panel is fully populated from the live model before the map exists.
-  buildWeights();wireUI();
+  buildWeights();buildKinds();wireUI();
 
   // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
   // await; keep it pinned to the container for fullscreen/projector too.
@@ -712,31 +732,38 @@ boot().catch(err=>{
        </div>`;
 });
 
-let repaintPending=false;
-/** Paint the fill for `current`, now or as soon as the style can take it.
+let pendingOps=[];
+/** Run a style mutation now, or as soon as the style can take it.
  *
- *  Deliberately not gated on map.getLayer('fill'): getLayer() returns undefined
- *  until the style has parsed, even though initMap() declared the layer. So a
- *  layer toggled during the basemap fetch (up to BASEMAP_TIMEOUT_MS) used to
+ *  Deliberately NOT gated on map.getLayer(id): getLayer() returns undefined
+ *  until the style has parsed, even though initMap() declared the layer. So
+ *  anything toggled during the basemap fetch (up to BASEMAP_TIMEOUT_MS) used to
  *  update the legend, the chip and the caption while the map kept showing the
- *  previous ramp. A legend that disagrees with the map is worse than a slow map:
- *  on stage you'd narrate the wrong picture. Toggles before the map exists at
- *  all are already covered — initMap() bakes fillExpr(current) into the style. */
-function paintFill(){
+ *  previous ramp — fixed bug 12. A legend that disagrees with the map is worse
+ *  than a slow map: on stage you would narrate the wrong picture.
+ *
+ *  Generalised from the old paintFill()-only version because the same hazard
+ *  applies to the centre filter and the selection ring, and both were sitting
+ *  behind exactly the `if(map.getLayer(...))` guard the bug was about. Queued
+ *  closures must read live state at call time, never capture it, so a burst of
+ *  toggles replays as the final intent rather than the first.
+ *
+ *  Toggles from before the map exists at all are already covered: initMap()
+ *  bakes the current fill, filter and selection into the style object. */
+function styleOp(fn){
   if(!map)return;
-  try{map.setPaintProperty('fill','fill-color',fillExpr(current));}
-  catch(e){
-    if(repaintPending)return;
-    repaintPending=true;
-    const retry=()=>{
-      try{
-        map.setPaintProperty('fill','fill-color',fillExpr(current));
-        map.off('styledata',retry);repaintPending=false;
-      }catch(_){}                     // still parsing; styledata will fire again
-    };
-    map.on('styledata',retry);
-  }
+  try{fn();return;}catch(e){/* style still parsing */}
+  pendingOps.push(fn);
+  if(pendingOps.length>1)return;                 // one listener serves the queue
+  const retry=()=>{
+    const q=pendingOps;pendingOps=[];
+    try{q.forEach(f=>f());map.off('styledata',retry);}
+    catch(_){pendingOps=q;}                      // styledata will fire again
+  };
+  map.on('styledata',retry);
 }
+function paintFill(){styleOp(()=>map.setPaintProperty('fill','fill-color',fillExpr(current)));}
+function paintSel(){styleOp(()=>map.setFilter('sel',['==','id',selId??-1]));}
 
 function setLayer(k){
   current=k;
@@ -763,6 +790,40 @@ function setLayer(k){
   const hi=L.worse!=='lo';
   dir.className='dir'+(hi?' hi':'');
   dir.textContent=(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
+}
+
+// ------------------------------------------------------- cooling relief sites
+/** Counts come from the file, never from a literal. The pipeline is meant to be
+ *  repointable at any city, and a hardcoded "212 libraries" would keep reading
+ *  as true in Lagos. Categories with no sites are dropped rather than shown as
+ *  an empty row. */
+function buildKinds(){
+  const n={};for(const f of CENTERS.features){const k=f.properties.kind;n[k]=(n[k]||0)+1;}
+  kindOn=new Set(KIND_KEYS.filter(k=>n[k]));
+  document.getElementById('kinds').innerHTML=KIND_KEYS.filter(k=>n[k]).map(k=>`
+    <div class="kind" data-k="${k}">
+      <span class="kdot" style="background:${KIND[k].c}"></span>
+      <div class="kb"><div class="khd"><span class="kn">${KIND[k].label}</span>
+        <span class="kc">${n[k]}</span></div>
+        <div class="kw">${KIND[k].what}</div></div>
+    </div>`).join('');
+  document.getElementById('kinds').addEventListener('click',e=>{
+    const row=e.target.closest('.kind');if(!row)return;
+    const k=row.dataset.k;
+    kindOn.has(k)?kindOn.delete(k):kindOn.add(k);
+    syncKinds();
+  });
+  syncKinds();
+}
+function syncKinds(){
+  document.querySelectorAll('.kind').forEach(r=>r.classList.toggle('off',!kindOn.has(r.dataset.k)));
+  const shown=CENTERS.features.filter(f=>kindOn.has(f.properties.kind)).length;
+  document.getElementById('ct-n').textContent=
+    `${shown} of ${CENTERS.features.length} shown`;
+  styleOp(()=>{
+    map.setFilter('centers',centersFilter());
+    map.setLayoutProperty('centers','visibility',kindOn.size?'visible':'none');
+  });
 }
 
 // ---------------------------------------------------------------- weights UI
@@ -836,13 +897,9 @@ function wireUI(){
   });
   document.getElementById('tg-holc').onclick=()=>{holcOn=!holcOn;if(holcOn){accessOn=false;setLayer('holc');}else setLayer('score');syncToggles();};
   document.getElementById('tg-access').onclick=()=>{accessOn=!accessOn;if(accessOn){holcOn=false;setLayer('access');}else setLayer('score');syncToggles();};
-  document.getElementById('tg-centers').onclick=()=>{centersOn=!centersOn;
-    if(map&&map.getLayer('centers'))map.setLayoutProperty('centers','visibility',centersOn?'visible':'none');
-    syncToggles();};
   document.getElementById('d-close').onclick=()=>{
     document.getElementById('detail').classList.remove('show');
-    if(map&&map.getLayer('sel'))map.setFilter('sel',['==','id',-1]);
-    selId=null;
+    selId=null;paintSel();
     document.querySelectorAll('.row').forEach(r=>r.classList.remove('sel'));
   };
 }
@@ -850,7 +907,6 @@ function wireUI(){
 function syncToggles(){
   document.getElementById('tg-holc').classList.toggle('on',holcOn);
   document.getElementById('tg-access').classList.toggle('on',accessOn);
-  document.getElementById('tg-centers').classList.toggle('on',centersOn);
 }
 
 function buildRank(){
@@ -871,7 +927,7 @@ function buildRank(){
 
 function selectHex(id,fly){
   selId=id;const f=HEX.features.find(x=>x.properties.id===id);if(!f)return;const p=f.properties;
-  if(map&&map.getLayer('sel'))map.setFilter('sel',['==','id',id]);
+  paintSel();
   document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',+r.dataset.id===id));
   const s=sc(p),r=rk(p);
   const badge=document.getElementById('d-badge'),bc=colorFor('score',s);
@@ -971,7 +1027,24 @@ function wireHover(){
        <div class="tt-row"><span>Canopy</span><span>${(+p.green).toFixed(0)}%</span></div>
        <div class="tt-row"><span>Walk to cooling</span><span>${fMin(+p.access_min)}</span></div>`).addTo(map);});
   map.on('mouseleave','fill',()=>{map.getCanvas().style.cursor='';pop.remove();});
-  map.on('click','fill',e=>selectHex(e.features[0].properties.id,false));
+  map.on('click','fill',e=>{
+    // A centre sits on top of the hex it is in, and both layers get the click.
+    // Let the marker win — you clicked the dot, not the 0.8 km² under it.
+    if(map.queryRenderedFeatures(e.point,{layers:['centers']}).length)return;
+    selectHex(e.features[0].properties.id,false);
+  });
+
+  // "What actually IS a cooling center?" answered on the object itself, with the
+  // site's real OSM name, so it is visibly a place and not a generic dot.
+  const cpop=new maplibregl.Popup({closeButton:true,closeOnClick:true,offset:10});
+  map.on('click','centers',e=>{
+    const p=e.features[0].properties,k=KIND[p.kind]||{c:'#64748b',label:p.kind,what:''};
+    cpop.setLngLat(e.features[0].geometry.coordinates).setHTML(
+      `<b>${p.name||k.label}</b>
+       <div class="tt-kind"><i style="background:${k.c}"></i>${k.label}</div>
+       <div class="tt-what">${k.what}</div>`).addTo(map);
+  });
+  map.on('mouseenter','centers',()=>{map.getCanvas().style.cursor='pointer';});
 }
 </script>
 </body>
