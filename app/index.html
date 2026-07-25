@@ -45,7 +45,13 @@
   .brand{padding:16px 20px 14px;border-bottom:1px solid var(--edge)}
   .brand h1{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:9px}
   .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
-  .brand p{margin:5px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5;letter-spacing:.005em}
+  .brand p{margin:8px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5;letter-spacing:.005em}
+  .brandtop{display:flex;align-items:center;gap:10px}
+  .seg{margin-left:auto;display:flex;gap:2px;padding:2px;background:#0c1219;border:1px solid var(--edge);border-radius:8px}
+  .seg button{font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.01em;color:var(--muted2);
+    background:none;border:0;padding:4px 8px;border-radius:6px;cursor:pointer;transition:.14s;white-space:nowrap}
+  .seg button:hover{color:var(--txt)}
+  .seg button.on{background:#1d2732;color:var(--txt)}
   .scroll{overflow-y:auto;min-height:0}
   .section{padding:15px 20px;border-bottom:1px solid var(--edge)}
   .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted2);margin:0 0 10px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
@@ -186,7 +192,12 @@
 <div id="app">
   <aside id="panel">
     <div class="brand">
-      <h1><span class="dot"></span> CoolEquity</h1>
+      <div class="brandtop">
+        <h1><span class="dot"></span> CoolEquity</h1>
+        <div class="seg" id="units" role="group" aria-label="Units">
+          <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
+        </div>
+      </div>
       <p>Which neighborhoods should a city cool first? A heat-equity engine that runs on global satellite data — shown here on Los Angeles.</p>
     </div>
 
@@ -598,7 +609,7 @@ async function boot(){
   // CDN can never leave the demo staring at an empty screen.
   // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
   // so the panel is fully populated from the live model before the map exists.
-  buildWeights();buildKinds();wireUI();
+  buildWeights();buildKinds();wireUI();setUnits(UNITS);
 
   // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
   // await; keep it pinned to the container for fullscreen/projector too.
@@ -890,7 +901,24 @@ function applyWeights(){
   if(selId!=null)selectHex(selId,false);
 }
 
+/** Units are a rendering choice, so switching them only re-renders. Nothing is
+ *  converted in place and nothing is recomputed — the model, the ROI arithmetic
+ *  and every stored value stay metric, because that is how the WRI cooling
+ *  coefficient, the 40 m² per tree and the 4.8 km/h walk pace are all defined.
+ *  Convert on the way out or you end up with a $500 tree priced per square foot. */
+function setUnits(u){
+  UNITS=u;
+  try{localStorage.setItem('ce-units',u);}catch(_){}    // private mode: not worth failing over
+  document.querySelectorAll('#units button').forEach(b=>b.classList.toggle('on',b.dataset.u===u));
+  setLayer(current);                                    // legend endpoints are formatted
+  buildRank();
+  if(selId!=null)selectHex(selId,false);
+}
+
 function wireUI(){
+  document.getElementById('units').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(b)setUnits(b.dataset.u);
+  });
   document.getElementById('layers').addEventListener('click',e=>{
     const b=e.target.closest('.layer');if(!b)return;
     holcOn=false;accessOn=false;syncToggles();setLayer(b.dataset.k);
@@ -942,7 +970,7 @@ function selectHex(id,fly){
     ['Population','pop',p.pop,Math.round(p.pop).toLocaleString(),false],
     ['Age 65+','pct65',p.pct65,LAYERS.pct65.fmt(p.pct65),false],
     ['A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
-    ['Walk to cooling','access',p.access_min,p.access_min.toFixed(0)+' min',false],
+    ['Walk to cooling','access',p.access_min,`${fMin(p.access_min)} · ${fDist(p.access_km)}`,true],
   ];
   document.getElementById('d-metrics').innerHTML=m.map(([lab,k,v,disp,est])=>{
     const t=norm(k,v);
@@ -1003,15 +1031,14 @@ function updateROI(p){
   const trees=Math.round(delta/100*area/TREE_M2);
   const cost=trees*COST_TREE;
   const perPerson=p.pop?cost/p.pop:0;
-  const km2=(area/1e6).toFixed(1);
   document.getElementById('roi-target').textContent=target;
-  document.getElementById('roi-temp').textContent='−'+tempDrop.toFixed(2)+'°C';
-  document.getElementById('roi-people').textContent=Math.round(p.pop).toLocaleString();
-  document.getElementById('roi-seniors').textContent=seniors.toLocaleString();
+  document.getElementById('roi-temp').textContent='−'+fTempD(tempDrop);
+  document.getElementById('roi-people').textContent=fInt(p.pop);
+  document.getElementById('roi-seniors').textContent=fInt(seniors);
   document.getElementById('roi-cost').textContent=cost>=1e6?'$'+(cost/1e6).toFixed(1)+'M':'$'+Math.round(cost/1000)+'k';
   document.getElementById('roi-per').textContent='$'+Math.round(perPerson);
   document.getElementById('roi-note').textContent=
-    `Raising canopy from ${p.green.toFixed(0)}% to ${target}% (~${trees.toLocaleString()} trees over ~${km2} km²) is estimated to cool afternoons by ${tempDrop.toFixed(2)}°C, easing heat for ${Math.round(p.pop).toLocaleString()} residents incl. ${seniors.toLocaleString()} aged 65+. Cooling factor per WRI (+10% canopy ≈ −0.3°C); costs are rough planning estimates.`;
+    `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(p.pop)} residents incl. ${fInt(seniors)} aged 65+. Cooling factor per WRI (+10% canopy ≈ −0.3°C); costs are rough planning estimates, not a quote.`;
 }
 
 function wireHover(){
