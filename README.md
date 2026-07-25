@@ -21,13 +21,15 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
 
 Serve from the **repo root**, not from `app/` — the page reads `../data/`.
 
-**This works with no network at all.** MapLibre is vendored in `app/vendor/` and
-every data file is local; without internet you lose only the CARTO street
-basemap, and the map falls back to a flat background with the county outline
-drawn in. Rehearse that look at `/app/?flat=1`.
+**This works with no network at all.** MapLibre and both typefaces are vendored
+in `app/vendor/` and every data file is local; without internet you lose only
+the CARTO street basemap, and the map falls back to a flat background with the
+county outline drawn in. Rehearse that look at `/app/?flat=1`, which should make
+**zero** off-host requests.
 
-Other URL switches: `?data=<name>` swaps the hex file (`?data=grid` for the
-unscored grid, or point it at another city's output).
+Other URL switches: `?go=1` skips the landing screen and opens straight onto the
+map; `?data=<name>` swaps the hex file (`?data=grid` for the unscored grid, or
+point it at another city's output) and implies `?go=1`.
 
 The app wants ~700px of map width. Below that the 366px panel crowds it out —
 fine on a projector, worth knowing on a small laptop.
@@ -63,14 +65,42 @@ Point at another city by editing `BBOX`, `CITY` and the census settings in
 
 Each input is min–max normalized **within the city** — 44 °C is ordinary in
 Phoenix and alarming in Seattle, and normalizing locally is what makes the score
-portable. Weights live in `pipeline/config.py` and are restated in the app's
-legend; keep the two in sync.
+portable.
 
 ```
-base_risk = 0.35·heat + 0.25·(1 − greenness) + 0.25·(1 − ac_access) + 0.15·age65
+base_risk = 0.35·heat + 0.25·(1 − canopy) + 0.25·(1 − ac_access) + 0.15·age65
 priority  = base_risk · (0.55 + 0.45 · population)
 score     = 100 · minmax(priority)
 ```
+
+**The weights are not buried in a config file.** They are four sliders in the
+app, and moving one re-scores and re-ranks all 3,008 hexes in the browser — map,
+ranked list, legend copy and ROI all follow. That is the answer to "why 35%?":
+try 60% and watch where the money would go instead. Weighting only age 65+, for
+example, moves LA's top priority from Westlake to Holmby Hills.
+
+It is the same model, not a demo approximation. Checked in-page against the
+committed `data/la.geojson` at the shipped weights: **max absolute difference
+0.156 points, mean 0.039, and pipeline ranks #1–#6 reproduced exactly** — the
+residual is the geojson storing `lst`/`green`/`ac` rounded to 1 dp. The
+pipeline's own `score` and `rank` are never overwritten, so Reset is exact.
+
+Defaults live in `pipeline/config.py` and are mirrored in the app's `DEFAULT_W`;
+keep those two in sync. The legend prose is generated from the weights in force,
+so it cannot drift.
+
+Selecting a hex shows the arithmetic term by term — what each input measured,
+where that sits on the city's 0–1 scale, what the weight turns it into, and how
+the four add up before population scales them.
+
+### Reading the map
+
+One rule across every layer, restated in the legend under the colour bar:
+**deeper and more saturated = more need for cooling investment.** For the two
+protective inputs — tree canopy and A/C access — the needy end is the *low* end,
+so those ramps run deep→pale and the legend's arrow flips rather than the
+meaning. The basemap is light so that the deep end is the heaviest ink on the
+screen; that is what makes the rule readable at a glance.
 
 The ROI calculator in the detail panel, per hex:
 
@@ -97,6 +127,15 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   heat/greenness correlation and stretch the ramp over a range nobody lives in.
 - **Coverage is the LA basin, not LA County** — 6.5M of the county's 9.85M. The
   hard straight edge near El Monte is the bbox, not missing data.
+- **Only Los Angeles has been through the pipeline.** The landing screen's city
+  picker says so: the other cities are marked *pipeline-ready* and show what
+  building one takes, rather than loading LA's numbers under another name.
+- **"Cooling site" means the four OpenStreetMap categories `04_overlays.py`
+  queries** — libraries, community centres, public pools, senior centres and
+  shelters. It is not a list of sites a city has formally designated as cooling
+  centers on a heat day; it is the set of places a resident could plausibly walk
+  to and sit in the cool for free. The app names all four and lets you switch
+  each off.
 
 Holding up: across the 3,008 populated hexes, heat and greenness correlate at
 **r = −0.61**, and it survives both a longitude-band split and removing a
@@ -105,7 +144,9 @@ quadratic spatial trend (−0.58).
 ## Repo
 
 ```
-app/index.html        the whole front end; app/vendor/ is MapLibre 4.7.1 (BSD-3)
+app/index.html        the whole front end
+app/vendor/           MapLibre 4.7.1 (BSD-3) + Inter & Instrument Serif (OFL 1.1),
+                      all vendored so the page makes no off-host requests
 pipeline/             01→05, run in order; config.py holds bbox, weights, constants
 data/                 committed outputs — the app needs la.geojson + centers.geojson
 DEMO.md               the 60–90s script, with real numbers and the likely questions

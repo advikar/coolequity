@@ -36,6 +36,7 @@ is how you get 504'd an hour before the demo.
 | 4 Overlays | done | `data/overlays.csv`, `centers.geojson`, `holc_la.geojson`, `places.geojson` |
 | 5 Score + rank | done | `data/la.geojson` — 3008 scored hexes, **app now on real data** |
 | 6 Polish + demo | done bar the video | `README.md`, `DEMO.md`, `app/vendor/` |
+| 7 Front-end rebuild | done | landing screen, live weights, ramp inversion, units |
 
 Verified in the browser at 1440×860: priority, redlining and cooling-access
 layers all render and the legend matches the map; ROI panel produces sane
@@ -90,7 +91,61 @@ manual step; instructions are at the bottom of `DEMO.md`.
     undefined until the style parses, so a layer toggled during the basemap fetch
     updated the legend, chip and caption while the map kept the old ramp. **The
     legend silently lying about the map is the worst failure mode here.**
-    `paintFill()` retries on `styledata`.
+    `paintFill()` retries on `styledata`. **Generalised in Phase 7 to
+    `styleOp()`** — the centre filter and the selection ring were both still
+    behind `if(map.getLayer(id))`, i.e. the same bug in two more places. Route
+    every style mutation through `styleOp`, and never through `getLayer`.
+13. **`rgbOf()` digit-scraped its argument** — it only ever worked on `ramp()`'s
+    `rgb(r,g,b)` output. Fed a raw `#rrggbb` from the ramp arrays it failed
+    *plausibly*: `#b30000` → `rgb(NaN)`, `#5c3a17` → `[5,3,17]` → a grey that
+    looked like a design choice, so every weight swatch and slider thumb was
+    silently grey. Branch on the leading `#`. **A colour helper that accepts two
+    notations has to test both.**
+14. **Mercator y in radians against longitude in degrees** (intro backdrop) —
+    the raw log-tangent is 57.3× too small, so LA drew as a 60 px horizontal
+    smear rather than a city. Multiply by `180/π`. Any hand-rolled projection
+    needs both axes in the same units.
+
+## Phase 7 — the front-end rebuild
+
+Driven by "it doesn't feel hackathon-winning": the map worked but the model was
+invisible, the colours argued the opposite of the thesis, and there was no way
+in other than being dropped on a map.
+
+- **Ramps inverted, basemap lit.** One rule, stated in the legend under the bar
+  with an arrow at the correct end: *deeper = more need*. The two protective
+  inputs (canopy, A/C) ramp deep→pale so the arrow flips rather than the meaning.
+  This forced CARTO **positron** — over dark-matter the deep end is the least
+  visible ink on screen. The two changes only work together. `?flat=1`'s flat
+  background is now light to match.
+- **The four weights are live sliders.** Not a rebuild of the model — the same
+  model. Verified in-page against the committed `la.geojson` at the shipped
+  weights: **max 0.156 points, mean 0.039, pipeline ranks #1–#6 exact.** The
+  residual is the geojson storing lst/green/ac at 1 dp. The pipeline's `score`
+  and `rank` properties are never overwritten, so Reset is exact.
+- The map repaints from a **MapLibre expression** that recomputes the score over
+  the raw properties. Not `setData` — that re-serialises 1.4 MB per frame of a
+  drag.
+- **The legend caption for Priority is generated from the weights in force**, so
+  the "keep config.py and the legend copy in sync" hazard below is retired for
+  that layer. It is now impossible for the caption to quote 35% while the slider
+  says 60%.
+- Detail panel shows the **score arithmetic term by term** — measured value,
+  position on the city's 0–1 scale, × weight, = points, then the population
+  multiplier.
+- **Cooling sites are classified** by the `kind` already in `centers.geojson`
+  (library 212, community centre 200, pool 133, senior/shelter 100), each with a
+  colour, a count read *from the file*, a plain-English definition and its own
+  filter. Clicking one names it.
+- **Landing screen** with a city picker. Only LA is built and the UI says so —
+  the other cities are labelled *pipeline-ready* and show the actual build steps.
+  A dropdown that appeared to load Delhi would be the worst thing in this repo.
+  Backdrop is the real hex layer drawn to a canvas from the same geometry.
+  `?go=1` (and any `?data=`) skips straight to the map.
+- **Metric/imperial switch**, display-layer only. `fTemp` and `fTempD` are
+  separate on purpose: a *drop* of 0.36 °C is 0.65 °F, not 32.65 °F.
+- **Inter + Instrument Serif vendored** at `app/vendor/*.woff2` (latin subsets,
+  63 KB, both OFL 1.1). Not a Google Fonts `<link>` — see fixed bug 11.
 
 ## Open issues / decisions taken
 
@@ -170,8 +225,20 @@ id  name  lst  green  pop  pct65  ac  holc  access_min  access_km  score  rank  
 ```
 
 `holc` is legitimately `null` outside the 1939 map (1962 of 3008 hexes) — the
-fill expression's `match` default handles it. Score weights live in
-`pipeline/config.py` **and** are described in the app's legend copy — keep in sync.
+fill expression's `match` default handles it.
+
+Score weights live in `pipeline/config.py` and are mirrored in the app's
+`DEFAULT_W` / `DEFAULT_POPW`. **Those two must stay in sync** — that is the whole
+basis of the "reproduces the pipeline" claim, and the check is one line in the
+console:
+
+```js
+HEX.features.reduce((m,f)=>Math.max(m,Math.abs(sc(f.properties)-f.properties.score)),0)
+// expect < 0.2 with the sliders at their defaults
+```
+
+The legend *copy* no longer needs syncing: it is generated from the weights in
+force.
 
 ## Notes
 
@@ -179,10 +246,16 @@ fill expression's `match` default handles it. Score weights live in
 - Satellite path is Planetary Computer (anonymous). No Earth Engine account needed.
 - Overpass mirrors are tried in order with backoff; `overpass.kumi.systems` leads
   because the main instance throttles hardest.
-- `?data=<name>` on the app URL swaps the hex file (e.g. `?data=grid`).
+- `?data=<name>` on the app URL swaps the hex file (e.g. `?data=grid`). Implies
+  `?go=1`.
+- `?go=1` opens straight onto the map, skipping the landing screen. Use it for
+  rehearsal and for the recorded walkthrough.
 - `?flat=1` forces the flat basemap, so the no-network look is rehearsable
   without actually killing the Wi-Fi. The county outline is drawn only on that
   path — over CARTO's streets it is clutter, over nothing it is the only thing
   telling you the holes over the bay are holes.
 - The app needs ~700px of width before the map column is usable; below that the
   366px panel eats the grid. Fine for a projector, worth knowing on a laptop.
+- Nothing off-host except CARTO's basemap: MapLibre, both typefaces and all data
+  are local. Re-audit with `?flat=1` after any front-end change — that path must
+  stay at **zero** external requests.

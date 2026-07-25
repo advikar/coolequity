@@ -12,8 +12,13 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
 ```
 
 - Window at ~1440×860 or full screen. Below ~700px the 366px panel eats the map.
-- Priority layer selected, cooling centers on, detail panel closed. That's the
-  default state on a fresh load — just reload rather than clicking back to it.
+- You land on the **intro screen**; the map is already booted behind it, so the
+  button is a fade, not a load. `?go=1` skips it if you'd rather open on the map.
+- Priority layer selected, all four cooling-site categories on, weights at
+  **pipeline defaults**, detail panel closed. That's the default state on a
+  fresh load — just reload rather than clicking back to it. If you have been
+  playing with the sliders, **hit Reset** (it greys out when you're back at the
+  shipped weights, so you can see at a glance that you are).
 - **No Wi-Fi?** Nothing to do. MapLibre is vendored and all data is local; the map
   loses only the CARTO street basemap and draws the county outline instead.
   Rehearse that look with `http://localhost:8000/app/?flat=1`.
@@ -22,18 +27,36 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
 
 ## The script
 
-**1 · Hook (10s)** — panel visible, don't touch anything yet.
+**1 · Hook (10s)** — intro screen, don't touch anything yet.
 
 > "Heat is the deadliest weather hazard on Earth — about 489,000 deaths a year —
 > and it lands hardest on the poorest, least-shaded blocks. Cities have cooling
 > budgets. What they don't have is a precise way to aim them."
+
+Then click **Explore Los Angeles**.
 
 **2 · Map (15s)** — Priority layer.
 
 > "This is all of Los Angeles — 3,008 hexes, 6.5 million residents, 0.8 km²
 > each. Every one scored on real satellite heat, real tree
 > canopy, population, age, and walking distance to the nearest cooling centre.
-> Nothing here is drawn by hand."
+> Nothing here is drawn by hand. The darker it is, the more help it needs."
+
+**2b · The model is not a black box (20s)** — drag **Surface heat** down and
+**Age 65+** up to about 60%, let the map and the list re-order, then hit
+**Reset**.
+
+> "And the weights aren't buried in a config file — they're right here. This is
+> the whole model recomputing across all three thousand hexes, live. Weight it
+> purely toward protecting seniors and LA's number one stops being Westlake and
+> becomes **Holmby Hills** — one of the wealthiest zip codes in America. That's
+> the argument for making this visible: the answer depends on what you decided
+> to care about, so you should be able to see the decision."
+
+Reset, then click any hex to show the breakdown:
+
+> "And for any block, here's the arithmetic — what we measured, where that sits
+> on the city's scale, times the weight, equals points."
 
 **3 · Story (20s)** — toggle **Redlining (HOLC)**, then **Cooling-access gap**.
 
@@ -107,8 +130,34 @@ trend still leaves **−0.58**. It is not the coastal gradient.
 **"Why the straight edge on the east side / why 6.5M not 10M?"** The bbox covers
 the LA basin, not Antelope Valley. Known, deliberate, not a data failure.
 
-**"Is A/C access measured?"** No — modeled from income and labelled `est.` in the
-UI. It's the one input that isn't observed, and it carries 25% of the score.
+**"Is A/C access measured?"** No — modeled from income and labelled `est` in the
+UI. It's the one input that isn't observed, and it carries 25% of the score. The
+honest follow-up is to drag its weight to zero on stage. The top of the list
+barely moves: Westlake S and Alvarado Terrace swap #1 and #2 — they are adjacent
+hexes in the same neighborhood — and the same Westlake / Historic Filipinotown /
+Koreatown blocks still lead. **Say "the leaders swap places", not "nothing
+changes"**; a judge watching the list will see the swap.
+
+**"Are those sliders really running the model, or a rough approximation?"** The
+model. Same arithmetic as `pipeline/05_score.py`, min-max normalised within the
+city. At the shipped weights it reproduces the committed `la.geojson` to a max
+of **0.156 points**, mean 0.039, with ranks #1–#6 identical — the residual is
+the geojson storing temperatures at one decimal place. Reset restores the exact
+shipped weights, and the pipeline's own `score`/`rank` fields are never
+overwritten. You can check it live in the console; the one-liner is in
+`STATUS.md`.
+
+**"Can I look at my city?"** Not today, and the picker says so rather than
+loading LA's numbers under another name. Every input except the US redlining
+overlay is global, so it's a bbox change in `pipeline/config.py` and one run of
+01→05. Outside the US you lose HOLC and swap ACS for a WorldPop raster.
+
+**"What counts as a cooling center?"** Four OpenStreetMap categories: 212
+libraries, 200 community centres, 133 public pools, 100 senior centres and
+shelters. Places a resident with no A/C could walk to and sit in the cool for
+free — **not** a list of sites the city has formally designated for a heat
+emergency. Switching libraries off in the panel is the fastest way to show how
+much of the network is one building type.
 
 **"What about the holes over the bay and Griffith Park?"** 478 hexes with
 essentially no residents, dropped. They'd otherwise invert the headline

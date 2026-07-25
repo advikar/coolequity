@@ -42,6 +42,49 @@
   svg.ico{width:13px;height:13px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
   #app{display:grid;grid-template-columns:366px 1fr;height:100vh;position:relative}
   #panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border-right:1px solid var(--edge);display:flex;flex-direction:column;min-height:0}
+  /* ------------------------------------------------------------ intro */
+  #intro{position:fixed;inset:0;z-index:50;background:#080b10;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .55s ease,transform .55s cubic-bezier(.4,0,.2,1)}
+  #intro.gone{opacity:0;transform:scale(1.05);pointer-events:none}
+  #intro-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5;
+    filter:blur(.4px);transform:scale(1.02)}
+  .intro-scrim{position:absolute;inset:0;
+    background:radial-gradient(115% 85% at 22% 45%,rgba(8,11,16,.97) 20%,rgba(8,11,16,.72) 52%,rgba(8,11,16,.35) 100%)}
+  .intro-card{position:relative;width:min(760px,calc(100% - 64px));padding:0 8px}
+  .eyebrow{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:20px}
+  .intro-card h1{font-family:var(--display);font-weight:400;margin:0;
+    font-size:clamp(38px,5.6vw,68px);line-height:1.03;letter-spacing:-.015em;color:#fff}
+  .lede{max-width:52ch;margin:20px 0 0;color:var(--muted);font-size:15px;line-height:1.62}
+  .istats{display:flex;flex-wrap:wrap;gap:34px;margin:30px 0 34px}
+  .istats div b{display:block;font-size:25px;font-weight:600;letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;color:var(--txt)}
+  .istats div span{font-size:11px;color:var(--muted2);letter-spacing:.05em;text-transform:uppercase}
+  .ilbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);
+    font-weight:600;margin:0 0 11px}
+  .cities{display:flex;flex-wrap:wrap;gap:8px}
+  .city{display:flex;align-items:center;gap:9px;background:#0e141c;border:1px solid var(--edge);
+    color:var(--muted);border-radius:10px;padding:9px 14px;font:inherit;font-size:12.5px;
+    cursor:pointer;transition:.16s}
+  .city:hover{border-color:#3a4a5c;color:var(--txt)}
+  .city.on{border-color:var(--accent);background:#1a1310;color:var(--txt)}
+  .city .cs{font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;
+    padding:2px 6px;border-radius:20px;background:#12261e;color:#4fd1a0}
+  .city .cs.soon{background:#1a1f27;color:var(--muted2)}
+  .cityinfo{margin-top:13px;font-size:11.5px;line-height:1.6;color:var(--muted);
+    background:#0c1219;border:1px solid var(--edge);border-radius:10px;padding:12px 14px;max-width:60ch}
+  .cityinfo code{font-family:var(--mono);font-size:10.5px;color:var(--accent2);
+    background:#141c26;padding:1px 5px;border-radius:4px}
+  .cta{margin-top:28px;display:inline-flex;align-items:center;gap:9px;font:inherit;font-size:14px;
+    font-weight:600;color:#0b0f14;background:linear-gradient(135deg,#ffb703,#ff7a45);
+    border:0;border-radius:11px;padding:13px 22px;cursor:pointer;
+    box-shadow:0 8px 26px rgba(255,122,69,.28);transition:transform .16s,box-shadow .16s}
+  .cta:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(255,122,69,.36)}
+  .cta .ico{opacity:1;stroke-width:2}
+  .fine{margin:20px 0 0;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:62ch}
+  @media (prefers-reduced-motion:reduce){#intro{transition:opacity .01s}#intro.gone{transform:none}}
+  @media (max-height:640px){.istats{margin:20px 0 22px}.lede{display:none}}
   .brand{padding:16px 20px 14px;border-bottom:1px solid var(--edge)}
   .brand h1{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:9px}
   .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
@@ -189,6 +232,29 @@
 </style>
 </head>
 <body>
+<!-- Landing overlay. Sits ON TOP of a fully-booted app rather than gating it:
+     the map, the data and the panel are all live behind this, so dismissing it
+     is a fade, not a load. Nothing here waits on the intro, which is the same
+     rule as fixed bugs 4/5/9 — never put the data path behind an interaction. -->
+<div id="intro">
+  <canvas id="intro-canvas" aria-hidden="true"></canvas>
+  <div class="intro-scrim"></div>
+  <div class="intro-card">
+    <div class="eyebrow"><span class="dot"></span> Heat &amp; cooling equity</div>
+    <h1>Which neighborhoods<br>should a city cool&nbsp;first?</h1>
+    <p class="lede">Heat is the deadliest weather hazard on Earth, and it lands hardest on the
+      poorest, least-shaded blocks. Cities have cooling budgets. What they don’t have is a
+      precise way to aim them.</p>
+    <div class="istats" id="istats"></div>
+    <p class="ilbl">Choose a city</p>
+    <div class="cities" id="cities"></div>
+    <div class="cityinfo" id="cityinfo" hidden></div>
+    <button class="cta" id="intro-go">Explore Los Angeles
+      <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+    <p class="fine" id="ifine"></p>
+  </div>
+</div>
+
 <div id="app">
   <aside id="panel">
     <div class="brand">
@@ -609,7 +675,10 @@ async function boot(){
   // CDN can never leave the demo staring at an empty screen.
   // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
   // so the panel is fully populated from the live model before the map exists.
-  buildWeights();buildKinds();wireUI();setUnits(UNITS);
+  buildWeights();buildKinds();wireUI();setUnits(UNITS);buildIntro();
+  // ?go=1 skips the landing screen. Rehearsal and the recorded walkthrough both
+  // want to open straight onto the map; so does anyone deep-linking ?data=.
+  if(_q.has('go')||_q.has('data'))dismissIntro();
 
   // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
   // await; keep it pinned to the container for fullscreen/projector too.
@@ -801,6 +870,117 @@ function setLayer(k){
   const hi=L.worse!=='lo';
   dir.className='dir'+(hi?' hi':'');
   dir.textContent=(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
+}
+
+// ---------------------------------------------------------------- intro
+/* The city list is deliberately honest about what exists.
+ *
+ * Only Los Angeles has been through the pipeline. A dropdown that appeared to
+ * load Delhi and quietly showed LA's numbers under a different name would be
+ * the single worst thing in this repo, and "every input is global" is a claim
+ * that has to survive someone clicking it. So the unbuilt cities say they are
+ * unbuilt, and say exactly what building one takes — which argues portability
+ * better than a fake selector does, because it is checkable.
+ *
+ * `have` is the data file each city would load, so wiring a second real city
+ * up later is one build and one line here. */
+const CITIES=[
+  {name:'Los Angeles',cc:'United States',have:'la',
+   note:'The built dataset. 3,008 populated hexes at H3 resolution 8, ~0.82 km² each, '
+       +'from Landsat 8/9 thermal, Sentinel-2 NDVI, ACS 2023 and OpenStreetMap.'},
+  {name:'Phoenix',cc:'United States'},
+  {name:'Athens',cc:'Greece'},
+  {name:'Delhi',cc:'India'},
+  {name:'Lagos',cc:'Nigeria'},
+];
+const BUILD_NOTE=c=>
+  `<b>Not built yet — and this page will not pretend otherwise.</b><br>
+   Every input except the US redlining overlay is global, so ${c.name} takes one config change
+   and one pipeline run: set <code>CITY</code> and <code>BBOX</code> in
+   <code>pipeline/config.py</code>, then run <code>01</code>→<code>05</code>.`
+  +(c.cc==='United States'
+     ? ' Census and HOLC layers both apply here.'
+     : ` Outside the US there is no HOLC map, and <code>03_census.py</code> needs a WorldPop
+        raster in place of the ACS — the other four stages are unchanged.`);
+
+function buildIntro(){
+  const pop=HEX.features.reduce((a,f)=>a+f.properties.pop,0);
+  const hot=Math.max(...HEX.features.map(f=>f.properties.lst));
+  document.getElementById('istats').innerHTML=[
+    [HEX.features.length.toLocaleString(),'neighborhoods scored'],
+    [(pop/1e6).toFixed(1)+'M','residents covered'],
+    [fTemp(hot),'hottest block'],
+    [CENTERS.features.length.toLocaleString(),'cooling sites mapped'],
+  ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
+
+  document.getElementById('cities').innerHTML=CITIES.map((c,i)=>
+    `<button class="city${c.have?' on':''}" data-i="${i}" type="button">${c.name}
+       <span class="cs${c.have?'':' soon'}">${c.have?'ready':'pipeline-ready'}</span></button>`).join('');
+  const info=document.getElementById('cityinfo');
+  document.getElementById('cities').addEventListener('click',e=>{
+    const b=e.target.closest('.city');if(!b)return;
+    const c=CITIES[+b.dataset.i];
+    document.querySelectorAll('.city').forEach(x=>x.classList.toggle('on',x===b));
+    info.hidden=false;
+    info.innerHTML=c.have?c.note:BUILD_NOTE(c);
+    // The button only ever opens what is actually loaded. It never claims to
+    // fetch a city whose data does not exist.
+    document.getElementById('intro-go').firstChild.textContent=
+      c.have?`Explore ${c.name} `:'Explore Los Angeles ';
+  });
+
+  document.getElementById('ifine').innerHTML=
+    'Real measurements throughout, except where labelled: A/C access is <b>modelled</b> from '
+   +'median household income, and walk time is a circuity-adjusted straight line, not a routed '
+   +'street path. Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap · '
+   +'HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>.';
+
+  document.getElementById('intro-go').onclick=dismissIntro;
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'||e.key==='Enter'){const el=document.getElementById('intro');
+      if(el&&!el.classList.contains('gone'))dismissIntro();}
+  });
+  drawIntroMap();
+  addEventListener('resize',drawIntroMap);
+}
+
+/** Backdrop is the real hex layer, drawn straight to a canvas from the same
+ *  geometry and the same live scores the map uses. Cheaper than a second
+ *  MapLibre instance, and it means the landing page cannot show a city that
+ *  isn't the one behind it. */
+function drawIntroMap(){
+  const cv=document.getElementById('intro-canvas');if(!cv||!HEX)return;
+  const dpr=Math.min(2,devicePixelRatio||1);
+  const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;
+  cv.width=w*dpr;cv.height=h*dpr;
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+  const [[x0,y0],[x1,y1]]=dataBounds();
+  // Web-mercator y so the shape matches the map the user is about to see.
+  // The 180/PI matters: x is longitude in DEGREES, and the raw log-tangent is in
+  // radians, so without it y is 57x too small and LA renders as a 60px smear.
+  const my=lat=>180/Math.PI*Math.log(Math.tan(Math.PI/4+lat*Math.PI/360));
+  const [my0,my1]=[my(y0),my(y1)];
+  // Cover, not contain, and pushed right — the card sits over the left half, so
+  // the city reads as a backdrop rather than a diagram competing with the text.
+  const s=Math.max(w/(x1-x0),h/(my1-my0))*1.15;
+  const cx=w*0.72-(x0+x1)/2*s, cy=h/2+(my0+my1)/2*s;
+  const px=x=>x*s+cx, py=lat=>cy-my(lat)*s;
+  for(const f of HEX.features){
+    const ring=f.geometry.coordinates[0];
+    g.beginPath();g.moveTo(px(ring[0][0]),py(ring[0][1]));
+    for(let i=1;i<ring.length;i++)g.lineTo(px(ring[i][0]),py(ring[i][1]));
+    g.closePath();g.fillStyle=colorFor('score',sc(f.properties));g.fill();
+  }
+}
+
+function dismissIntro(){
+  const el=document.getElementById('intro');if(!el)return;
+  el.classList.add('gone');
+  el.addEventListener('transitionend',()=>el.remove(),{once:true});
+  setTimeout(()=>{if(el.isConnected)el.remove();},900);   // transitionend can be skipped
+  // The map has been alive underneath the whole time; it just needs to be told
+  // the visible viewport is now its own.
+  if(map){map.resize();fitData(map);}
 }
 
 // ------------------------------------------------------- cooling relief sites
