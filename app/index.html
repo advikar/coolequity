@@ -157,7 +157,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot">Demo build · mock data for UI review. Production engine: satellite land-surface temp + greenness, WorldPop population, modeled A/C-access proxy — aggregated to an H3 hex grid so it runs on any city worldwide.</div>
+      <div class="foot">Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is modeled from income, not measured. Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -313,44 +313,115 @@ async function basemapStyle(){
   }
 }
 
+/** Build the map with the hexes already in the style.
+ *
+ *  The data layers are baked into the style object BEFORE construction rather
+ *  than added from a map event. Both candidate events are unreliable exactly
+ *  when it matters: 'load' waits on the first render, and 'styledata' /
+ *  isStyleLoaded() do not settle either while a tab is hidden — a hidden tab has
+ *  rAF suspended, so nothing renders and neither ever fires. Measured: with the
+ *  layers added on 'load', a tab opened in the background reports
+ *  document.hidden=true, map.loaded()=false forever, and presents a blank map
+ *  when you switch to it. That is the demo failing on stage.
+ *
+ *  A style that already contains the data needs no event at all — MapLibre draws
+ *  it whenever it first draws anything. Same lesson as the basemap fallback
+ *  above: never make the data path wait on a render. */
 function initMap(style){
-  const m=new maplibregl.Map({container:'map',style,
+  // Copy before mutating: FLAT_STYLE is a shared const and a retry would
+  // otherwise push a second set of layers onto it.
+  const s={...style,sources:{...style.sources},layers:[...style.layers]};
+  s.sources.hex={type:'geojson',data:HEX};
+  s.sources.centers={type:'geojson',data:CENTERS};
+  s.layers.push(
+    {id:'fill',type:'fill',source:'hex',
+      paint:{'fill-color':fillExpr(current),'fill-opacity':0.75}},
+    {id:'line',type:'line',source:'hex',
+      paint:{'line-color':'#0b0f14','line-width':0.4,'line-opacity':0.45}},
+    {id:'sel',type:'line',source:'hex',
+      paint:{'line-color':'#fff','line-width':2.4},filter:['==','id',selId??-1]},
+    {id:'centers',type:'circle',source:'centers',
+      layout:{visibility:centersOn?'visible':'none'},
+      // 645 real OSM sites at a fixed 6px blanket the city and hide the very
+      // overlay you toggled them on to read. Scale with zoom: a dot at city
+      // view, a target you can click once you're in a neighborhood.
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],9,2.2,11,4,14,7],
+        'circle-color':'#4cc9a4',
+        'circle-stroke-width':['interpolate',['linear'],['zoom'],9,0.6,14,2],
+        'circle-stroke-color':'#0b0f14','circle-opacity':0.9}});
+
+  const m=new maplibregl.Map({container:'map',style:s,
     center:[-118.35,34.02],zoom:9.7,attributionControl:true});
   map=m;
   m.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
-  m.on('load',()=>addDataLayers(m));
+  wireHover();m.resize();fitData(m);
 }
 
-function addDataLayers(m){
-  if(map!==m)return;                   // a newer map won the race
-  m.addSource('hex',{type:'geojson',data:HEX});
-  m.addLayer({id:'fill',type:'fill',source:'hex',paint:{'fill-color':fillExpr(current),'fill-opacity':0.75}});
-  m.addLayer({id:'line',type:'line',source:'hex',paint:{'line-color':'#0b0f14','line-width':0.4,'line-opacity':0.45}});
-  m.addLayer({id:'sel',type:'line',source:'hex',paint:{'line-color':'#fff','line-width':2.4},filter:['==','id',selId??-1]});
-  m.addSource('centers',{type:'geojson',data:CENTERS});
-  m.addLayer({id:'centers',type:'circle',source:'centers',paint:{
-    'circle-radius':6,'circle-color':'#4cc9a4','circle-stroke-width':2,'circle-stroke-color':'#0b0f14',
-    'circle-opacity':0.95}});
-  m.setLayoutProperty('centers','visibility',centersOn?'visible':'none');
-  wireHover();m.resize();
-  // Right dock is 340px; keep the fitted view clear of it.
-  m.fitBounds(dataBounds(),{padding:{top:40,bottom:40,left:40,right:360},duration:0});
+/** Frame the data, with padding the container can actually afford.
+ *  fitBounds throws "Invalid LngLat object: (Infinity, NaN)" when the padding
+ *  meets or exceeds the viewport — and since that throw happens inside boot()'s
+ *  promise chain it used to take down the entire map and report it as "could
+ *  not load la.geojson", which sends you debugging the wrong layer entirely.
+ *  A narrow window is enough to trigger it: the right pad alone is 360px. */
+function fitData(m){
+  const c=m.getContainer(),w=c.clientWidth,h=c.clientHeight;
+  // Zero-sized container: wait for the ResizeObserver's resize() instead of
+  // fitting to nothing.
+  if(!w||!h){m.once('resize',()=>fitData(m));return;}
+  const pad={top:40,bottom:40,left:40,right:360};   // right dock is 340px
+  if(pad.left+pad.right>w*0.8){pad.left=pad.right=w*0.05;}
+  if(pad.top+pad.bottom>h*0.8){pad.top=pad.bottom=h*0.05;}
+  m.fitBounds(dataBounds(),{padding:pad,duration:0});
 }
 
 boot().catch(err=>{
   console.error(err);
-  document.getElementById('map').innerHTML=
-    `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
-       <b>Could not load ${DATA_URL}</b><br>${err.message}<br><br>
-       Serve from the repo root so <code>data/</code> resolves:<br>
-       <code>python -m http.server 8000</code> then open <code>/app/</code>
-     </div>`;
+  // Distinguish the two failures. Blaming the data file when the data is
+  // already in memory and it was the map that threw wastes the one thing you
+  // don't have at a demo, which is time.
+  const gotData=HEX&&HEX.features&&HEX.features.length;
+  document.getElementById('map').innerHTML=gotData
+    ? `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
+         <b>Data loaded (${HEX.features.length} hexes) but the map failed to start</b>
+         <br>${err.message}<br><br>The panel and ranking on the left are still live.
+       </div>`
+    : `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
+         <b>Could not load ${DATA_URL}</b><br>${err.message}<br><br>
+         Serve from the repo root so <code>data/</code> resolves:<br>
+         <code>python -m http.server 8000</code> then open <code>/app/</code>
+       </div>`;
 });
+
+let repaintPending=false;
+/** Paint the fill for `current`, now or as soon as the style can take it.
+ *
+ *  Deliberately not gated on map.getLayer('fill'): getLayer() returns undefined
+ *  until the style has parsed, even though initMap() declared the layer. So a
+ *  layer toggled during the basemap fetch (up to BASEMAP_TIMEOUT_MS) used to
+ *  update the legend, the chip and the caption while the map kept showing the
+ *  previous ramp. A legend that disagrees with the map is worse than a slow map:
+ *  on stage you'd narrate the wrong picture. Toggles before the map exists at
+ *  all are already covered — initMap() bakes fillExpr(current) into the style. */
+function paintFill(){
+  if(!map)return;
+  try{map.setPaintProperty('fill','fill-color',fillExpr(current));}
+  catch(e){
+    if(repaintPending)return;
+    repaintPending=true;
+    const retry=()=>{
+      try{
+        map.setPaintProperty('fill','fill-color',fillExpr(current));
+        map.off('styledata',retry);repaintPending=false;
+      }catch(_){}                     // still parsing; styledata will fire again
+    };
+    map.on('styledata',retry);
+  }
+}
 
 function setLayer(k){
   current=k;
   // May run before the map is ready (panel renders first) — legend still updates.
-  if(map&&map.getLayer('fill'))map.setPaintProperty('fill','fill-color',fillExpr(k));
+  paintFill();
   document.querySelectorAll('.layer').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
   const L=LAYERS[k];
   document.getElementById('legend-title').textContent=L.title;

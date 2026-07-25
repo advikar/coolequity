@@ -1,0 +1,3487 @@
+h3,name,holc,access_min,access_km
+8829a11001fffff,Shadow Glen Estates NE 5,,27.0,2.16
+8829a11009fffff,Shadow Glen Estates NE 3,,11.5,0.92
+8829a1100bfffff,Shadow Glen Estates N 2,,24.4,1.95
+8829a1100dfffff,Shadow Glen Estates NE 4,,22.4,1.79
+8829a11041fffff,Sylmar NE,,16.1,1.29
+8829a11043fffff,Shadow Glen Estates NE,,4.8,0.38
+8829a11045fffff,Sylmar NE 2,,24.7,1.97
+8829a11047fffff,Shadow Glen Estates NE 2,,11.7,0.94
+8829a11049fffff,Sylmar,,4.8,0.39
+8829a1104bfffff,Shadow Glen Estates,,11.4,0.91
+8829a1104dfffff,Sylmar E,,19.8,1.58
+8829a11051fffff,Rancho Cascades NE,,1.5,0.12
+8829a11053fffff,Rancho Cascades N,,15.9,1.27
+8829a11055fffff,Shadow Glen Estates N,,14.0,1.12
+8829a11057fffff,Rancho Cascades NE 2,,14.6,1.17
+8829a11059fffff,Rancho Cascades SE,,12.8,1.03
+8829a1105bfffff,Rancho Cascades,,17.1,1.37
+8829a1105dfffff,Shadow Glen Estates NW,,14.6,1.17
+8829a11061fffff,Sylmar NE 5,,23.5,1.88
+8829a11063fffff,Shadow Glen Estates NE 6,,36.8,2.95
+8829a11065fffff,Lopez/Kagel Canyons NW 5,,23.2,1.86
+8829a11067fffff,Lopez/Kagel Canyons NW 7,,35.3,2.82
+8829a11069fffff,Sylmar NE 4,,18.5,1.48
+8829a1106bfffff,Sylmar NE 3,,27.2,2.18
+8829a1106dfffff,Lopez/Kagel Canyons W 5,,8.7,0.7
+8829a11141fffff,Lopez/Kagel Canyons NE 3,,62.3,4.98
+8829a11143fffff,Lopez/Kagel Canyons N 4,,58.5,4.68
+8829a11145fffff,Lopez/Kagel Canyons NE 4,,77.8,6.22
+8829a11147fffff,Lopez/Kagel Canyons NE 6,,73.2,5.85
+8829a11149fffff,Lopez/Kagel Canyons NE,,53.8,4.3
+8829a1114bfffff,Lopez/Kagel Canyons N 2,,46.9,3.75
+8829a1114dfffff,Lopez/Kagel Canyons NE 2,,69.4,5.55
+8829a11151fffff,Lopez/Kagel Canyons N 5,,47.0,3.76
+8829a11159fffff,Lopez/Kagel Canyons NW 4,,31.8,2.54
+8829a1115bfffff,Lopez/Kagel Canyons NW 6,,38.5,3.08
+8829a1115dfffff,Lopez/Kagel Canyons N 3,,44.4,3.55
+8829a11169fffff,Lopez/Kagel Canyons NE 7,,93.3,7.47
+8829a1116bfffff,Lopez/Kagel Canyons NE 8,,88.2,7.06
+8829a1116dfffff,Lopez/Kagel Canyons NE 10,,108.9,8.71
+8829a11201fffff,Carey Ranch S,,13.5,1.08
+8829a11203fffff,Carey Ranch SW,,28.8,2.3
+8829a11205fffff,Carey Ranch SE,,16.2,1.3
+8829a11207fffff,Carey Ranch,,25.9,2.07
+8829a11209fffff,Mission Hills N 2,,13.4,1.07
+8829a1120bfffff,Carey Ranch SW 2,,24.3,1.95
+8829a1120dfffff,Mission Hills N 3,,2.0,0.16
+8829a11211fffff,Sylmar Acres SW 4,,45.7,3.65
+8829a11213fffff,Sylmar Acres W 3,,46.2,3.69
+8829a11215fffff,Sylmar Acres SW 3,,34.5,2.76
+8829a11217fffff,Sylmar Acres SW 2,,31.7,2.54
+8829a11219fffff,Granada Hills NE 4,,31.0,2.48
+8829a1121bfffff,Granada Hills NE 5,,42.6,3.41
+8829a1121dfffff,Carey Ranch W,,38.3,3.07
+8829a11221fffff,Village Green E,,11.0,0.88
+8829a11223fffff,Village Green N,,14.8,1.19
+8829a11225fffff,San Fernando NE,C,12.3,0.98
+8829a11227fffff,Village Green NE,,4.4,0.35
+8829a11229fffff,San Fernando Mall,D,12.3,0.98
+8829a1122bfffff,Village Green SW,,23.4,1.87
+8829a1122dfffff,San Fernando,B,3.4,0.27
+8829a11231fffff,Sylmar Acres SE,,14.5,1.16
+8829a11233fffff,Sylmar Acres,,4.7,0.38
+8829a11235fffff,Sylmar W,,11.7,0.94
+8829a11237fffff,Shadow Glen Estates SW,,11.0,0.88
+8829a11239fffff,Carey Ranch NW,,28.0,2.24
+8829a1123bfffff,Sylmar Acres SW,,19.1,1.53
+8829a1123dfffff,Carey Ranch N,,25.1,2.01
+8829a11241fffff,Mission Hills,,20.4,1.63
+8829a11243fffff,Mission Hills NW,,25.3,2.02
+8829a11245fffff,Mission Hills E,,20.8,1.66
+8829a11247fffff,Mission Hills N,,13.6,1.09
+8829a11249fffff,Mission Hills S,,10.0,0.8
+8829a1124bfffff,Mission Hills W,,24.2,1.94
+8829a1124dfffff,Mission Hills SE,,5.8,0.46
+8829a11251fffff,Granada Hills E 2,,9.8,0.79
+8829a11253fffff,Granada Hills NE 3,,16.1,1.28
+8829a11255fffff,Mission Hills NW 2,,24.9,1.99
+8829a11257fffff,Mission Hills NW 3,,24.0,1.92
+8829a11259fffff,North Hills NW 2,,9.3,0.75
+8829a1125bfffff,Granada Hills E,,6.3,0.5
+8829a1125dfffff,Mission Hills W 2,,18.9,1.51
+8829a11261fffff,San Fernando Mall S 2,,8.4,0.67
+8829a11263fffff,San Fernando Mall SW,C,17.1,1.36
+8829a11265fffff,Pacoima NW,,12.7,1.02
+8829a11267fffff,San Fernando Mall S,C,10.4,0.83
+8829a11269fffff,Pacoima W 2,,12.9,1.03
+8829a1126bfffff,Mission Hills NE,,14.8,1.18
+8829a1126dfffff,Pacoima W,,6.5,0.52
+8829a11281fffff,The Legends at Cascades W 2,,70.1,5.61
+8829a11283fffff,The Legends at Cascades W 4,,83.3,6.66
+8829a11285fffff,The Legends at Cascades W,,57.4,4.59
+8829a11287fffff,The Legends at Cascades NW 2,,68.7,5.5
+8829a11289fffff,The Legends at Cascades W 3,,71.2,5.7
+8829a1128bfffff,Cagney Ranch Estates N 5,,83.6,6.69
+8829a1128dfffff,The Legends at Cascades SW 2,,56.9,4.55
+8829a11291fffff,Cagney Ranch Estates N 9,,95.6,7.65
+8829a11295fffff,The Legends at Cascades NW 4,,95.2,7.62
+8829a11299fffff,Cagney Ranch Estates N 6,,81.2,6.49
+8829a1129bfffff,Cagney Ranch Estates N 8,,84.0,6.72
+8829a1129dfffff,Cagney Ranch Estates N 7,,94.4,7.55
+8829a112a1fffff,The Legends at Cascades N,,41.6,3.33
+8829a112a5fffff,The Legends at Cascades NE 2,,31.2,2.49
+8829a112a9fffff,The Legends at Cascades,,42.4,3.39
+8829a112abfffff,The Legends at Cascades NW,,54.6,4.37
+8829a112adfffff,The Legends at Cascades NE,,28.0,2.24
+8829a112b9fffff,The Legends at Cascades NW 3,,81.3,6.5
+8829a112c1fffff,Cagney Ranch Estates E 3,,64.2,5.14
+8829a112c3fffff,Cagney Ranch Estates NE,,75.5,6.04
+8829a112c5fffff,The Legends at Cascades SW 5,,51.4,4.11
+8829a112c7fffff,The Legends at Cascades SW 4,,60.2,4.82
+8829a112c9fffff,Cagney Ranch Estates E 2,,50.0,4.0
+8829a112cbfffff,Cagney Ranch Estates E,,63.3,5.07
+8829a112cdfffff,Cagney Ranch Estates E 4,,53.3,4.27
+8829a112d1fffff,Cagney Ranch Estates N 2,,68.9,5.51
+8829a112d3fffff,Cagney Ranch Estates NW 4,,67.2,5.38
+8829a112d5fffff,Cagney Ranch Estates N 3,,84.0,6.72
+8829a112d7fffff,Cagney Ranch Estates N 4,,81.2,6.49
+8829a112d9fffff,Cagney Ranch Estates NW,,58.3,4.66
+8829a112dbfffff,Cagney Ranch Estates NW 2,,54.2,4.33
+8829a112ddfffff,Cagney Ranch Estates N,,73.8,5.9
+8829a112e1fffff,The Legends at Cascades S,,30.3,2.43
+8829a112e3fffff,The Legends at Cascades SW,,43.6,3.49
+8829a112e5fffff,Rancho Cascades SW,,17.3,1.38
+8829a112e7fffff,The Legends at Cascades SE,,32.3,2.58
+8829a112e9fffff,Sylmar Acres W 2,,35.8,2.87
+8829a112ebfffff,The Legends at Cascades SW 3,,45.0,3.6
+8829a112edfffff,Sylmar Acres W,,20.2,1.62
+8829a11301fffff,El Merrie Del W 2,,29.8,2.39
+8829a11303fffff,Lopez/Kagel Canyons SW 2,,31.8,2.55
+8829a11305fffff,El Merrie Del W,,37.8,3.02
+8829a11307fffff,Lopez/Kagel Canyons SW,,38.1,3.05
+8829a11309fffff,El Merrie Del SW 2,,15.1,1.21
+8829a1130bfffff,El Merrie Del W 3,,28.7,2.3
+8829a1130dfffff,El Merrie Del SW,,22.6,1.81
+8829a11311fffff,San Fernando NE 3,,24.7,1.97
+8829a11313fffff,Sylmar E 3,,24.9,1.99
+8829a11315fffff,Lopez/Kagel Canyons W 4,,18.0,1.44
+8829a11317fffff,Lopez/Kagel Canyons W 6,,10.0,0.8
+8829a11319fffff,San Fernando NE 2,C,25.6,2.05
+8829a1131bfffff,Sylmar E 2,,17.0,1.36
+8829a1131dfffff,Parkside Industrial Center NE 3,,32.6,2.61
+8829a11321fffff,Lopez/Kagel Canyons SE,,54.7,4.37
+8829a11323fffff,Lopez/Kagel Canyons,,48.9,3.91
+8829a11325fffff,Lopez/Kagel Canyons E 2,,60.3,4.82
+8829a11327fffff,Lopez/Kagel Canyons E,,63.7,5.09
+8829a11329fffff,El Merrie Del,,40.1,3.21
+8829a1132bfffff,Lopez/Kagel Canyons S,,48.7,3.9
+8829a1132dfffff,El Merrie Del E,,44.8,3.58
+8829a11331fffff,Lopez/Kagel Canyons NW,,22.8,1.83
+8829a11333fffff,Lopez/Kagel Canyons NW 3,,17.2,1.38
+8829a11335fffff,Lopez/Kagel Canyons N,,38.3,3.06
+8829a11337fffff,Lopez/Kagel Canyons NW 2,,31.7,2.53
+8829a11339fffff,Lopez/Kagel Canyons W 2,,22.9,1.83
+8829a1133bfffff,Lopez/Kagel Canyons W 3,,8.2,0.65
+8829a1133dfffff,Lopez/Kagel Canyons W,,34.8,2.79
+8829a11341fffff,San Fernando Gardens E 3,,4.1,0.33
+8829a11343fffff,San Fernando Gardens NE 2,,7.1,0.57
+8829a11345fffff,Lake View Terrace W 2,,14.3,1.15
+8829a11347fffff,El Merrie Del SW 3,,8.9,0.71
+8829a11349fffff,San Fernando Gardens E 2,,19.6,1.57
+8829a1134bfffff,San Fernando Gardens E,,12.4,1.0
+8829a1134dfffff,Stonehurst NW 2,,17.9,1.43
+8829a11351fffff,Parkside Industrial Center E,,12.4,0.99
+8829a11353fffff,Parkside Industrial Center NE,B,16.9,1.35
+8829a11355fffff,San Fernando Gardens NE 3,,13.2,1.06
+8829a11357fffff,Parkside Industrial Center NE 2,,23.6,1.89
+8829a11359fffff,San Fernando Gardens NW,D,6.6,0.53
+8829a1135bfffff,Parkside Industrial Center,,7.6,0.61
+8829a1135dfffff,San Fernando Gardens NE,,2.9,0.23
+8829a11361fffff,Lake View Terrace NW,,13.9,1.11
+8829a11363fffff,El Merrie Del S,,26.7,2.14
+8829a11365fffff,Lake View Terrace N,,23.9,1.91
+8829a11367fffff,El Merrie Del SE,,29.2,2.34
+8829a11369fffff,Lake View Terrace W,,3.8,0.31
+8829a1136bfffff,El Merrie Del S 2,,17.4,1.39
+8829a1136dfffff,Lake View Terrace,,11.8,0.94
+8829a11641fffff,The Heights at Porter Ranch NW 30,,101.5,8.12
+8829a11643fffff,The Heights at Porter Ranch NW 33,,116.7,9.34
+8829a11645fffff,The Heights at Porter Ranch NW 28,,93.4,7.47
+8829a11647fffff,The Heights at Porter Ranch NW 31,,108.6,8.69
+8829a11649fffff,The Heights at Porter Ranch NW 29,,96.4,7.71
+8829a1164bfffff,The Heights at Porter Ranch NW 32,,111.3,8.9
+8829a1164dfffff,The Heights at Porter Ranch NW 27,,86.4,6.91
+8829a1165dfffff,The Heights at Porter Ranch NW 34,,126.2,10.1
+8829a11669fffff,The Heights at Porter Ranch NW 26,,87.3,6.98
+8829a1166dfffff,The Heights at Porter Ranch NW 24,,83.7,6.7
+8829a11749fffff,Cagney Ranch Estates NW 11,,81.4,6.51
+8829a1174dfffff,Cagney Ranch Estates NW 10,,89.4,7.15
+8829a11a49fffff,Sunland N 24,,133.5,10.68
+8829a11a4dfffff,Sunland N 26,,139.8,11.18
+8829a18001fffff,Topanga W,,8.3,0.67
+8829a18003fffff,Topanga NW,,20.7,1.66
+8829a18005fffff,Topanga,,7.3,0.58
+8829a18007fffff,Topanga N,,13.4,1.07
+8829a18009fffff,Topanga SW,,21.1,1.69
+8829a1800bfffff,Topanga W 2,,23.9,1.91
+8829a1800dfffff,Topanga S,,13.3,1.06
+8829a18011fffff,Topanga W 5,,47.2,3.78
+8829a18013fffff,Topanga NW 6,,61.3,4.9
+8829a18015fffff,Topanga NW 3,,35.5,2.84
+8829a18017fffff,Topanga NW 5,,50.5,4.04
+8829a18019fffff,Topanga W 6,,48.9,3.91
+8829a1801bfffff,Topanga W 8,,60.7,4.86
+8829a1801dfffff,Topanga W 3,,34.2,2.73
+8829a18021fffff,Topanga NE 2,,33.8,2.7
+8829a18023fffff,Topanga NE 3,,35.6,2.85
+8829a18025fffff,Topanga NE 5,,48.5,3.88
+8829a18027fffff,Topanga NE 4,,47.3,3.79
+8829a18029fffff,Topanga E,,22.9,1.83
+8829a1802bfffff,Topanga NE,,20.4,1.63
+8829a1802dfffff,Topanga E 3,,38.5,3.08
+8829a18031fffff,Topanga N 3,,40.0,3.2
+8829a18033fffff,Topanga N 5,,53.8,4.3
+8829a18035fffff,Topanga N 4,,43.1,3.45
+8829a18037fffff,Topanga N 6,,54.0,4.32
+8829a18039fffff,Topanga NW 2,,27.8,2.22
+8829a1803bfffff,Topanga NW 4,,42.8,3.43
+8829a1803dfffff,Topanga N 2,,27.8,2.23
+8829a18041fffff,Topanga S 4,,43.4,3.47
+8829a18043fffff,Topanga SW 3,,36.2,2.89
+8829a18045fffff,Topanga S 3,,39.9,3.19
+8829a18047fffff,Topanga S 2,,28.0,2.24
+8829a18049fffff,Topanga S 7,,58.8,4.71
+8829a1804bfffff,Topanga SW 6,,51.5,4.12
+8829a1804dfffff,Topanga S 6,,54.0,4.32
+8829a18051fffff,Topanga SW 5,,49.4,3.96
+8829a18053fffff,Topanga W 7,,55.1,4.41
+8829a18055fffff,Topanga SW 2,,34.7,2.77
+8829a18057fffff,Topanga W 4,,39.5,3.16
+8829a18059fffff,Topanga SW 7,,61.7,4.94
+8829a1805bfffff,Topanga SW 9,,64.6,5.17
+8829a1805dfffff,Topanga SW 4,,48.1,3.85
+8829a18061fffff,Topanga SE 3,,34.7,2.77
+8829a18063fffff,Topanga SE,,19.9,1.59
+8829a18065fffff,Topanga E 4,,46.3,3.7
+8829a18067fffff,Topanga E 2,,33.2,2.65
+8829a18069fffff,Topanga SE 4,,42.3,3.39
+8829a1806bfffff,Topanga SE 2,,27.4,2.19
+8829a1806dfffff,Topanga SE 5,,49.8,3.98
+8829a18081fffff,Calabasas SW,,36.7,2.93
+8829a18083fffff,Calabasas W 3,,29.7,2.38
+8829a18085fffff,Calabasas S,,30.2,2.41
+8829a18087fffff,Calabasas W,,21.4,1.71
+8829a18089fffff,Calabasas SW 3,,52.1,4.17
+8829a1808bfffff,Calabasas SW 2,,45.0,3.6
+8829a1808dfffff,Calabasas S 3,,45.4,3.64
+8829a180a1fffff,Calabasas E,,15.3,1.22
+8829a180a3fffff,Calabasas N,,4.6,0.36
+8829a180a5fffff,Calabasas E 3,,21.6,1.73
+8829a180a7fffff,Calabasas NE,,6.8,0.54
+8829a180a9fffff,Calabasas SE,,28.7,2.29
+8829a180abfffff,Calabasas,,15.5,1.24
+8829a180adfffff,Calabasas E 2,,30.2,2.42
+8829a180b1fffff,Hidden Hills S,,8.0,0.64
+8829a180b3fffff,Hidden Hills W,,12.7,1.01
+8829a180b5fffff,Hidden Hills SE,,11.2,0.89
+8829a180b7fffff,Hidden Hills,,8.1,0.65
+8829a180b9fffff,Calabasas W 2,,15.2,1.22
+8829a180bbfffff,Hidden Hills SW,,21.7,1.74
+8829a180bdfffff,Calabasas NW,,7.6,0.61
+8829a180c1fffff,Calabasas S 9,,76.4,6.11
+8829a180c3fffff,Calabasas SW 4,,67.6,5.41
+8829a180c5fffff,Calabasas S 8,,71.0,5.68
+8829a180c7fffff,Calabasas S 6,,60.9,4.87
+8829a180c9fffff,Calabasas S 11,,87.3,6.99
+8829a180cbfffff,Calabasas SW 5,,83.2,6.65
+8829a180cdfffff,Calabasas S 10,,73.8,5.91
+8829a180e1fffff,Calabasas S 4,,55.2,4.41
+8829a180e3fffff,Calabasas S 2,,42.1,3.37
+8829a180e5fffff,Calabasas SE 4,,55.8,4.46
+8829a180e7fffff,Calabasas SE 2,,41.7,3.33
+8829a180e9fffff,Calabasas S 7,,65.7,5.25
+8829a180ebfffff,Calabasas S 5,,56.2,4.5
+8829a180edfffff,Calabasas SE 6,,58.0,4.64
+8829a18101fffff,Riviera NW 11,,85.9,6.87
+8829a18103fffff,Topanga E 13,,94.4,7.55
+8829a18105fffff,Riviera NW 10,,73.8,5.9
+8829a18107fffff,Encino SW 11,,88.5,7.08
+8829a18109fffff,Pacific Palisades N 6,,86.2,6.89
+8829a1810bfffff,Topanga E 12,,85.3,6.83
+8829a1810dfffff,Riviera NW 9,,72.4,5.79
+8829a18111fffff,Topanga NE 12,,75.2,6.02
+8829a18113fffff,Topanga NE 11,,74.5,5.96
+8829a18115fffff,Topanga NE 16,,90.0,7.2
+8829a18117fffff,Topanga NE 15,,88.0,7.04
+8829a18119fffff,Topanga NE 9,,63.6,5.09
+8829a1811bfffff,Topanga NE 7,,60.9,4.87
+8829a1811dfffff,Topanga NE 14,,79.0,6.32
+8829a18121fffff,Encino S 10,,67.1,5.37
+8829a18123fffff,Encino SW 9,,67.2,5.37
+8829a18125fffff,Encino S 9,,55.3,4.42
+8829a18127fffff,Encino S 7,,53.1,4.25
+8829a18129fffff,Riviera N 9,,63.2,5.06
+8829a1812bfffff,Encino S 11,,78.4,6.27
+8829a1812dfffff,Beverly Glen W 11,,55.1,4.41
+8829a18131fffff,Tarzana S 8,,72.0,5.76
+8829a18133fffff,Tarzana S 6,,63.5,5.08
+8829a18135fffff,Encino SW 8,,64.2,5.14
+8829a18137fffff,Tarzana S 5,,56.7,4.54
+8829a18139fffff,Tarzana S 10,,87.4,6.99
+8829a1813bfffff,Tarzana S 9,,79.1,6.33
+8829a1813dfffff,Encino SW 10,,79.4,6.35
+8829a18141fffff,Pacific Palisades N 4,,65.6,5.25
+8829a18143fffff,Pacific Palisades N 5,,79.4,6.35
+8829a18145fffff,Riviera NW 6,,63.8,5.1
+8829a18147fffff,Riviera NW 8,,74.2,5.94
+8829a18149fffff,Pacific Palisades NW 4,,53.1,4.24
+8829a1814bfffff,Pacific Palisades NW 5,,67.7,5.41
+8829a1814dfffff,Pacific Palisades N 3,,52.6,4.21
+8829a18151fffff,Topanga E 8,,63.0,5.04
+8829a18153fffff,Topanga E 6,,54.1,4.33
+8829a18155fffff,Topanga E 11,,78.4,6.27
+8829a18157fffff,Topanga E 9,,69.7,5.58
+8829a18159fffff,Topanga E 7,,59.7,4.78
+8829a1815bfffff,Topanga E 5,,47.9,3.83
+8829a1815dfffff,Topanga E 10,,74.0,5.92
+8829a18161fffff,Riviera N 5,,45.7,3.65
+8829a18163fffff,Riviera N 8,,59.4,4.75
+8829a18165fffff,Riviera N 6,,33.2,2.66
+8829a18167fffff,Riviera N 7,,48.1,3.85
+8829a18169fffff,Riviera NW 5,,48.4,3.87
+8829a1816bfffff,Riviera NW 7,,59.6,4.77
+8829a1816dfffff,Riviera N 4,,33.3,2.66
+8829a18181fffff,Woodland Hills SE 5,,36.3,2.91
+8829a18183fffff,Woodland Hills SE 3,,22.7,1.82
+8829a18185fffff,Woodland Hills SE 6,,41.6,3.33
+8829a18187fffff,Woodland Hills SE 4,,26.3,2.11
+8829a18189fffff,Woodland Hills SE 7,,49.3,3.95
+8829a1818bfffff,Woodland Hills S 4,,37.4,2.99
+8829a1818dfffff,Woodland Hills SE 8,,50.9,4.07
+8829a18191fffff,Woodland Hills S,,16.7,1.34
+8829a18193fffff,Woodland Hills W,,11.4,0.92
+8829a18195fffff,Woodland Hills SE,,13.4,1.08
+8829a18197fffff,Woodland Hills,,5.5,0.44
+8829a18199fffff,Woodland Hills S 3,,31.9,2.55
+8829a1819bfffff,Woodland Hills SW,,21.5,1.72
+8829a1819dfffff,Woodland Hills S 2,,28.8,2.3
+8829a181a1fffff,Tarzana W 3,,46.1,3.69
+8829a181a3fffff,Tarzana W 5,,36.3,2.91
+8829a181a5fffff,Tarzana SW 2,,31.7,2.54
+8829a181a7fffff,Tarzana W 2,,34.4,2.75
+8829a181a9fffff,Tarzana SW 6,,51.3,4.1
+8829a181abfffff,Woodland Hills E 2,,36.8,2.95
+8829a181adfffff,Tarzana SW 4,,42.8,3.42
+8829a181b1fffff,Warner Center SE,,14.6,1.17
+8829a181b3fffff,Warner Center,,18.4,1.47
+8829a181b5fffff,Warner Center E 2,,23.0,1.84
+8829a181b7fffff,Warner Center E,,14.2,1.14
+8829a181b9fffff,Woodland Hills SE 2,,11.1,0.88
+8829a181bbfffff,Woodland Hills E,,4.3,0.34
+8829a181bdfffff,Warner Center SE 2,,23.5,1.88
+8829a181c1fffff,Topanga NE 10,,66.5,5.32
+8829a181c3fffff,Woodland Hills S 7,,63.5,5.08
+8829a181c5fffff,Topanga NE 13,,76.8,6.15
+8829a181c7fffff,Woodland Hills SE 9,,62.8,5.02
+8829a181c9fffff,Topanga NE 6,,51.0,4.08
+8829a181cbfffff,Topanga N 7,,58.5,4.68
+8829a181cdfffff,Topanga NE 8,,61.9,4.95
+8829a181d1fffff,Calabasas E 5,,52.0,4.16
+8829a181d3fffff,Calabasas E 4,,36.8,2.94
+8829a181d5fffff,Woodland Hills S 6,,52.6,4.21
+8829a181d7fffff,Woodland Hills S 5,,43.2,3.46
+8829a181d9fffff,Calabasas SE 5,,60.5,4.84
+8829a181dbfffff,Calabasas SE 3,,45.4,3.63
+8829a181ddfffff,Calabasas SE 7,,67.3,5.38
+8829a181e1fffff,Tarzana SW 10,,69.9,5.59
+8829a181e3fffff,Tarzana SW 9,,56.9,4.55
+8829a181e5fffff,Tarzana SW 8,,57.8,4.63
+8829a181e7fffff,Tarzana SW 7,,55.9,4.47
+8829a181e9fffff,Tarzana SW 11,,80.8,6.47
+8829a181ebfffff,Woodland Hills SE 10,,65.8,5.26
+8829a181edfffff,Tarzana S 7,,73.0,5.84
+8829a18201fffff,Castellammare W 16,,113.6,9.09
+8829a18203fffff,Topanga SW 24,,107.9,8.63
+8829a18205fffff,Castellammare W 14,,105.5,8.44
+8829a18207fffff,Topanga SW 19,,98.1,7.84
+8829a18209fffff,Castellammare W 17,,129.2,10.33
+8829a1820bfffff,Castellammare W 18,,123.2,9.86
+8829a1820dfffff,Castellammare W 15,,121.0,9.68
+8829a18211fffff,Topanga SW 26,,116.5,9.32
+8829a18213fffff,Topanga SW 25,,116.1,9.29
+8829a18215fffff,Topanga SW 22,,104.1,8.33
+8829a18217fffff,Topanga SW 20,,102.4,8.2
+8829a18219fffff,Topanga SW 29,,130.9,10.47
+8829a1821bfffff,Topanga SW 28,,129.6,10.37
+8829a1821dfffff,Topanga SW 27,,118.9,9.51
+8829a18221fffff,Castellammare W 10,,83.9,6.71
+8829a18223fffff,Topanga S 8,,74.3,5.95
+8829a18225fffff,Castellammare W 6,,80.5,6.44
+8829a18227fffff,Castellammare W 8,,68.8,5.5
+8829a18229fffff,Castellammare W 11,,99.1,7.93
+8829a1822bfffff,Castellammare W 13,,89.9,7.19
+8829a1822dfffff,Castellammare W 7,,94.9,7.59
+8829a18231fffff,Topanga SW 13,,77.5,6.2
+8829a18233fffff,Topanga SW 11,,75.3,6.02
+8829a18235fffff,Topanga SW 10,,67.0,5.36
+8829a18237fffff,Topanga SW 8,,62.6,5.01
+8829a18239fffff,Topanga SW 18,,92.6,7.41
+8829a1823bfffff,Topanga SW 16,,89.5,7.16
+8829a1823dfffff,Topanga SW 14,,82.5,6.6
+8829a18241fffff,Castellammare SW 28,,152.2,12.17
+8829a18243fffff,Castellammare SW 30,,144.7,11.58
+8829a18245fffff,Castellammare SW 21,,145.2,11.62
+8829a18247fffff,Castellammare SW 23,,136.6,10.93
+8829a18249fffff,Castellammare SW 33,,167.8,13.42
+8829a1824bfffff,Castellammare SW 34,,160.3,12.83
+8829a1824dfffff,Castellammare SW 26,,160.7,12.86
+8829a18251fffff,Castellammare W 21,,149.1,11.93
+8829a18253fffff,Topanga SW 31,,145.6,11.65
+8829a18255fffff,Castellammare W 19,,138.6,11.09
+8829a18257fffff,Topanga SW 30,,133.9,10.72
+8829a18259fffff,Castellammare W 22,,164.3,13.14
+8829a1825bfffff,Topanga SW 32,,160.4,12.83
+8829a1825dfffff,Castellammare W 20,,154.0,12.32
+8829a18261fffff,Castellammare SW 12,,124.6,9.97
+8829a18263fffff,Castellammare W 12,,114.4,9.15
+8829a18265fffff,Castellammare SW 8,,113.1,9.05
+8829a18267fffff,Castellammare W 9,,109.7,8.77
+8829a18269fffff,Castellammare SW 15,,138.7,11.1
+8829a1826bfffff,Castellammare SW 17,,129.8,10.39
+8829a1826dfffff,Castellammare SW 10,,123.5,9.88
+8829a182a1fffff,Topanga W 12,,79.4,6.35
+8829a182a3fffff,Topanga W 15,,89.8,7.18
+8829a182a5fffff,Topanga W 9,,64.1,5.12
+8829a182a7fffff,Topanga W 11,,75.1,6.0
+8829a182a9fffff,Topanga W 14,,86.4,6.91
+8829a182abfffff,Topanga W 16,,94.8,7.58
+8829a182adfffff,Topanga W 10,,70.7,5.66
+8829a182e1fffff,Topanga SW 17,,90.9,7.27
+8829a182e3fffff,Topanga W 17,,95.4,7.63
+8829a182e5fffff,Topanga SW 12,,76.1,6.09
+8829a182e7fffff,Topanga W 13,,80.0,6.4
+8829a182e9fffff,Topanga SW 21,,103.1,8.25
+8829a182ebfffff,Topanga SW 23,,105.9,8.48
+8829a182edfffff,Topanga SW 15,,88.9,7.11
+8829a18301fffff,Castellammare,,50.7,4.06
+8829a18303fffff,Castellammare NW,,62.2,4.98
+8829a18305fffff,Castellammare E,,35.7,2.86
+8829a18307fffff,Castellammare N,,48.4,3.87
+8829a18309fffff,Castellammare S,,57.3,4.58
+8829a1830bfffff,Castellammare W,,65.9,5.28
+8829a1830dfffff,Castellammare SE,,41.7,3.33
+8829a18311fffff,Castellammare NW 4,,67.9,5.43
+8829a18313fffff,Topanga S 5,,53.5,4.28
+8829a18315fffff,Castellammare NW 3,,72.6,5.81
+8829a18317fffff,Castellammare NW 5,,57.4,4.6
+8829a18319fffff,Castellammare W 3,,80.0,6.4
+8829a1831bfffff,Castellammare W 5,,66.5,5.32
+8829a1831dfffff,Castellammare NW 2,,76.7,6.14
+8829a18321fffff,Pacific Palisades NW,,27.4,2.2
+8829a18323fffff,Pacific Palisades NW 3,,42.6,3.41
+8829a18325fffff,Pacific Palisades N,,26.2,2.1
+8829a18327fffff,Pacific Palisades N 2,,39.0,3.12
+8829a18329fffff,Pacific Palisades W,B,21.8,1.74
+8829a1832bfffff,Pacific Palisades NW 2,,36.1,2.89
+8829a1832dfffff,Pacific Palisades,B,12.5,1.0
+8829a18331fffff,Castellammare N 5,,66.1,5.29
+8829a18333fffff,Castellammare N 7,,60.4,4.83
+8829a18335fffff,Castellammare N 6,,57.9,4.63
+8829a18337fffff,Castellammare N 8,,72.9,5.83
+8829a18339fffff,Castellammare N 2,,62.3,4.98
+8829a1833bfffff,Castellammare N 4,,65.0,5.2
+8829a1833dfffff,Castellammare N 3,,51.0,4.08
+8829a18341fffff,Castellammare S 4,,64.2,5.13
+8829a18343fffff,Castellammare S 3,,66.9,5.36
+8829a18345fffff,Castellammare SE 3,,50.5,4.04
+8829a18347fffff,Castellammare S 2,,51.8,4.14
+8829a18349fffff,Castellammare S 7,,75.2,6.02
+8829a1834bfffff,Castellammare S 5,,78.5,6.28
+8829a1834dfffff,Castellammare S 6,,59.6,4.77
+8829a18351fffff,Castellammare SW 3,,88.5,7.08
+8829a18353fffff,Castellammare W 4,,93.2,7.45
+8829a18355fffff,Castellammare SW,,72.9,5.83
+8829a18357fffff,Castellammare W 2,,81.3,6.51
+8829a18359fffff,Castellammare SW 4,,97.7,7.81
+8829a1835bfffff,Castellammare SW 6,,104.1,8.33
+8829a1835dfffff,Castellammare SW 2,,82.3,6.58
+8829a18361fffff,Pacific Palisades SW 3,B,23.5,1.88
+8829a18363fffff,Pacific Palisades SW 2,B,26.1,2.09
+8829a18365fffff,Pacific Palisades S,B,14.7,1.17
+8829a18367fffff,Pacific Palisades SW,B,10.5,0.84
+8829a18369fffff,Pacific Palisades SW 4,,37.3,2.98
+8829a1836bfffff,Castellammare SE 2,,37.1,2.96
+8829a1836dfffff,Pacific Palisades S 3,,22.7,1.82
+8829a18801fffff,Van Nuys SE,C,15.7,1.25
+8829a18803fffff,Van Nuys,C,3.9,0.31
+8829a18805fffff,Valley Glen W 2,B,24.9,1.99
+8829a18807fffff,Van Nuys E,C,12.4,0.99
+8829a18809fffff,Sherman Oaks N 3,,3.8,0.3
+8829a1880bfffff,Van Nuys S,,12.3,0.98
+8829a1880dfffff,Sherman Village NW 2,B,19.0,1.52
+8829a18811fffff,Van Nuys W,B,28.5,2.28
+8829a18813fffff,Van Nuys W 2,,26.3,2.1
+8829a18815fffff,Van Nuys NW,B,13.0,1.04
+8829a18817fffff,Van Nuys NW 2,,25.9,2.07
+8829a18819fffff,Van Nuys SW 3,,16.6,1.33
+8829a1881bfffff,Van Nuys W 3,,30.7,2.46
+8829a1881dfffff,Van Nuys SW,D,19.1,1.53
+8829a18821fffff,Valley Glen NW,,24.4,1.95
+8829a18823fffff,Valley Glen NW 2,,32.6,2.61
+8829a18825fffff,Valley Glen NE,,8.8,0.71
+8829a18827fffff,Valley Glen N,,18.9,1.51
+8829a18829fffff,Valley Glen SW,,33.0,2.64
+8829a1882bfffff,Valley Glen W,,27.9,2.23
+8829a1882dfffff,Valley Glen,,17.4,1.39
+8829a18831fffff,Van Nuys NE 3,,19.4,1.55
+8829a18833fffff,Raymer SE 2,,9.5,0.76
+8829a18835fffff,Van Nuys NE 4,,28.2,2.26
+8829a18837fffff,Panorama City S 2,,13.5,1.08
+8829a18839fffff,Van Nuys NE,C,4.0,0.32
+8829a1883bfffff,Van Nuys N,B,16.7,1.34
+8829a1883dfffff,Van Nuys NE 2,,18.7,1.49
+8829a18841fffff,Sherman Oaks E,B,5.6,0.45
+8829a18843fffff,Sherman Oaks N,,6.7,0.54
+8829a18845fffff,Sherman Village W 2,B,20.9,1.67
+8829a18847fffff,Sherman Oaks NE,,8.7,0.69
+8829a18849fffff,Sherman Oaks SE,A,11.7,0.93
+8829a1884bfffff,Sherman Oaks,B,10.6,0.85
+8829a1884dfffff,Sherman Oaks E 2,A,17.0,1.36
+8829a18851fffff,Sherman Oaks NW 2,,9.7,0.78
+8829a18853fffff,Van Nuys SW 4,,8.0,0.64
+8829a18855fffff,Sherman Oaks N 2,,10.4,0.83
+8829a18857fffff,Van Nuys SW 2,,8.7,0.69
+8829a18859fffff,Sherman Oaks W 2,,24.3,1.94
+8829a1885bfffff,Encino E 3,,18.1,1.45
+8829a1885dfffff,Sherman Oaks NW,B,17.4,1.4
+8829a18861fffff,Sherman Village N,,30.7,2.45
+8829a18863fffff,Valley Glen SW 2,B,34.6,2.77
+8829a18865fffff,Garnsey,A,29.7,2.38
+8829a18867fffff,Valley Glen S,,28.3,2.27
+8829a18869fffff,Sherman Village W,B,23.8,1.9
+8829a1886bfffff,Sherman Village NW,B,24.3,1.94
+8829a1886dfffff,Sherman Village,B,15.9,1.28
+8829a18881fffff,Raymer W 3,,22.6,1.81
+8829a18883fffff,North Hills SW 3,,20.3,1.63
+8829a18885fffff,Raymer NW,,24.0,1.92
+8829a18887fffff,North Hills S 2,,10.3,0.82
+8829a18889fffff,Lake Balboa N 3,,10.4,0.83
+8829a1888bfffff,Lake Balboa N 5,,13.2,1.06
+8829a1888dfffff,Raymer W 2,,22.4,1.79
+8829a18891fffff,Northridge E 2,,20.2,1.62
+8829a18893fffff,Northridge E,,5.9,0.48
+8829a18895fffff,North Hills SW 2,,24.2,1.94
+8829a18897fffff,Northridge E 3,,20.2,1.61
+8829a18899fffff,Northridge SE 3,,12.3,0.98
+8829a1889bfffff,Northridge SE,,16.2,1.3
+8829a1889dfffff,Northridge E 4,,8.7,0.69
+8829a188a1fffff,North Hills East,,13.2,1.05
+8829a188a3fffff,North Hills East NW,,8.1,0.65
+8829a188a5fffff,North Hills East E,,9.6,0.77
+8829a188a7fffff,North Hills East NE,,8.9,0.71
+8829a188a9fffff,Raymer N,,18.7,1.5
+8829a188abfffff,North Hills East SW,,16.9,1.35
+8829a188adfffff,North Hills East SE,,4.5,0.36
+8829a188b1fffff,North Hills,,16.6,1.33
+8829a188b3fffff,North Hills NW,,13.4,1.07
+8829a188b5fffff,North Hills NE,,17.9,1.43
+8829a188b7fffff,North Hills N,,24.1,1.93
+8829a188b9fffff,North Hills SW,,10.1,0.81
+8829a188bbfffff,North Hills W,,23.7,1.9
+8829a188bdfffff,North Hills S,,6.9,0.55
+8829a188c1fffff,Lake Balboa E,,9.0,0.72
+8829a188c3fffff,Lake Balboa N,,13.9,1.11
+8829a188c5fffff,Lake Balboa E 3,,11.7,0.93
+8829a188c7fffff,Lake Balboa NE,,7.0,0.56
+8829a188c9fffff,Lake Balboa SE,,24.4,1.95
+8829a188cbfffff,Lake Balboa,,22.6,1.81
+8829a188cdfffff,Lake Balboa E 2,,20.0,1.6
+8829a188d1fffff,Lake Balboa NW 2,,20.8,1.67
+8829a188d3fffff,Reseda NE 2,,19.5,1.56
+8829a188d5fffff,Lake Balboa N 2,,5.2,0.42
+8829a188d7fffff,Lake Balboa N 4,,7.1,0.56
+8829a188d9fffff,Reseda E,,28.2,2.26
+8829a188dbfffff,Reseda NE,,18.1,1.45
+8829a188ddfffff,Lake Balboa NW,,19.1,1.53
+8829a188e1fffff,Raymer S,,28.5,2.28
+8829a188e3fffff,Raymer W,,31.4,2.51
+8829a188e5fffff,Raymer E,,13.4,1.07
+8829a188e7fffff,Raymer,,20.1,1.61
+8829a188e9fffff,Raymer S 2,,26.1,2.09
+8829a188ebfffff,Raymer SW,,18.9,1.51
+8829a188edfffff,Raymer SE,,22.1,1.77
+8829a18901fffff,Hewitt SE 3,,8.6,0.69
+8829a18903fffff,Hewitt E,,17.3,1.38
+8829a18905fffff,Glencrest Hills S 3,,12.7,1.02
+8829a18907fffff,Hewitt E 3,,22.7,1.82
+8829a18909fffff,North Hollywood N 3,C,9.4,0.75
+8829a1890bfffff,Hewitt SE 2,,8.9,0.71
+8829a1890dfffff,North Hollywood NE 3,,3.9,0.32
+8829a18911fffff,Hewitt,,16.5,1.32
+8829a18913fffff,Hewitt NW,,10.2,0.81
+8829a18915fffff,Hewitt NE,,27.0,2.16
+8829a18917fffff,Hewitt N,,25.7,2.06
+8829a18919fffff,Hewitt SW,,6.8,0.54
+8829a1891bfffff,Hewitt W,,8.4,0.67
+8829a1891dfffff,Hewitt SE,,22.3,1.79
+8829a18921fffff,Glencrest Hills S,,7.1,0.57
+8829a18923fffff,Glencrest Hills SW,,16.7,1.33
+8829a18925fffff,Glencrest Hills SE 2,,10.2,0.82
+8829a18927fffff,Glencrest Hills SE,,6.9,0.55
+8829a18929fffff,Glencrest Hills S 2,C,15.7,1.26
+8829a1892bfffff,Glencrest Hills SW 3,,21.5,1.72
+8829a1892dfffff,Glencrest Hills SE 3,C,9.0,0.72
+8829a18931fffff,Sun Valley SE 2,,3.9,0.31
+8829a18933fffff,Sun Valley E,,11.5,0.92
+8829a18935fffff,Glencrest Hills W,,18.2,1.45
+8829a18937fffff,Glencrest Hills NW 2,,14.6,1.17
+8829a18939fffff,Hewitt E 2,,17.4,1.39
+8829a1893bfffff,Sun Valley SE,,13.7,1.09
+8829a1893dfffff,Glencrest Hills SW 2,,19.1,1.53
+8829a18941fffff,North Hollywood E,C,5.6,0.45
+8829a18943fffff,North Hollywood N,C,12.1,0.97
+8829a18945fffff,North Hollywood E 2,C,13.1,1.05
+8829a18947fffff,North Hollywood NE,B,18.5,1.48
+8829a18949fffff,North Hollywood SE,B,14.4,1.15
+8829a1894bfffff,North Hollywood,C,1.8,0.14
+8829a1894dfffff,Toluca Lake N,B,9.8,0.78
+8829a18951fffff,Garnsey NE,,13.6,1.09
+8829a18953fffff,Valley Glen E,,2.0,0.16
+8829a18955fffff,North Hollywood N 2,C,18.6,1.49
+8829a18957fffff,Hewitt S,,13.9,1.11
+8829a18959fffff,Garnsey E,A,20.7,1.66
+8829a1895bfffff,Garnsey N,,15.8,1.27
+8829a1895dfffff,North Hollywood NW,C,7.8,0.63
+8829a18961fffff,North Hollywood NE 4,C,10.9,0.87
+8829a18963fffff,Glencrest Hills S 5,,5.4,0.43
+8829a18965fffff,Burbank W 3,C,11.2,0.9
+8829a18967fffff,Glencrest Hills S 4,C,7.4,0.59
+8829a18969fffff,Toluca Lake NE 3,C,24.3,1.95
+8829a1896bfffff,North Hollywood NE 2,C,16.4,1.32
+8829a1896dfffff,Burbank W 4,C,18.7,1.5
+8829a18981fffff,Arleta SE,,9.1,0.73
+8829a18983fffff,Arleta E,,15.1,1.21
+8829a18985fffff,Arleta E 3,,24.7,1.97
+8829a18987fffff,Arleta E 2,,17.2,1.37
+8829a18989fffff,Arleta SE 2,,11.7,0.93
+8829a1898bfffff,Arleta S,,6.8,0.55
+8829a1898dfffff,Sun Valley NW 3,,20.2,1.61
+8829a18991fffff,Arleta NW,,12.5,1.0
+8829a18993fffff,Mission Hills E 2,,14.2,1.13
+8829a18995fffff,Arleta N,,23.2,1.86
+8829a18997fffff,Pacoima SW,,19.0,1.52
+8829a18999fffff,Arleta W,,14.1,1.13
+8829a1899bfffff,North Hills East NE 2,,3.1,0.25
+8829a1899dfffff,Arleta,,20.6,1.65
+8829a189a1fffff,Stonehurst W 3,,35.8,2.87
+8829a189a3fffff,San Fernando Gardens SE 2,,24.3,1.94
+8829a189a5fffff,Stonehurst W,,43.9,3.51
+8829a189a7fffff,Stonehurst W 2,,30.4,2.43
+8829a189a9fffff,Sun Valley N 2,,38.4,3.07
+8829a189abfffff,Arleta E 4,,23.4,1.87
+8829a189adfffff,Stonehurst SW 2,,49.5,3.96
+8829a189b1fffff,Pacoima SE,,9.5,0.76
+8829a189b3fffff,Pacoima,,8.0,0.64
+8829a189b5fffff,San Fernando Gardens SE,,17.9,1.43
+8829a189b7fffff,San Fernando Gardens,D,4.1,0.33
+8829a189b9fffff,Arleta NE,,8.2,0.66
+8829a189bbfffff,Pacoima S,,9.1,0.73
+8829a189bdfffff,San Fernando Gardens S,,9.2,0.73
+8829a189c1fffff,Hewitt NW 2,,17.8,1.43
+8829a189c3fffff,Panorama City E 2,,26.0,2.08
+8829a189c5fffff,Sun Valley W 2,,12.4,0.99
+8829a189c7fffff,Sun Valley W 3,,25.9,2.07
+8829a189c9fffff,Valley Glen N 2,,21.2,1.69
+8829a189cbfffff,Panorama City SE 2,,27.6,2.21
+8829a189cdfffff,Hewitt W 2,,5.7,0.45
+8829a189d1fffff,Panorama City,,6.4,0.51
+8829a189d3fffff,Panorama City NW,,12.8,1.03
+8829a189d5fffff,Panorama City E,,18.8,1.5
+8829a189d7fffff,Panorama City NE,,19.3,1.54
+8829a189d9fffff,Panorama City S,,6.0,0.48
+8829a189dbfffff,Panorama City SW,,6.0,0.48
+8829a189ddfffff,Panorama City SE,,19.5,1.56
+8829a189e1fffff,Sun Valley NW,,36.6,2.93
+8829a189e3fffff,Sun Valley NW 2,,34.2,2.73
+8829a189e5fffff,Sun Valley NE,,26.7,2.14
+8829a189e7fffff,Sun Valley N,,42.0,3.36
+8829a189e9fffff,Sun Valley SW,,21.9,1.75
+8829a189ebfffff,Sun Valley W,,27.6,2.21
+8829a189edfffff,Sun Valley,,23.2,1.86
+8829a18a01fffff,Beverly Glen NW 2,,55.0,4.4
+8829a18a03fffff,Beverly Glen NW 4,,40.2,3.22
+8829a18a05fffff,Beverly Glen NW,,58.0,4.64
+8829a18a07fffff,Beverly Glen NW 3,,46.0,3.68
+8829a18a09fffff,Beverly Glen W 3,,48.3,3.86
+8829a18a0bfffff,Beverly Glen W 5,,52.7,4.22
+8829a18a0dfffff,Beverly Glen W,,45.3,3.62
+8829a18a11fffff,Encino S 5,,30.1,2.41
+8829a18a13fffff,Encino S 3,,25.9,2.07
+8829a18a15fffff,Sherman Oaks SW 6,,26.1,2.09
+8829a18a17fffff,Encino SE 4,,14.5,1.16
+8829a18a19fffff,Encino S 8,,45.7,3.66
+8829a18a1bfffff,Encino S 6,,40.2,3.22
+8829a18a1dfffff,Beverly Glen NW 5,,40.1,3.21
+8829a18a21fffff,Beverly Crest NW 2,,38.1,3.05
+8829a18a23fffff,Sherman Oaks S,,27.0,2.16
+8829a18a25fffff,Beverly Crest N 2,,39.8,3.19
+8829a18a27fffff,Sherman Oaks SE 2,,25.1,2.0
+8829a18a29fffff,Beverly Crest NW,,52.5,4.2
+8829a18a2bfffff,Beverly Crest NW 3,,42.5,3.4
+8829a18a2dfffff,Beverly Crest N,,51.4,4.11
+8829a18a31fffff,Sherman Oaks SW 2,,27.4,2.19
+8829a18a33fffff,Sherman Oaks W 3,,16.8,1.34
+8829a18a35fffff,Sherman Oaks SW,A,21.7,1.73
+8829a18a37fffff,Sherman Oaks W,A,26.1,2.09
+8829a18a39fffff,Sherman Oaks SW 4,,30.7,2.45
+8829a18a3bfffff,Sherman Oaks SW 5,,15.4,1.23
+8829a18a3dfffff,Sherman Oaks SW 3,,36.2,2.9
+8829a18a41fffff,Bel Air NW 2,,28.4,2.27
+8829a18a43fffff,Beverly Glen W 4,,33.0,2.64
+8829a18a45fffff,Beverly Glen SW,,19.3,1.54
+8829a18a47fffff,Beverly Glen W 2,,34.4,2.76
+8829a18a49fffff,Bel Air W 2,,22.9,1.83
+8829a18a4bfffff,Bel Air NW 3,,18.2,1.45
+8829a18a4dfffff,Bel Air NW,A,15.1,1.21
+8829a18a51fffff,Beverly Glen W 9,,36.7,2.94
+8829a18a53fffff,Beverly Glen W 10,,50.6,4.05
+8829a18a55fffff,Beverly Glen W 6,,39.9,3.19
+8829a18a57fffff,Beverly Glen W 8,,50.7,4.06
+8829a18a59fffff,Westgate Heights NW 5,,24.7,1.98
+8829a18a5bfffff,Westgate Heights NW 6,,39.9,3.19
+8829a18a5dfffff,Beverly Glen W 7,,24.6,1.97
+8829a18a61fffff,Beverly Glen E,A,36.2,2.9
+8829a18a63fffff,Beverly Glen N,C,46.1,3.69
+8829a18a65fffff,Beverly Crest S,A,45.9,3.67
+8829a18a67fffff,Beverly Crest,A,51.8,4.14
+8829a18a69fffff,Beverly Glen S,C,20.6,1.65
+8829a18a6bfffff,Beverly Glen,,31.7,2.54
+8829a18a6dfffff,Beverly Glen SE,A,31.1,2.49
+8829a18a81fffff,Encino W,,15.3,1.22
+8829a18a83fffff,Tarzana E,,10.6,0.85
+8829a18a85fffff,Encino N,,6.9,0.55
+8829a18a87fffff,Encino NW,,5.4,0.43
+8829a18a89fffff,Encino SW 3,,22.7,1.82
+8829a18a8bfffff,Tarzana SE 2,,15.0,1.2
+8829a18a8dfffff,Encino SW,,7.9,0.63
+8829a18a91fffff,Tarzana,,4.6,0.37
+8829a18a93fffff,Tarzana NW,,9.6,0.77
+8829a18a95fffff,Tarzana NE,,10.5,0.84
+8829a18a97fffff,Tarzana N,,4.8,0.38
+8829a18a99fffff,Tarzana SW,,16.2,1.3
+8829a18a9bfffff,Tarzana W,,20.1,1.61
+8829a18a9dfffff,Tarzana SE,,1.6,0.13
+8829a18aa1fffff,Encino NE 3,,18.0,1.44
+8829a18aa3fffff,Lake Balboa S 2,,15.6,1.25
+8829a18aa5fffff,Lake Balboa SE 3,,22.4,1.79
+8829a18aa7fffff,Lake Balboa SE 2,,29.3,2.35
+8829a18aa9fffff,Encino NE,,3.9,0.31
+8829a18aabfffff,Encino N 2,,5.0,0.4
+8829a18aadfffff,Encino NE 2,,19.5,1.56
+8829a18ab1fffff,Lake Balboa SW,,25.0,2.0
+8829a18ab3fffff,Reseda SE 2,,16.2,1.3
+8829a18ab5fffff,Lake Balboa S,,23.8,1.9
+8829a18ab7fffff,Lake Balboa W,,31.6,2.53
+8829a18ab9fffff,Tarzana NE 3,,11.9,0.95
+8829a18abbfffff,Tarzana NE 2,,11.9,0.96
+8829a18abdfffff,Lake Balboa S 3,,10.7,0.86
+8829a18ac1fffff,Encino SW 5,,38.4,3.08
+8829a18ac3fffff,Encino SW 4,,35.1,2.81
+8829a18ac5fffff,Encino S 2,,30.1,2.41
+8829a18ac7fffff,Encino SW 2,,23.0,1.84
+8829a18ac9fffff,Encino SW 7,,54.0,4.32
+8829a18acbfffff,Encino SW 6,,49.4,3.95
+8829a18acdfffff,Encino S 4,,40.2,3.22
+8829a18ad1fffff,Tarzana S 2,,32.3,2.59
+8829a18ad3fffff,Tarzana SW 3,,28.7,2.3
+8829a18ad5fffff,Tarzana SE 3,,27.1,2.17
+8829a18ad7fffff,Tarzana S,,16.8,1.34
+8829a18ad9fffff,Tarzana S 4,,47.9,3.83
+8829a18adbfffff,Tarzana SW 5,,42.9,3.43
+8829a18addfffff,Tarzana S 3,,41.6,3.33
+8829a18ae1fffff,Encino SE,,15.3,1.22
+8829a18ae3fffff,Encino,,8.9,0.71
+8829a18ae5fffff,Encino E 2,,16.7,1.33
+8829a18ae7fffff,Encino E,,17.4,1.39
+8829a18ae9fffff,Encino SE 2,,14.5,1.16
+8829a18aebfffff,Encino S,,17.6,1.41
+8829a18aedfffff,Encino SE 3,,1.3,0.1
+8829a18b01fffff,Studio City S 2,,18.7,1.5
+8829a18b03fffff,Studio City S,B,9.7,0.77
+8829a18b05fffff,Studio City SE 2,B,18.6,1.49
+8829a18b07fffff,Studio City SE,B,9.3,0.75
+8829a18b09fffff,Trousdale Estates N 2,,33.2,2.66
+8829a18b0bfffff,Studio City S 3,,24.7,1.98
+8829a18b0dfffff,Hollywood Hills West NW,,32.8,2.63
+8829a18b11fffff,Sherman Village S 2,,21.3,1.71
+8829a18b13fffff,Sherman Village SW,B,26.0,2.08
+8829a18b15fffff,Studio City SW,B,11.2,0.89
+8829a18b17fffff,Sherman Village S,B,10.6,0.85
+8829a18b19fffff,Beverly Crest NE 3,,35.8,2.87
+8829a18b1bfffff,Sherman Village SW 2,A,31.9,2.55
+8829a18b1dfffff,Studio City SW 2,,24.2,1.94
+8829a18b21fffff,Universal City W,C,3.1,0.25
+8829a18b23fffff,North Hollywood S,B,1.1,0.09
+8829a18b25fffff,Universal City,A,14.6,1.17
+8829a18b27fffff,Toluca Lake W,B,12.5,1.0
+8829a18b29fffff,Universal City SW 2,,13.1,1.05
+8829a18b2bfffff,Universal City W 2,B,5.3,0.42
+8829a18b2dfffff,Universal City SW,,15.2,1.21
+8829a18b31fffff,Studio City NE,B,21.1,1.69
+8829a18b33fffff,Valley Village,A,20.7,1.66
+8829a18b35fffff,North Hollywood SW,B,15.3,1.23
+8829a18b37fffff,Valley Village E,B,13.7,1.1
+8829a18b39fffff,Studio City,B,7.9,0.63
+8829a18b3bfffff,Studio City NW,B,5.9,0.47
+8829a18b3dfffff,Studio City E,B,14.4,1.15
+8829a18b41fffff,Trousdale Estates,A,34.4,2.75
+8829a18b43fffff,Trousdale Estates N,,48.4,3.87
+8829a18b45fffff,Hollywood Hills West W,A,29.7,2.38
+8829a18b47fffff,Trousdale Estates NE,,44.0,3.52
+8829a18b49fffff,Trousdale Estates S,A,30.4,2.43
+8829a18b4bfffff,Trousdale Estates W,,44.5,3.56
+8829a18b4dfffff,Trousdale Estates E,A,19.1,1.53
+8829a18b51fffff,Beverly Crest E 2,,51.1,4.09
+8829a18b53fffff,Beverly Crest NE,,50.9,4.07
+8829a18b55fffff,Trousdale Estates NW 2,,40.2,3.21
+8829a18b57fffff,Beverly Crest NE 2,,36.9,2.95
+8829a18b59fffff,Beverly Crest SE,,53.5,4.28
+8829a18b5bfffff,Beverly Crest E,,61.0,4.88
+8829a18b5dfffff,Trousdale Estates NW,,55.7,4.46
+8829a18b61fffff,Hollywood Hills West NE,,29.3,2.35
+8829a18b63fffff,Hollywood Hills West N 2,,26.9,2.15
+8829a18b65fffff,Hollywood Hills W,,17.5,1.4
+8829a18b67fffff,Universal City S,,17.5,1.4
+8829a18b69fffff,Hollywood Hills West,A,32.6,2.61
+8829a18b6bfffff,Hollywood Hills West N,,42.0,3.36
+8829a18b6dfffff,Hollywood Hills West E,,29.8,2.38
+8829a18c01fffff,Chatsworth SW,,12.1,0.97
+8829a18c03fffff,Chatsworth W 2,,7.3,0.59
+8829a18c05fffff,Chatsworth,,15.6,1.25
+8829a18c07fffff,Chatsworth W,,8.4,0.67
+8829a18c09fffff,Chatsworth SW 2,,21.4,1.71
+8829a18c0bfffff,Chatsworth SW 3,,19.6,1.57
+8829a18c0dfffff,Chatsworth S,,8.7,0.7
+8829a18c11fffff,Chatsworth W 5,,28.8,2.3
+8829a18c15fffff,Chatsworth W 3,,14.4,1.15
+8829a18c17fffff,Chatsworth NW 5,,28.7,2.3
+8829a18c1dfffff,Chatsworth W 4,,21.0,1.68
+8829a18c21fffff,Chatsworth NE 2,,12.0,0.96
+8829a18c23fffff,Chatsworth NE 3,,16.0,1.28
+8829a18c25fffff,The Heights at Porter Ranch SW 3,,23.7,1.9
+8829a18c27fffff,The Heights at Porter Ranch SW 2,,18.9,1.51
+8829a18c29fffff,Chatsworth E,,3.6,0.28
+8829a18c2bfffff,Chatsworth NE,,12.1,0.97
+8829a18c2dfffff,Chatsworth E 2,,13.4,1.07
+8829a18c31fffff,Chatsworth NW 2,,23.9,1.91
+8829a18c33fffff,Chatsworth NW 4,,34.5,2.76
+8829a18c35fffff,Chatsworth N 2,,12.3,0.98
+8829a18c37fffff,Chatsworth N 3,,22.6,1.81
+8829a18c39fffff,Chatsworth NW,,8.4,0.67
+8829a18c3bfffff,Chatsworth NW 3,,21.4,1.71
+8829a18c3dfffff,Chatsworth N,,20.5,1.64
+8829a18c41fffff,Canoga Park NW 5,,28.1,2.25
+8829a18c43fffff,Lakeside Park E 4,,28.8,2.3
+8829a18c45fffff,Chatsworth S 5,,19.8,1.58
+8829a18c47fffff,Chatsworth S 3,,13.8,1.11
+8829a18c49fffff,Canoga Park NW 4,,33.5,2.68
+8829a18c4bfffff,Lakeside Park E 3,,41.0,3.28
+8829a18c4dfffff,Canoga Park N 2,,31.7,2.53
+8829a18c51fffff,Lakeside Park NE 2,,46.6,3.73
+8829a18c53fffff,Lakeside Park N 3,,47.9,3.83
+8829a18c55fffff,Lakeside Park NE 3,,34.6,2.77
+8829a18c57fffff,Lakeside Park NE 4,,33.3,2.66
+8829a18c59fffff,Lakeside Park NE,,59.7,4.77
+8829a18c5bfffff,Lakeside Park N,,60.3,4.82
+8829a18c5dfffff,Lakeside Park E 2,,44.2,3.53
+8829a18c61fffff,Chatsworth SE 3,,19.5,1.56
+8829a18c63fffff,Chatsworth SE,,13.4,1.07
+8829a18c65fffff,Devonshire Highlands W 2,,24.9,1.99
+8829a18c67fffff,Chatsworth SE 2,,16.7,1.34
+8829a18c69fffff,Chatsworth S 4,,21.8,1.74
+8829a18c6bfffff,Chatsworth S 2,,6.5,0.52
+8829a18c6dfffff,Devonshire Highlands SW 3,,29.6,2.37
+8829a18ca1fffff,Chatsworth NW 13,,79.9,6.39
+8829a18ca3fffff,Chatsworth NW 15,,93.7,7.49
+8829a18ca5fffff,The Heights at Porter Ranch NW 19,,67.3,5.38
+8829a18ca7fffff,The Heights at Porter Ranch NW 25,,81.7,6.54
+8829a18ca9fffff,Chatsworth NW 12,,76.4,6.11
+8829a18cabfffff,Chatsworth NW 14,,91.2,7.3
+8829a18cadfffff,Chatsworth NW 11,,66.3,5.3
+8829a18cb5fffff,Chatsworth NW 16,,107.8,8.63
+8829a18cb7fffff,Chatsworth NW 17,,122.2,9.78
+8829a18ce1fffff,Chatsworth NW 8,,51.2,4.1
+8829a18ce5fffff,Chatsworth NW 7,,47.7,3.82
+8829a18ce7fffff,Chatsworth NW 10,,61.8,4.95
+8829a18cedfffff,Chatsworth NW 6,,36.2,2.89
+8829a18d01fffff,Devonshire Country Estates NE 2,,23.9,1.91
+8829a18d03fffff,Porter Ranch SE 2,,37.5,3.0
+8829a18d05fffff,Granada Hills W,,12.0,0.96
+8829a18d07fffff,Granada Hills NW 2,,27.3,2.18
+8829a18d09fffff,Devonshire Country Estates E,,29.7,2.38
+8829a18d0bfffff,Devonshire Country Estates NE,,38.5,3.08
+8829a18d0dfffff,Granada Hills SW 2,,14.2,1.14
+8829a18d11fffff,Porter Ranch SW,,38.0,3.04
+8829a18d13fffff,The Heights at Porter Ranch,,22.7,1.82
+8829a18d15fffff,Porter Ranch SE,,47.4,3.79
+8829a18d17fffff,Porter Ranch,,33.0,2.64
+8829a18d19fffff,Porter Ranch S 2,,38.3,3.06
+8829a18d1bfffff,The Heights at Porter Ranch SW,,30.7,2.46
+8829a18d1dfffff,Porter Ranch S,,50.5,4.04
+8829a18d21fffff,Granada Hills N,,23.4,1.87
+8829a18d23fffff,Cagney Ranch Estates SE 2,,36.9,2.95
+8829a18d25fffff,Granada Hills NE 2,,29.6,2.36
+8829a18d27fffff,Granada Hills N 2,,38.1,3.05
+8829a18d29fffff,Granada Hills,,11.4,0.91
+8829a18d2bfffff,Granada Hills NW,,23.9,1.91
+8829a18d2dfffff,Granada Hills NE,,14.2,1.14
+8829a18d31fffff,Cagney Ranch Estates SW,,52.0,4.16
+8829a18d33fffff,Cagney Ranch Estates W,,50.3,4.02
+8829a18d35fffff,Cagney Ranch Estates SE,,50.5,4.04
+8829a18d37fffff,Cagney Ranch Estates,,63.9,5.11
+8829a18d39fffff,Porter Ranch E,,42.6,3.41
+8829a18d3bfffff,Porter Ranch NE,,46.3,3.71
+8829a18d3dfffff,Cagney Ranch Estates S,,37.5,3.0
+8829a18d41fffff,Northridge N,,14.8,1.18
+8829a18d43fffff,Devonshire Highlands E,,26.9,2.15
+8829a18d45fffff,Northridge NE,,7.2,0.57
+8829a18d47fffff,Northridge N 2,,21.0,1.68
+8829a18d49fffff,Northridge W,,8.6,0.68
+8829a18d4bfffff,Devonshire Highlands SE,,12.1,0.96
+8829a18d4dfffff,Northridge,,2.7,0.22
+8829a18d51fffff,Devonshire Country Estates W,,25.9,2.07
+8829a18d53fffff,Devonshire Country Estates NW 2,,28.8,2.3
+8829a18d55fffff,Devonshire Country Estates,,31.3,2.51
+8829a18d57fffff,Devonshire Country Estates NW,,40.4,3.23
+8829a18d59fffff,Devonshire Highlands W,,13.8,1.11
+8829a18d5bfffff,Devonshire Country Estates W 2,,26.1,2.08
+8829a18d5dfffff,Devonshire Highlands,,15.8,1.26
+8829a18d61fffff,Granada Hills S,,17.7,1.42
+8829a18d63fffff,Granada Hills SW,,3.2,0.26
+8829a18d65fffff,Granada Hills SE 2,,2.4,0.19
+8829a18d67fffff,Granada Hills SE,,3.9,0.31
+8829a18d69fffff,Northridge NE 2,,13.9,1.11
+8829a18d6bfffff,Granada Hills SW 3,,17.3,1.39
+8829a18d6dfffff,Granada Hills S 2,,15.9,1.28
+8829a18d81fffff,The Heights at Porter Ranch NW 6,,29.8,2.38
+8829a18d83fffff,The Heights at Porter Ranch NW 10,,43.2,3.46
+8829a18d85fffff,The Heights at Porter Ranch N 4,,34.7,2.78
+8829a18d87fffff,The Heights at Porter Ranch NW 9,,44.2,3.54
+8829a18d89fffff,The Heights at Porter Ranch NW 5,,17.3,1.38
+8829a18d8bfffff,The Heights at Porter Ranch NW 8,,32.4,2.59
+8829a18d8dfffff,The Heights at Porter Ranch NW 4,,19.2,1.53
+8829a18d91fffff,The Heights at Porter Ranch NW 17,,62.9,5.03
+8829a18d93fffff,The Heights at Porter Ranch NW 23,,78.1,6.25
+8829a18d95fffff,The Heights at Porter Ranch NW 15,,57.6,4.61
+8829a18d97fffff,The Heights at Porter Ranch NW 20,,72.4,5.79
+8829a18d99fffff,The Heights at Porter Ranch NW 16,,56.2,4.49
+8829a18d9bfffff,The Heights at Porter Ranch NW 21,,71.2,5.7
+8829a18d9dfffff,The Heights at Porter Ranch NW 12,,47.6,3.81
+8829a18da1fffff,Cagney Ranch Estates NW 7,,58.3,4.67
+8829a18da3fffff,Cagney Ranch Estates NW 9,,65.9,5.27
+8829a18da5fffff,Cagney Ranch Estates NW 6,,68.9,5.51
+8829a18da7fffff,Cagney Ranch Estates NW 8,,73.8,5.91
+8829a18da9fffff,The Heights at Porter Ranch N 5,,42.9,3.43
+8829a18dabfffff,The Heights at Porter Ranch N 6,,50.3,4.02
+8829a18dadfffff,Cagney Ranch Estates NW 5,,54.2,4.33
+8829a18db1fffff,The Heights at Porter Ranch N 9,,70.4,5.64
+8829a18db3fffff,The Heights at Porter Ranch NW 22,,82.9,6.63
+8829a18db5fffff,The Heights at Porter Ranch N 8,,74.5,5.96
+8829a18db9fffff,The Heights at Porter Ranch NW 13,,56.3,4.51
+8829a18dbbfffff,The Heights at Porter Ranch NW 18,,69.7,5.57
+8829a18dbdfffff,The Heights at Porter Ranch N 7,,59.3,4.74
+8829a18dc1fffff,The Heights at Porter Ranch W 2,,12.0,0.96
+8829a18dc3fffff,The Heights at Porter Ranch W 4,,14.1,1.12
+8829a18dc5fffff,The Heights at Porter Ranch NW,,7.5,0.6
+8829a18dc7fffff,The Heights at Porter Ranch NW 3,,3.6,0.29
+8829a18dc9fffff,The Heights at Porter Ranch W 3,,4.0,0.32
+8829a18dcbfffff,The Heights at Porter Ranch W 5,,12.0,0.96
+8829a18dcdfffff,The Heights at Porter Ranch W,,19.2,1.54
+8829a18dd1fffff,The Heights at Porter Ranch W 7,,40.3,3.22
+8829a18dd3fffff,The Heights at Porter Ranch NW 14,,53.3,4.27
+8829a18dd5fffff,The Heights at Porter Ranch NW 7,,26.8,2.14
+8829a18dd7fffff,The Heights at Porter Ranch NW 11,,41.3,3.3
+8829a18dd9fffff,Chatsworth N 4,,36.6,2.93
+8829a18ddbfffff,Chatsworth NW 9,,51.3,4.1
+8829a18dddfffff,The Heights at Porter Ranch W 6,,27.1,2.17
+8829a18de1fffff,The Heights at Porter Ranch N 2,,27.5,2.2
+8829a18de3fffff,The Heights at Porter Ranch N 3,,27.6,2.2
+8829a18de5fffff,Cagney Ranch Estates W 2,,42.8,3.42
+8829a18de7fffff,Cagney Ranch Estates NW 3,,40.0,3.2
+8829a18de9fffff,The Heights at Porter Ranch N,,19.8,1.59
+8829a18debfffff,The Heights at Porter Ranch NW 2,,12.9,1.03
+8829a18dedfffff,Porter Ranch N,,34.9,2.79
+8829a18e01fffff,West Hills SE 2,,13.6,1.09
+8829a18e03fffff,West Hills SE,,21.9,1.75
+8829a18e05fffff,West Hills SE 3,,19.6,1.57
+8829a18e07fffff,West Hills E,,28.7,2.29
+8829a18e09fffff,West Hills S 2,,5.6,0.45
+8829a18e0bfffff,West Hills S,,9.7,0.77
+8829a18e0dfffff,West Hills SE 4,,8.1,0.64
+8829a18e11fffff,West Hills W,,40.2,3.22
+8829a18e13fffff,West Hills W 2,,55.5,4.44
+8829a18e15fffff,West Hills,,35.2,2.82
+8829a18e17fffff,West Hills NW,,49.7,3.97
+8829a18e19fffff,West Hills SW 2,,35.4,2.83
+8829a18e1dfffff,West Hills SW,,25.0,2.0
+8829a18e21fffff,Canoga Park W,C,13.2,1.06
+8829a18e23fffff,Canoga Park NW 3,,26.8,2.15
+8829a18e25fffff,Canoga Park NW,C,5.8,0.47
+8829a18e27fffff,Canoga Park NW 2,,18.6,1.49
+8829a18e29fffff,Canoga Park W 2,,20.8,1.66
+8829a18e2bfffff,West Hills E 3,,28.3,2.26
+8829a18e2dfffff,Canoga Park SW,C,6.1,0.49
+8829a18e31fffff,West Hills NE 2,,52.0,4.16
+8829a18e33fffff,Lakeside Park SE,,62.7,5.02
+8829a18e35fffff,West Hills NE 3,,41.6,3.33
+8829a18e37fffff,Lakeside Park E,,55.3,4.42
+8829a18e39fffff,West Hills NE,,36.7,2.94
+8829a18e3bfffff,West Hills N,,48.4,3.87
+8829a18e3dfffff,West Hills E 2,,39.8,3.18
+8829a18e41fffff,Hidden Hills E 3,,23.5,1.88
+8829a18e43fffff,Hidden Hills NE 2,,19.1,1.53
+8829a18e45fffff,Woodland Hills W 2,,19.3,1.54
+8829a18e47fffff,Woodland Hills NW 3,,15.2,1.22
+8829a18e49fffff,Hidden Hills E 2,,9.6,0.77
+8829a18e4bfffff,Hidden Hills E,,21.4,1.71
+8829a18e4dfffff,Woodland Hills W 3,,16.6,1.32
+8829a18e51fffff,Hidden Hills N,,20.8,1.66
+8829a18e53fffff,Hidden Hills N 2,,33.5,2.68
+8829a18e55fffff,Hidden Hills NE 3,,13.9,1.11
+8829a18e57fffff,West Hills SW 3,,22.1,1.77
+8829a18e59fffff,Hidden Hills NW,,7.3,0.59
+8829a18e5bfffff,Hidden Hills NW 2,,22.6,1.8
+8829a18e5dfffff,Hidden Hills NE,,14.5,1.16
+8829a18e61fffff,Warner Center W,,9.0,0.72
+8829a18e63fffff,Warner Center NW 3,,12.0,0.96
+8829a18e65fffff,Warner Center NW,,21.6,1.73
+8829a18e67fffff,Warner Center NW 2,,16.1,1.29
+8829a18e69fffff,Woodland Hills NW,,3.8,0.3
+8829a18e6bfffff,Woodland Hills NW 2,,7.6,0.6
+8829a18e6dfffff,Warner Center SW,,11.8,0.94
+8829a18ea9fffff,Lakeside Park NW 3,,77.5,6.2
+8829a18eadfffff,Lakeside Park N 2,,62.5,5.0
+8829a18ee1fffff,Lakeside Park W,,75.7,6.06
+8829a18ee3fffff,Lakeside Park NW 2,,89.3,7.14
+8829a18ee5fffff,Lakeside Park,,73.8,5.9
+8829a18ee7fffff,Lakeside Park NW,,74.7,5.98
+8829a18ee9fffff,Lakeside Park SW 2,,64.5,5.16
+8829a18eedfffff,Lakeside Park SW,,61.7,4.93
+8829a18f01fffff,Winnetka NE,,7.8,0.62
+8829a18f03fffff,Winnetka N,,22.5,1.8
+8829a18f05fffff,Reseda Ranch SW,,14.3,1.14
+8829a18f07fffff,Reseda Ranch W,,22.4,1.79
+8829a18f09fffff,Winnetka SE,,10.1,0.81
+8829a18f0bfffff,Winnetka,,17.8,1.42
+8829a18f0dfffff,Winnetka E,,4.4,0.36
+8829a18f11fffff,Canoga Park NE 2,,28.2,2.25
+8829a18f13fffff,Canoga Park N 3,,32.5,2.6
+8829a18f15fffff,Winnetka N 2,,35.0,2.8
+8829a18f17fffff,Winnetka NW 2,,37.1,2.97
+8829a18f19fffff,Canoga Park NE,C,13.1,1.05
+8829a18f1bfffff,Canoga Park N,,21.4,1.71
+8829a18f1dfffff,Winnetka NW,,19.4,1.56
+8829a18f21fffff,Reseda Ranch E,,11.7,0.93
+8829a18f23fffff,Reseda Ranch N,,6.5,0.52
+8829a18f25fffff,Northridge SE 2,,17.4,1.39
+8829a18f27fffff,Northridge S,,13.8,1.11
+8829a18f29fffff,Reseda Ranch SE,,10.4,0.83
+8829a18f2bfffff,Reseda Ranch,,21.4,1.71
+8829a18f2dfffff,Reseda N,,5.3,0.42
+8829a18f31fffff,Devonshire Highlands S,,15.6,1.24
+8829a18f33fffff,Devonshire Highlands SW 2,,14.1,1.12
+8829a18f35fffff,Northridge W 2,,7.3,0.58
+8829a18f37fffff,Devonshire Highlands SW,,1.8,0.14
+8829a18f39fffff,Reseda Ranch W 2,,31.1,2.49
+8829a18f3bfffff,Reseda Ranch NW 2,,26.3,2.1
+8829a18f3dfffff,Reseda Ranch NW,,19.0,1.52
+8829a18f41fffff,Winnetka S 2,,15.9,1.28
+8829a18f43fffff,Winnetka S,,1.0,0.08
+8829a18f45fffff,Reseda SW 3,,3.3,0.26
+8829a18f47fffff,Winnetka SE 2,,13.7,1.1
+8829a18f49fffff,Tarzana W 4,,25.9,2.08
+8829a18f4bfffff,Winnetka S 3,,10.7,0.85
+8829a18f4dfffff,Tarzana NW 2,,18.8,1.51
+8829a18f51fffff,Canoga Park SE,,11.9,0.95
+8829a18f53fffff,Canoga Park,C,6.1,0.49
+8829a18f55fffff,Winnetka SW,,14.7,1.17
+8829a18f57fffff,Winnetka W,,4.1,0.33
+8829a18f59fffff,Warner Center NE,,18.5,1.48
+8829a18f5bfffff,Canoga Park S,,9.9,0.79
+8829a18f5dfffff,Winnetka SW 2,,4.6,0.37
+8829a18f61fffff,Reseda SW,C,10.3,0.83
+8829a18f63fffff,Reseda W,C,11.2,0.9
+8829a18f65fffff,Reseda SE,,14.4,1.15
+8829a18f67fffff,Reseda,C,13.1,1.05
+8829a18f69fffff,Reseda S 2,,9.0,0.72
+8829a18f6bfffff,Reseda SW 2,,1.3,0.11
+8829a18f6dfffff,Reseda S,,3.9,0.31
+8829a19083fffff,Castellammare SW 46,,216.0,17.28
+8829a19087fffff,Castellammare SW 43,,207.1,16.56
+8829a19095fffff,Castellammare SW 47,,210.3,16.82
+8829a190a1fffff,Castellammare SW 35,,187.4,14.99
+8829a190a3fffff,Castellammare SW 36,,183.3,14.67
+8829a190a5fffff,Castellammare SW 32,,172.0,13.76
+8829a190a7fffff,Castellammare SW 31,,176.2,14.1
+8829a190abfffff,Castellammare SW 39,,198.9,15.91
+8829a190b1fffff,Castellammare SW 41,,185.0,14.8
+8829a190b3fffff,Castellammare SW 42,,179.6,14.37
+8829a190b5fffff,Castellammare SW 37,,175.9,14.07
+8829a190b7fffff,Castellammare SW 38,,169.5,13.56
+8829a190b9fffff,Castellammare SW 44,,200.5,16.04
+8829a190bbfffff,Castellammare SW 45,,194.9,15.59
+8829a190bdfffff,Castellammare SW 40,,191.5,15.32
+8829a19105fffff,Venice Canal Historic District SW 20,,111.3,8.91
+8829a19121fffff,Venice Canal Historic District SW 13,,85.2,6.81
+8829a19123fffff,Venice Canal Historic District SW 15,,81.7,6.54
+8829a19125fffff,Venice Canal Historic District SW 10,,73.9,5.91
+8829a19127fffff,Venice Canal Historic District SW 11,,69.9,5.6
+8829a19129fffff,Venice Canal Historic District SW 16,,100.5,8.04
+8829a1912bfffff,Venice Canal Historic District SW 17,,96.4,7.71
+8829a1912dfffff,Venice Canal Historic District SW 14,,87.4,6.99
+8829a19131fffff,Ocean Park SW 14,,95.2,7.62
+8829a19133fffff,Ocean Park SW 15,,96.2,7.69
+8829a19135fffff,Ocean Park SW 12,,81.0,6.48
+8829a19137fffff,Ocean Park SW 13,,82.7,6.61
+8829a1913dfffff,Venice Canal Historic District SW 19,,94.6,7.57
+8829a19161fffff,Playa del Rey W 9,,113.9,9.11
+8829a19163fffff,Venice Canal Historic District SW 21,,114.6,9.17
+8829a19165fffff,Playa del Rey SW 16,,99.4,7.95
+8829a19167fffff,Venice Canal Historic District SW 18,,101.5,8.12
+8829a1916dfffff,Playa del Rey SW 19,,102.7,8.22
+8829a19181fffff,Castellammare S 20,,122.8,9.83
+8829a19183fffff,Castellammare SW 18,,126.1,10.09
+8829a19185fffff,Castellammare S 19,,108.3,8.67
+8829a19187fffff,Castellammare S 16,,111.0,8.88
+8829a1918bfffff,Castellammare SW 24,,137.6,11.01
+8829a19191fffff,Castellammare SW 20,,146.6,11.73
+8829a19193fffff,Castellammare SW 19,,149.8,11.98
+8829a19195fffff,Castellammare SW 16,,131.1,10.49
+8829a19197fffff,Castellammare SW 14,,134.8,10.78
+8829a19199fffff,Castellammare SW 27,,156.6,12.53
+8829a1919bfffff,Castellammare SW 25,,161.5,12.92
+8829a1919dfffff,Castellammare SW 22,,141.3,11.31
+8829a191a1fffff,Castellammare S 14,,81.3,6.51
+8829a191a3fffff,Castellammare S 11,,84.8,6.79
+8829a191a5fffff,Castellammare S 13,,67.0,5.36
+8829a191a7fffff,Castellammare S 9,,69.6,5.57
+8829a191a9fffff,Castellammare S 18,,94.2,7.54
+8829a191abfffff,Castellammare S 15,,96.0,7.68
+8829a191adfffff,Castellammare S 17,,80.6,6.45
+8829a191b1fffff,Castellammare SW 9,,105.5,8.44
+8829a191b3fffff,Castellammare SW 7,,108.3,8.66
+8829a191b5fffff,Castellammare S 8,,90.8,7.27
+8829a191b7fffff,Castellammare SW 5,,93.3,7.46
+8829a191b9fffff,Castellammare SW 13,,115.6,9.25
+8829a191bbfffff,Castellammare SW 11,,120.0,9.6
+8829a191bdfffff,Castellammare S 12,,100.2,8.02
+8829a191d7fffff,Castellammare SW 29,,152.5,12.2
+8829a191e5fffff,Downtown Santa Monica SW 12,,97.8,7.82
+8829a191e7fffff,Downtown Santa Monica SW 13,,94.8,7.59
+8829a19565fffff,Castellammare W 23,,175.4,14.03
+8829a19801fffff,Westdale S,,11.1,0.88
+8829a19803fffff,Westdale W,,8.1,0.65
+8829a19805fffff,Westdale SE,,4.8,0.38
+8829a19807fffff,Westdale,B,4.3,0.34
+8829a19809fffff,Mar Vista,C,9.9,0.79
+8829a1980bfffff,Mar Vista NW,,19.7,1.58
+8829a1980dfffff,Mar Vista NE,C,4.1,0.32
+8829a19811fffff,Sawtelle SW 3,D,10.7,0.85
+8829a19813fffff,Sawtelle SW 2,D,13.5,1.08
+8829a19815fffff,Sawtelle S 2,B,7.5,0.6
+8829a19817fffff,Sawtelle SW,D,18.3,1.46
+8829a19819fffff,Ocean Park NE 3,B,4.1,0.33
+8829a1981bfffff,Santa Monica E 2,D,6.8,0.54
+8829a1981dfffff,Westdale W 2,B,12.2,0.97
+8829a19821fffff,Palms,C,3.6,0.29
+8829a19823fffff,Rancho Park,,4.2,0.34
+8829a19825fffff,California Country Club Estates S,C,3.1,0.25
+8829a19827fffff,California Country Club Estates W,A,8.3,0.67
+8829a19829fffff,Palms SW,D,11.8,0.95
+8829a1982bfffff,Westside Village,C,11.2,0.89
+8829a1982dfffff,Palms SE,D,2.2,0.18
+8829a19831fffff,Sawtelle Japantown,D,10.9,0.88
+8829a19833fffff,Sawtelle Japantown NW,D,7.4,0.59
+8829a19835fffff,Rancho Park N,B,8.9,0.71
+8829a19837fffff,West Los Angeles,B,4.9,0.39
+8829a19839fffff,Westdale NW,B,6.1,0.49
+8829a1983bfffff,Sawtelle S,D,10.3,0.83
+8829a1983dfffff,Rancho Park SW,B,14.2,1.14
+8829a19841fffff,Culver Garden W,C,11.0,0.88
+8829a19843fffff,Mar Vista SW,C,6.3,0.51
+8829a19845fffff,Culver Garden,C,11.2,0.89
+8829a19847fffff,Mar Vista SE,C,5.1,0.4
+8829a19849fffff,Marina del Rey NE,,3.8,0.3
+8829a1984bfffff,Marina del Rey N,D,9.9,0.79
+8829a1984dfffff,Alla,C,19.1,1.53
+8829a19851fffff,Venice NE,C,23.2,1.86
+8829a19853fffff,Venice N,C,14.1,1.13
+8829a19855fffff,Mar Vista W,C,15.7,1.25
+8829a19857fffff,Venice NE 2,C,11.2,0.89
+8829a19859fffff,Venice,D,9.7,0.77
+8829a1985bfffff,Venice NW,D,14.9,1.19
+8829a1985dfffff,Venice E,D,19.2,1.54
+8829a19861fffff,Sunkist Park NW 2,C,8.0,0.64
+8829a19863fffff,Mar Vista E,C,14.3,1.14
+8829a19865fffff,Sunkist Park N,,9.4,0.75
+8829a19867fffff,Palms S,,1.9,0.15
+8829a19869fffff,Del Rey NE,C,9.1,0.73
+8829a1986bfffff,Culver Garden NE,C,7.1,0.57
+8829a1986dfffff,Sunkist Park NW,C,10.7,0.85
+8829a19881fffff,Brentwood Park,A,21.2,1.7
+8829a19883fffff,Riviera NE,B,34.9,2.79
+8829a19885fffff,Brentwood Heights,B,18.4,1.47
+8829a19887fffff,Brentwood Heights NW,A,31.3,2.5
+8829a19889fffff,Brentwood Park SW,A,9.9,0.79
+8829a1988bfffff,Riviera,A,25.1,2.01
+8829a1988dfffff,Brentwood W,B,12.3,0.99
+8829a19891fffff,Riviera NW 2,,48.8,3.91
+8829a19893fffff,Riviera NW 4,,55.5,4.44
+8829a19895fffff,Riviera N,B,36.3,2.91
+8829a19897fffff,Riviera N 2,,40.0,3.2
+8829a19899fffff,Riviera W,,33.4,2.67
+8829a1989bfffff,Riviera NW 3,,41.3,3.31
+8829a1989dfffff,Riviera NW,A,40.4,3.23
+8829a198a1fffff,Brentwood Glen,A,13.2,1.06
+8829a198a3fffff,Westgate Heights N,,22.0,1.76
+8829a198a5fffff,Bel Air SW,A,4.2,0.33
+8829a198a7fffff,Bel Air W,A,17.1,1.37
+8829a198a9fffff,Brentwood Village,,17.9,1.43
+8829a198abfffff,Westgate Heights,A,28.6,2.29
+8829a198adfffff,Brentwood Glen E,C,11.5,0.92
+8829a198b1fffff,Westgate Heights NW 3,,9.2,0.74
+8829a198b3fffff,Westgate Heights NW 4,,19.0,1.52
+8829a198b5fffff,Westgate Heights N 2,,7.7,0.62
+8829a198b7fffff,Westgate Heights N 3,,10.1,0.81
+8829a198b9fffff,Westgate Heights NW 2,,23.5,1.88
+8829a198bbfffff,Riviera N 3,B,24.4,1.95
+8829a198bdfffff,Westgate Heights NW,,16.6,1.33
+8829a198c1fffff,Santa Monica N 3,C,7.9,0.63
+8829a198c3fffff,Brentwood Park S,B,13.2,1.06
+8829a198c5fffff,Brentwood S 2,C,10.5,0.84
+8829a198c7fffff,Brentwood SW,B,5.7,0.46
+8829a198c9fffff,Santa Monica N,C,5.9,0.47
+8829a198cbfffff,Santa Monica N 2,B,7.7,0.62
+8829a198cdfffff,Santa Monica NE,D,2.4,0.2
+8829a198d1fffff,Pacific Palisades E,A,20.8,1.66
+8829a198d3fffff,Pacific Palisades NE,B,18.1,1.45
+8829a198d5fffff,Riviera S,A,23.1,1.84
+8829a198d7fffff,Riviera SW,A,31.4,2.51
+8829a198d9fffff,Pacific Palisades SE 2,C,19.2,1.53
+8829a198dbfffff,Pacific Palisades SE,B,5.3,0.42
+8829a198ddfffff,Riviera S 2,B,20.2,1.61
+8829a198e1fffff,Brentwood SE,D,10.5,0.84
+8829a198e3fffff,Brentwood,C,3.2,0.25
+8829a198e5fffff,Sawtelle N,D,8.1,0.65
+8829a198e7fffff,Brentwood Glen S,,15.0,1.2
+8829a198e9fffff,Sawtelle W,D,5.1,0.41
+8829a198ebfffff,Brentwood S,C,11.1,0.89
+8829a198edfffff,Sawtelle,D,10.9,0.87
+8829a19901fffff,Sentous,C,17.7,1.42
+8829a19903fffff,Culver City Arts District NE,D,13.6,1.08
+8829a19905fffff,West Adams,C,4.8,0.38
+8829a19907fffff,Mid-City S,C,20.1,1.61
+8829a19909fffff,Sentous S,,19.6,1.56
+8829a1990bfffff,Hayden Tract,,4.3,0.34
+8829a1990dfffff,Village Green,,14.2,1.14
+8829a19911fffff,Reynier Village,C,17.6,1.41
+8829a19913fffff,Beverlywood,,15.7,1.26
+8829a19915fffff,Reynier Village NE,C,8.9,0.71
+8829a19917fffff,Pico-Robertson S,C,2.1,0.16
+8829a19919fffff,Castle Heights,C,9.5,0.76
+8829a1991bfffff,California Country Club Estates,B,14.6,1.17
+8829a1991dfffff,Culver City Arts District,C,10.4,0.83
+8829a19921fffff,Mid-City Heights,C,17.8,1.42
+8829a19923fffff,Mid-Wilshire S,C,23.8,1.9
+8829a19925fffff,Victoria Park,C,5.0,0.4
+8829a19927fffff,Victoria Park W,B,17.5,1.4
+8829a19929fffff,Mid-City Heights S,C,7.3,0.59
+8829a1992bfffff,Mid-City Heights W,C,18.2,1.45
+8829a1992dfffff,Mid-City Heights E,C,12.9,1.03
+8829a19931fffff,Little Ethiopia S,B,14.4,1.16
+8829a19933fffff,South Carthay,B,7.7,0.61
+8829a19935fffff,Little Ethiopia SE,B,8.5,0.68
+8829a19937fffff,Little Ethiopia,B,6.9,0.55
+8829a19939fffff,Mid-City W,B,11.3,0.91
+8829a1993bfffff,South Carthay S,B,7.3,0.58
+8829a1993dfffff,Mid-City,C,21.6,1.73
+8829a19941fffff,Baldwin Hills S,,21.5,1.72
+8829a19943fffff,Baldwin Hills W,,24.5,1.96
+8829a19945fffff,Baldwin Hills SE,,9.6,0.77
+8829a19947fffff,Baldwin Hills,,12.5,1.0
+8829a19949fffff,Ladera Heights N,,23.3,1.86
+8829a1994bfffff,Ladera Heights N 2,,13.6,1.09
+8829a1994dfffff,Windsor Hills N,,25.2,2.01
+8829a19951fffff,Culver City SE,C,18.1,1.45
+8829a19953fffff,Culver City,C,6.2,0.5
+8829a19955fffff,Hayden Tract S,,18.4,1.47
+8829a19957fffff,Hayden Tract W,C,7.2,0.58
+8829a19959fffff,Culver City S 2,,6.5,0.52
+8829a1995bfffff,Culver City S,B,3.8,0.3
+8829a1995dfffff,Hayden Tract S 2,,11.0,0.88
+8829a19961fffff,Crenshaw,,20.2,1.61
+8829a19963fffff,West Adams SE,C,8.3,0.66
+8829a19965fffff,Crenshaw E,,20.8,1.66
+8829a19967fffff,Crenshaw N,C,13.6,1.09
+8829a19969fffff,Crenshaw SW,,14.4,1.15
+8829a1996bfffff,Baldwin Hills E,,6.1,0.49
+8829a1996dfffff,Leimert Park,A,23.0,1.84
+8829a19981fffff,The Flats SW,A,12.5,1.0
+8829a19983fffff,Holmby Hills NE,A,11.1,0.89
+8829a19985fffff,The Flats,A,8.4,0.68
+8829a19987fffff,The Flats NW,A,4.5,0.36
+8829a19989fffff,Century City N,,8.0,0.64
+8829a1998bfffff,Holmby Hills SE,A,9.6,0.77
+8829a1998dfffff,The Flats S,C,7.7,0.61
+8829a19991fffff,Bel Air E,A,12.2,0.97
+8829a19993fffff,Bel Air N,A,5.2,0.41
+8829a19995fffff,Holmby Hills N,A,22.9,1.83
+8829a19997fffff,Bel Air NE,A,17.7,1.42
+8829a19999fffff,Westwood N,A,1.5,0.12
+8829a1999bfffff,Bel Air,A,10.7,0.86
+8829a1999dfffff,Holmby Hills,A,11.8,0.95
+8829a199a1fffff,Beverly Hills N 2,A,11.5,0.92
+8829a199a3fffff,Trousdale Estates S 2,A,26.5,2.12
+8829a199a5fffff,West Hollywood SW,C,8.9,0.71
+8829a199a7fffff,Trousdale Estates SE,A,18.4,1.47
+8829a199a9fffff,Beverly Hills N,C,10.2,0.82
+8829a199abfffff,The Flats NE,A,18.5,1.48
+8829a199adfffff,Beverly Grove W,C,5.5,0.44
+8829a199b1fffff,Trousdale Estates SW 2,A,27.0,2.16
+8829a199b3fffff,Beverly Crest SE 2,,39.9,3.19
+8829a199b5fffff,Trousdale Estates SW,A,33.6,2.69
+8829a199b7fffff,Trousdale Estates W 2,,42.0,3.36
+8829a199b9fffff,The Flats NW 2,A,13.5,1.08
+8829a199bbfffff,Holmby Hills N 2,A,28.5,2.28
+8829a199bdfffff,The Flats N,A,18.2,1.46
+8829a199c1fffff,Century City S,A,2.5,0.2
+8829a199c3fffff,Century City W,A,8.4,0.67
+8829a199c5fffff,Beverlywood NW,,9.7,0.78
+8829a199c7fffff,Century City,,7.1,0.57
+8829a199c9fffff,Cheviot Hills W,B,8.1,0.65
+8829a199cbfffff,West Los Angeles E,B,11.8,0.95
+8829a199cdfffff,Cheviot Hills,A,2.9,0.23
+8829a199d1fffff,Westwood Village E,A,6.4,0.52
+8829a199d3fffff,Westwood W,C,5.4,0.43
+8829a199d5fffff,Westwood SE,A,7.2,0.57
+8829a199d7fffff,Westwood,A,7.9,0.63
+8829a199d9fffff,Tehrangeles,C,8.9,0.72
+8829a199dbfffff,Westwood Village,,9.1,0.73
+8829a199ddfffff,West Los Angeles N,A,5.6,0.45
+8829a199e1fffff,Beverly Hills SE,B,12.5,1.0
+8829a199e3fffff,Beverly Hills,B,0.5,0.04
+8829a199e5fffff,South Carthay NW,C,7.1,0.56
+8829a199e7fffff,Beverly Hills E,C,16.0,1.28
+8829a199e9fffff,Pico-Robertson W,C,8.0,0.64
+8829a199ebfffff,Beverly Hills S,B,8.8,0.71
+8829a199edfffff,Pico-Robertson,C,7.7,0.62
+8829a19a01fffff,Playa del Rey W 3,,47.0,3.76
+8829a19a03fffff,Venice Canal Historic District S 2,,37.6,3.01
+8829a19a05fffff,Playa del Rey W,,43.3,3.46
+8829a19a07fffff,Marina del Rey SW 2,,32.3,2.59
+8829a19a09fffff,Playa del Rey W 4,,62.1,4.97
+8829a19a0bfffff,Playa del Rey W 5,,53.2,4.26
+8829a19a0dfffff,Playa del Rey W 2,,56.2,4.49
+8829a19a11fffff,Venice Canal Historic District SW 4,,46.8,3.74
+8829a19a13fffff,Venice Canal Historic District SW 5,,44.4,3.55
+8829a19a15fffff,Venice Canal Historic District SW 3,,33.1,2.65
+8829a19a17fffff,Venice Canal Historic District SW 2,,34.1,2.73
+8829a19a19fffff,Venice Canal Historic District SW 8,,60.2,4.82
+8829a19a1bfffff,Venice Canal Historic District SW 7,,60.0,4.8
+8829a19a1dfffff,Venice Canal Historic District SW 6,,47.7,3.82
+8829a19a21fffff,Playa del Rey N 2,,16.5,1.32
+8829a19a23fffff,Marina del Rey SE,,15.7,1.25
+8829a19a25fffff,Playa Vista SW,,1.8,0.14
+8829a19a27fffff,Alla SW,,9.1,0.73
+8829a19a29fffff,Playa del Rey N,,28.9,2.32
+8829a19a2bfffff,Marina del Rey S,,31.0,2.48
+8829a19a2dfffff,Playa del Rey NE,,17.0,1.36
+8829a19a31fffff,Venice Canal Historic District SE,D,6.4,0.52
+8829a19a33fffff,Venice Canal Historic District,D,6.9,0.55
+8829a19a35fffff,Marina del Rey,,7.0,0.56
+8829a19a37fffff,Venice Canal Historic District E,D,7.2,0.57
+8829a19a39fffff,Venice Canal Historic District S,,22.0,1.76
+8829a19a3bfffff,Venice Canal Historic District SW,,19.9,1.59
+8829a19a3dfffff,Marina del Rey SW,,19.1,1.53
+8829a19a41fffff,Playa del Rey SW 5,,45.1,3.61
+8829a19a43fffff,Playa del Rey SW 6,,59.3,4.75
+8829a19a45fffff,Playa del Rey SW 4,,33.6,2.69
+8829a19a47fffff,Playa del Rey SW 3,,48.7,3.9
+8829a19a49fffff,Playa del Rey SW 9,,46.8,3.74
+8829a19a4bfffff,Playa del Rey SW 8,,58.6,4.69
+8829a19a4dfffff,Playa del Rey SW 7,,32.0,2.56
+8829a19a51fffff,Playa del Rey W 7,,78.1,6.25
+8829a19a53fffff,Venice Canal Historic District SW 12,,74.5,5.96
+8829a19a55fffff,Playa del Rey W 6,,68.8,5.51
+8829a19a57fffff,Venice Canal Historic District S 3,,62.8,5.03
+8829a19a59fffff,Playa del Rey SW 13,,85.3,6.82
+8829a19a5bfffff,Playa del Rey W 8,,89.2,7.14
+8829a19a5dfffff,Playa del Rey SW 10,,71.8,5.74
+8829a19a61fffff,Playa del Rey S,B,37.6,3.01
+8829a19a63fffff,Playa del Rey SW,B,40.8,3.26
+8829a19a65fffff,Playa del Rey SE,,24.5,1.96
+8829a19a67fffff,Playa del Rey,,25.3,2.03
+8829a19a69fffff,Playa del Rey S 2,B,26.6,2.13
+8829a19a6bfffff,Playa del Rey SW 2,,41.5,3.32
+8829a19a6dfffff,Playa del Rey SE 2,,27.8,2.22
+8829a19a81fffff,Downtown Santa Monica SW 2,,29.9,2.39
+8829a19a83fffff,Downtown Santa Monica SW 3,,32.5,2.6
+8829a19a85fffff,Ocean Park W 2,,14.7,1.18
+8829a19a87fffff,Downtown Santa Monica SW,,23.1,1.84
+8829a19a89fffff,Ocean Park SW 6,,41.8,3.34
+8829a19a8bfffff,Downtown Santa Monica SW 4,,45.4,3.63
+8829a19a8dfffff,Ocean Park SW 3,,28.5,2.28
+8829a19a91fffff,Downtown Santa Monica W 5,,39.9,3.19
+8829a19a93fffff,Castellammare SE 4,,44.0,3.52
+8829a19a95fffff,Downtown Santa Monica W 4,,26.4,2.11
+8829a19a97fffff,Pacific Palisades S 4,,28.5,2.28
+8829a19a99fffff,Downtown Santa Monica W 6,,53.5,4.28
+8829a19a9bfffff,Castellammare S 10,,54.5,4.36
+8829a19a9dfffff,Downtown Santa Monica SW 5,,41.4,3.31
+8829a19aa1fffff,Santa Monica SE,D,10.0,0.8
+8829a19aa3fffff,Santa Monica,,0.2,0.02
+8829a19aa5fffff,Ocean Park NE 2,C,9.1,0.73
+8829a19aa7fffff,Santa Monica E,D,3.6,0.29
+8829a19aa9fffff,Ocean Park W,,5.1,0.41
+8829a19aabfffff,Downtown Santa Monica,,9.6,0.77
+8829a19aadfffff,Ocean Park NE,D,5.3,0.43
+8829a19ab1fffff,Downtown Santa Monica NW,C,4.2,0.33
+8829a19ab3fffff,Pacific Palisades S 2,C,11.3,0.91
+8829a19ab5fffff,Santa Monica NW,C,12.3,0.98
+8829a19ab7fffff,Santa Monica NW 2,C,15.1,1.21
+8829a19ab9fffff,Downtown Santa Monica W 2,,17.1,1.37
+8829a19abbfffff,Downtown Santa Monica W 3,,13.0,1.04
+8829a19abdfffff,Downtown Santa Monica W,,15.8,1.27
+8829a19ac1fffff,Ocean Park SW 7,,53.8,4.31
+8829a19ac3fffff,Ocean Park SW 8,,55.5,4.44
+8829a19ac5fffff,Ocean Park SW 5,,40.3,3.22
+8829a19ac7fffff,Ocean Park SW 4,,41.7,3.34
+8829a19ac9fffff,Ocean Park SW 10,,67.4,5.39
+8829a19acbfffff,Ocean Park SW 9,,68.3,5.46
+8829a19acdfffff,Venice Canal Historic District SW 9,,54.9,4.39
+8829a19ad1fffff,Downtown Santa Monica SW 8,,71.2,5.7
+8829a19ad3fffff,Downtown Santa Monica SW 9,,67.9,5.43
+8829a19ad5fffff,Downtown Santa Monica SW 6,,56.3,4.5
+8829a19ad7fffff,Downtown Santa Monica SW 7,,56.7,4.54
+8829a19ad9fffff,Downtown Santa Monica SW 10,,83.2,6.65
+8829a19adbfffff,Downtown Santa Monica SW 11,,82.8,6.62
+8829a19addfffff,Ocean Park SW 11,,69.0,5.52
+8829a19ae1fffff,Ocean Park S,,13.4,1.07
+8829a19ae3fffff,Ocean Park SW,,17.2,1.38
+8829a19ae5fffff,Venice SW,,11.5,0.92
+8829a19ae7fffff,Ocean Park,,3.8,0.31
+8829a19ae9fffff,Venice Canal Historic District W 2,,28.9,2.31
+8829a19aebfffff,Ocean Park SW 2,,26.8,2.14
+8829a19aedfffff,Venice Canal Historic District W,,21.7,1.73
+8829a19b01fffff,Westchester NE,,18.8,1.51
+8829a19b03fffff,Fox Hills S,,33.2,2.66
+8829a19b05fffff,Ladera Heights SW 2,,18.9,1.51
+8829a19b07fffff,Fox Hills SE,,22.5,1.8
+8829a19b09fffff,Westchester E,,10.5,0.84
+8829a19b0bfffff,Westchester N,,25.0,2.0
+8829a19b0dfffff,Westchester E 3,,8.6,0.69
+8829a19b11fffff,Playa Vista NE,C,18.9,1.51
+8829a19b13fffff,Del Rey,C,24.3,1.94
+8829a19b15fffff,Fox Hills SW,C,30.7,2.45
+8829a19b17fffff,Sunkist Park SW,C,23.2,1.86
+8829a19b19fffff,Playa Vista,,4.8,0.38
+8829a19b1bfffff,Playa Vista NW,,10.8,0.86
+8829a19b1dfffff,Playa Vista E,,20.4,1.63
+8829a19b21fffff,Ladera Heights SE,B,8.9,0.72
+8829a19b23fffff,Ladera Heights,,15.1,1.21
+8829a19b25fffff,Windsor Hills,B,24.1,1.93
+8829a19b27fffff,Windsor Hills NW,,22.6,1.81
+8829a19b29fffff,Ladera Heights S,D,11.6,0.93
+8829a19b2bfffff,Ladera Heights SW,,7.1,0.57
+8829a19b2dfffff,Windsor Hills S,D,13.0,1.04
+8829a19b31fffff,Fox Hills NE,,14.7,1.18
+8829a19b33fffff,Sunkist Park NE,,5.5,0.44
+8829a19b35fffff,Ladera Heights NW,,11.6,0.93
+8829a19b37fffff,Fox Hills NE 2,,3.7,0.3
+8829a19b39fffff,Fox Hills,,29.0,2.32
+8829a19b3bfffff,Sunkist Park,,15.6,1.25
+8829a19b3dfffff,Fox Hills E,,20.8,1.67
+8829a19b41fffff,Westchester SE 2,,6.3,0.51
+8829a19b43fffff,Westchester SE,,13.9,1.11
+8829a19b45fffff,Lennox NW 2,,11.1,0.89
+8829a19b47fffff,Westchester E 2,,4.9,0.39
+8829a19b49fffff,Lair Port NW 3,,21.6,1.73
+8829a19b4bfffff,Westchester S,,21.1,1.69
+8829a19b4dfffff,Lair Port N,,17.2,1.38
+8829a19b51fffff,Westchester W,,6.2,0.5
+8829a19b53fffff,Playa Vista S,C,7.6,0.61
+8829a19b55fffff,Westchester,,21.3,1.7
+8829a19b57fffff,Westchester NW,,15.7,1.25
+8829a19b59fffff,Westchester SW 2,,16.5,1.32
+8829a19b5bfffff,Playa del Rey E,,10.4,0.83
+8829a19b5dfffff,Westchester SW,,20.8,1.67
+8829a19b61fffff,Inglewood W,C,13.8,1.11
+8829a19b63fffff,Inglewood NW 2,D,22.9,1.83
+8829a19b65fffff,Inglewood,C,3.7,0.3
+8829a19b67fffff,Inglewood NW,C,8.0,0.64
+8829a19b69fffff,Inglewood SW 2,C,26.4,2.11
+8829a19b6bfffff,Inglewood W 2,D,16.1,1.29
+8829a19b6dfffff,Inglewood SW,C,17.8,1.42
+8829a1c081fffff,La Cañada Flintridge NE 15,,82.6,6.61
+8829a1c083fffff,La Cañada Flintridge NE 16,,83.2,6.66
+8829a1c089fffff,La Cañada Flintridge NE 12,,69.9,5.59
+8829a1c08bfffff,La Cañada Flintridge NE 11,,69.0,5.52
+8829a1c091fffff,La Cañada Flintridge NE 14,,76.8,6.14
+8829a1c093fffff,La Crescenta NE 15,,84.6,6.77
+8829a1c095fffff,La Cañada Flintridge NE 17,,86.5,6.92
+8829a1c097fffff,La Crescenta E 8,,92.3,7.39
+8829a1c099fffff,La Cañada Flintridge NE 10,,61.2,4.9
+8829a1c09bfffff,La Crescenta E 7,,69.2,5.53
+8829a1c09dfffff,La Cañada Flintridge NE 13,,71.3,5.71
+8829a1c0b1fffff,La Cañada Flintridge NE 20,,112.8,9.02
+8829a1c0b3fffff,La Crescenta NE 32,,117.2,9.38
+8829a1c0b9fffff,La Cañada Flintridge NE 18,,97.9,7.83
+8829a1c0bbfffff,La Cañada Flintridge NE 19,,101.9,8.15
+8829a1c0c1fffff,La Cañada Flintridge E 11,,65.4,5.23
+8829a1c0c3fffff,La Cañada Flintridge NE 9,,58.7,4.69
+8829a1c0c9fffff,La Cañada Flintridge E 10,C,59.6,4.77
+8829a1c0cbfffff,La Cañada Flintridge E 8,,49.8,3.98
+8829a1c0d1fffff,La Cañada Flintridge NE 4,,41.8,3.34
+8829a1c0d3fffff,La Cañada Flintridge NE 6,,45.7,3.65
+8829a1c0d5fffff,La Cañada Flintridge NE 7,,55.5,4.44
+8829a1c0d7fffff,La Cañada Flintridge NE 8,,56.4,4.51
+8829a1c0d9fffff,La Cañada Flintridge NE 2,,28.4,2.27
+8829a1c0dbfffff,La Cañada Flintridge NE 3,,30.2,2.41
+8829a1c0ddfffff,La Cañada Flintridge NE 5,,43.4,3.47
+8829a1c213fffff,Eagle Rock E 9,D,31.7,2.54
+8829a1c219fffff,Highland Park NE 10,C,30.9,2.47
+8829a1c21bfffff,Highland Park NE 9,C,24.5,1.96
+8829a1c253fffff,Highland Park E 4,B,15.6,1.25
+8829a1c259fffff,Newton Park NE 5,B,12.0,0.96
+8829a1c25bfffff,Newton Park NE 6,C,4.6,0.37
+8829a1c281fffff,Emerald Isle E 4,B,9.0,0.72
+8829a1c283fffff,Emerald Isle E 3,,18.6,1.49
+8829a1c285fffff,Emerald Isle E 5,B,23.5,1.88
+8829a1c287fffff,La Cañada Flintridge SE 4,B,24.1,1.93
+8829a1c289fffff,Emerald Isle SE 4,B,8.1,0.65
+8829a1c28bfffff,Emerald Isle SE 3,B,4.8,0.38
+8829a1c28dfffff,Emerald Isle SE 5,D,16.9,1.35
+8829a1c291fffff,Emerald Isle E,A,19.2,1.54
+8829a1c293fffff,Emerald Isle N,,26.7,2.13
+8829a1c295fffff,La Cañada Flintridge SE 2,A,28.7,2.3
+8829a1c297fffff,La Cañada Flintridge SE,A,17.4,1.39
+8829a1c299fffff,Emerald Isle SE,,4.9,0.39
+8829a1c29bfffff,Emerald Isle,,20.1,1.61
+8829a1c29dfffff,Emerald Isle E 2,,15.0,1.2
+8829a1c2a3fffff,La Cañada Flintridge E 9,C,50.5,4.04
+8829a1c2a9fffff,La Cañada Flintridge SE 6,C,25.5,2.04
+8829a1c2abfffff,La Cañada Flintridge SE 5,C,36.2,2.89
+8829a1c2b1fffff,La Cañada Flintridge E 4,,30.8,2.46
+8829a1c2b3fffff,La Cañada Flintridge E 3,B,18.7,1.5
+8829a1c2b5fffff,La Cañada Flintridge E 7,,44.8,3.58
+8829a1c2b7fffff,La Cañada Flintridge E 5,,34.2,2.74
+8829a1c2b9fffff,La Cañada Flintridge SE 3,,32.9,2.63
+8829a1c2bbfffff,La Cañada Flintridge E 2,A,19.5,1.56
+8829a1c2bdfffff,La Cañada Flintridge E 6,C,39.6,3.17
+8829a1c2c1fffff,Eagle Rock E 6,A,26.6,2.13
+8829a1c2c3fffff,Rancho San Rafael E 4,A,22.6,1.81
+8829a1c2c5fffff,Eagle Rock E 8,B,27.0,2.16
+8829a1c2c7fffff,Emerald Isle SE 6,,22.4,1.79
+8829a1c2c9fffff,Eagle Rock E 5,A,11.7,0.93
+8829a1c2cbfffff,Eagle Rock E 4,,25.7,2.06
+8829a1c2cdfffff,Eagle Rock E 7,A,20.5,1.64
+8829a1c2d1fffff,Rancho San Rafael E 2,,22.0,1.76
+8829a1c2d3fffff,Rancho San Rafael E,B,12.8,1.03
+8829a1c2d5fffff,Rancho San Rafael E 3,,10.8,0.86
+8829a1c2d7fffff,Emerald Isle SE 2,,10.6,0.85
+8829a1c2d9fffff,Eagle Rock NE 2,,26.3,2.11
+8829a1c2dbfffff,Rancho San Rafael SE,,17.7,1.41
+8829a1c2ddfffff,Rancho San Rafael SE 2,,26.4,2.11
+8829a1c2e3fffff,Emerald Isle E 6,D,13.8,1.1
+8829a1c2e9fffff,Eagle Rock E 10,C,16.2,1.29
+8829a1c2ebfffff,Emerald Isle SE 7,D,14.7,1.18
+8829a1c401fffff,Tujunga NE 2,,42.9,3.43
+8829a1c403fffff,Tujunga NE 3,,37.4,2.99
+8829a1c405fffff,Tujunga NE 5,,58.5,4.68
+8829a1c407fffff,Tujunga NE 4,,52.4,4.19
+8829a1c409fffff,Tujunga E,,37.6,3.01
+8829a1c40bfffff,Tujunga NE,,27.3,2.18
+8829a1c40dfffff,Tujunga E 3,,52.4,4.19
+8829a1c411fffff,Sunland NE,,28.4,2.27
+8829a1c413fffff,Sunland N,,39.2,3.13
+8829a1c415fffff,Sunland NE 2,,37.8,3.02
+8829a1c417fffff,Sunland NE 3,,43.9,3.51
+8829a1c419fffff,Sunland,,13.0,1.04
+8829a1c41bfffff,Sunland NW,,25.8,2.07
+8829a1c41dfffff,Sunland E,,23.2,1.86
+8829a1c421fffff,Tujunga NE 9,,83.1,6.65
+8829a1c423fffff,Tujunga NE 8,,79.0,6.32
+8829a1c425fffff,La Crescenta N 12,,93.4,7.47
+8829a1c427fffff,Tujunga NE 10,,93.9,7.51
+8829a1c429fffff,Tujunga NE 7,,74.1,5.93
+8829a1c42bfffff,Tujunga NE 6,,67.7,5.42
+8829a1c42dfffff,La Crescenta N 9,,78.5,6.28
+8829a1c431fffff,Sunland NE 7,,64.6,5.17
+8829a1c433fffff,Sunland NE 8,,68.3,5.46
+8829a1c435fffff,Sunland NE 11,,77.6,6.21
+8829a1c437fffff,Sunland NE 10,,79.3,6.34
+8829a1c439fffff,Sunland NE 5,,50.4,4.03
+8829a1c43bfffff,Sunland NE 4,,53.0,4.24
+8829a1c43dfffff,Sunland NE 9,,64.4,5.15
+8829a1c441fffff,Tujunga SE 2,,53.4,4.27
+8829a1c443fffff,Tujunga SE,C,38.4,3.07
+8829a1c445fffff,Tujunga SE 4,,43.9,3.52
+8829a1c447fffff,Tujunga E 2,,50.5,4.04
+8829a1c449fffff,Tujunga SE 3,,53.1,4.25
+8829a1c44bfffff,Tujunga S 2,,45.0,3.6
+8829a1c44dfffff,La Crescenta W 4,,39.7,3.18
+8829a1c451fffff,Tujunga W,C,14.8,1.18
+8829a1c453fffff,Sunland S,C,4.1,0.33
+8829a1c455fffff,Tujunga,C,23.9,1.91
+8829a1c457fffff,Tujunga NW,C,11.7,0.93
+8829a1c459fffff,Tujunga SW,,28.0,2.24
+8829a1c45bfffff,Tujunga W 2,,18.8,1.5
+8829a1c45dfffff,Tujunga S,C,29.8,2.38
+8829a1c461fffff,La Crescenta NW 3,,50.2,4.02
+8829a1c463fffff,Tujunga E 5,,64.0,5.12
+8829a1c465fffff,La Crescenta N 4,,52.6,4.21
+8829a1c467fffff,La Crescenta N 6,,64.1,5.13
+8829a1c469fffff,La Crescenta NW 2,,37.8,3.03
+8829a1c46bfffff,Tujunga E 4,,52.6,4.21
+8829a1c46dfffff,La Crescenta N 2,,37.7,3.01
+8829a1c481fffff,Sunland N 12,,82.4,6.59
+8829a1c483fffff,Lopez/Kagel Canyons E 8,,92.2,7.38
+8829a1c485fffff,Sunland N 11,,87.1,6.97
+8829a1c487fffff,Sunland N 15,,97.3,7.78
+8829a1c489fffff,Lake View Terrace NE 6,,67.9,5.43
+8829a1c48bfffff,Lake View Terrace NE 7,,78.2,6.26
+8829a1c48dfffff,Sunland N 7,,71.8,5.74
+8829a1c491fffff,Lopez/Kagel Canyons E 5,,84.5,6.76
+8829a1c493fffff,Lopez/Kagel Canyons NE 5,,84.9,6.8
+8829a1c495fffff,Lopez/Kagel Canyons E 7,,95.0,7.6
+8829a1c497fffff,Lopez/Kagel Canyons NE 9,,100.0,8.0
+8829a1c499fffff,Lopez/Kagel Canyons E 4,,69.1,5.53
+8829a1c49bfffff,Lopez/Kagel Canyons E 3,,75.9,6.07
+8829a1c49dfffff,Lopez/Kagel Canyons E 6,,80.0,6.4
+8829a1c4a1fffff,Sunland N 18,,109.5,8.76
+8829a1c4a3fffff,Sunland N 20,,118.0,9.44
+8829a1c4a5fffff,Sunland N 19,,114.7,9.18
+8829a1c4a7fffff,Sunland N 22,,124.6,9.97
+8829a1c4a9fffff,Sunland N 13,,94.2,7.54
+8829a1c4abfffff,Sunland N 16,,102.5,8.2
+8829a1c4adfffff,Sunland N 14,,99.3,7.95
+8829a1c4b1fffff,Lopez/Kagel Canyons E 10,,121.4,9.72
+8829a1c4b3fffff,Lopez/Kagel Canyons NE 12,,124.5,9.96
+8829a1c4b5fffff,Lopez/Kagel Canyons E 12,,127.5,10.2
+8829a1c4b7fffff,Lopez/Kagel Canyons NE 13,,136.4,10.91
+8829a1c4b9fffff,Lopez/Kagel Canyons E 9,,106.7,8.54
+8829a1c4bbfffff,Lopez/Kagel Canyons NE 11,,110.1,8.81
+8829a1c4bdfffff,Lopez/Kagel Canyons E 11,,112.3,8.99
+8829a1c4c1fffff,Sunland NW 4,,41.6,3.32
+8829a1c4c3fffff,Lake View Terrace NE 5,,53.9,4.31
+8829a1c4c5fffff,Sunland N 2,,47.5,3.8
+8829a1c4c7fffff,Sunland NW 5,,56.5,4.52
+8829a1c4c9fffff,Sunland NW 3,,27.3,2.18
+8829a1c4cbfffff,Lake View Terrace E 3,,41.1,3.29
+8829a1c4cdfffff,Sunland NW 2,,31.9,2.55
+8829a1c4d1fffff,Lake View Terrace NE 3,,51.0,4.08
+8829a1c4d3fffff,El Merrie Del E 2,,53.7,4.3
+8829a1c4d5fffff,Lake View Terrace NE 4,,64.9,5.19
+8829a1c4d7fffff,El Merrie Del E 3,,65.2,5.22
+8829a1c4d9fffff,Lake View Terrace NE,,37.9,3.03
+8829a1c4dbfffff,Lake View Terrace N 2,,38.5,3.08
+8829a1c4ddfffff,Lake View Terrace NE 2,,52.8,4.22
+8829a1c4e1fffff,Sunland N 5,,68.8,5.5
+8829a1c4e3fffff,Sunland N 8,,78.6,6.29
+8829a1c4e5fffff,Sunland N 6,,75.0,6.0
+8829a1c4e7fffff,Sunland N 9,,84.0,6.72
+8829a1c4e9fffff,Sunland N 3,,53.8,4.3
+8829a1c4ebfffff,Sunland N 4,,63.1,5.04
+8829a1c4edfffff,Sunland NE 6,,59.4,4.76
+8829a1c501fffff,La Crescenta NE 20,,110.0,8.8
+8829a1c503fffff,La Crescenta NE 21,,114.8,9.19
+8829a1c505fffff,La Crescenta NE 24,,121.6,9.73
+8829a1c507fffff,La Crescenta NE 26,,125.1,10.01
+8829a1c509fffff,La Crescenta NE 14,,94.9,7.59
+8829a1c50bfffff,La Crescenta NE 16,,99.4,7.95
+8829a1c50dfffff,La Crescenta NE 18,,107.1,8.56
+8829a1c511fffff,La Crescenta N 16,,114.1,9.13
+8829a1c513fffff,Tujunga NE 12,,120.5,9.64
+8829a1c515fffff,La Crescenta N 17,,121.5,9.72
+8829a1c517fffff,La Crescenta N 18,,129.6,10.37
+8829a1c519fffff,La Crescenta N 13,,98.6,7.89
+8829a1c51bfffff,La Crescenta N 15,,108.4,8.67
+8829a1c51dfffff,La Crescenta N 14,,105.9,8.47
+8829a1c521fffff,La Crescenta NE 37,,148.5,11.88
+8829a1c523fffff,La Crescenta NE 39,,151.4,12.11
+8829a1c525fffff,La Crescenta NE 42,,160.9,12.87
+8829a1c527fffff,La Crescenta NE 45,,163.1,13.05
+8829a1c529fffff,La Crescenta NE 29,,134.1,10.73
+8829a1c52bfffff,La Crescenta NE 31,,136.4,10.91
+8829a1c52dfffff,La Crescenta NE 35,,145.6,11.65
+8829a1c531fffff,La Crescenta NE 34,,145.8,11.67
+8829a1c533fffff,La Crescenta N 21,,152.6,12.21
+8829a1c535fffff,La Crescenta NE 40,,155.7,12.45
+8829a1c537fffff,La Crescenta NE 43,,161.3,12.91
+8829a1c539fffff,La Crescenta NE 27,,130.3,10.43
+8829a1c53bfffff,La Crescenta N 19,,137.0,10.96
+8829a1c53dfffff,La Crescenta NE 33,,140.4,11.23
+8829a1c541fffff,La Crescenta NE 8,,79.1,6.33
+8829a1c543fffff,La Crescenta NE 9,,80.1,6.41
+8829a1c545fffff,La Crescenta NE 13,,89.2,7.13
+8829a1c547fffff,La Crescenta NE 12,,92.8,7.43
+8829a1c549fffff,La Crescenta NE 6,,63.9,5.11
+8829a1c54bfffff,La Crescenta NE 5,,65.7,5.25
+8829a1c54dfffff,La Crescenta NE 10,,73.9,5.91
+8829a1c551fffff,La Crescenta N 8,,74.7,5.98
+8829a1c553fffff,La Crescenta N 10,,83.2,6.65
+8829a1c555fffff,La Crescenta NE 11,,84.0,6.72
+8829a1c557fffff,La Crescenta N 11,,90.3,7.22
+8829a1c559fffff,La Crescenta N 5,,59.1,4.73
+8829a1c55bfffff,La Crescenta N 7,,67.8,5.43
+8829a1c55dfffff,La Crescenta NE 7,,68.7,5.49
+8829a1c561fffff,La Crescenta NE 23,,115.3,9.22
+8829a1c563fffff,La Crescenta NE 22,,119.9,9.59
+8829a1c565fffff,La Crescenta NE 30,,123.5,9.88
+8829a1c567fffff,La Crescenta NE 28,,130.4,10.43
+8829a1c569fffff,La Crescenta NE 19,,100.1,8.01
+8829a1c56bfffff,La Crescenta NE 17,,104.5,8.36
+8829a1c56dfffff,La Crescenta NE 25,,107.9,8.63
+8829a1c581fffff,Sunland NE 28,,135.7,10.85
+8829a1c583fffff,Sunland NE 29,,140.0,11.2
+8829a1c585fffff,Sunland NE 32,,147.5,11.8
+8829a1c587fffff,Sunland NE 34,,150.7,12.06
+8829a1c589fffff,Sunland NE 22,,120.8,9.66
+8829a1c58bfffff,Sunland NE 24,,124.7,9.97
+8829a1c58dfffff,Sunland NE 26,,133.0,10.64
+8829a1c591fffff,Sunland N 25,,137.3,10.98
+8829a1c593fffff,Sunland N 27,,145.6,11.65
+8829a1c595fffff,Sunland NE 30,,145.8,11.66
+8829a1c599fffff,Sunland N 21,,121.7,9.74
+8829a1c59bfffff,Sunland N 23,,130.2,10.41
+8829a1c59dfffff,Sunland NE 25,,130.2,10.42
+8829a1c5a1fffff,Sunland NE 41,,174.4,13.95
+8829a1c5a5fffff,Sunland NE 43,,187.1,14.97
+8829a1c5a9fffff,Sunland NE 36,,160.0,12.8
+8829a1c5abfffff,Sunland NE 38,,162.2,12.98
+8829a1c5adfffff,Sunland NE 40,,173.0,13.84
+8829a1c5b9fffff,Sunland NE 35,,155.4,12.43
+8829a1c5bdfffff,Sunland NE 39,,165.9,13.27
+8829a1c5c1fffff,Sunland NE 18,,104.8,8.39
+8829a1c5c3fffff,Sunland NE 17,,106.0,8.48
+8829a1c5c5fffff,Sunland NE 23,,118.6,9.49
+8829a1c5c7fffff,Sunland NE 21,,118.7,9.5
+8829a1c5c9fffff,Sunland NE 15,,91.5,7.32
+8829a1c5cbfffff,Sunland NE 13,,91.6,7.33
+8829a1c5cdfffff,Tujunga NE 11,,105.8,8.47
+8829a1c5d1fffff,Sunland NE 16,,99.2,7.94
+8829a1c5d3fffff,Sunland N 17,,106.2,8.49
+8829a1c5d5fffff,Sunland NE 19,,109.4,8.75
+8829a1c5d7fffff,Sunland NE 20,,114.7,9.18
+8829a1c5d9fffff,Sunland NE 12,,83.7,6.7
+8829a1c5dbfffff,Sunland N 10,,90.6,7.25
+8829a1c5ddfffff,Sunland NE 14,,94.3,7.54
+8829a1c5e1fffff,Sunland NE 33,,145.8,11.66
+8829a1c5e3fffff,Sunland NE 31,,145.9,11.67
+8829a1c5e5fffff,La Crescenta N 22,,159.9,12.79
+8829a1c5e7fffff,Sunland NE 37,,159.2,12.74
+8829a1c5e9fffff,Tujunga NE 13,,132.8,10.63
+8829a1c5ebfffff,Sunland NE 27,,132.0,10.56
+8829a1c5edfffff,La Crescenta N 20,,145.1,11.61
+8829a1c601fffff,Burbank NE 6,,39.2,3.14
+8829a1c603fffff,Burbank N 5,,40.7,3.25
+8829a1c605fffff,Burbank NE 8,,45.1,3.61
+8829a1c607fffff,Burbank N 6,,54.0,4.32
+8829a1c609fffff,Burbank NE 3,A,23.6,1.89
+8829a1c60bfffff,Burbank N 3,,26.8,2.15
+8829a1c60dfffff,Burbank NE 4,,33.6,2.69
+8829a1c611fffff,Glencrest Hills E 3,,32.4,2.59
+8829a1c613fffff,Glencrest Hills NE 3,,31.5,2.52
+8829a1c615fffff,Glencrest Hills E 5,,45.2,3.62
+8829a1c617fffff,Glencrest Hills E 4,,44.6,3.57
+8829a1c619fffff,Glencrest Hills E 2,,24.4,1.95
+8829a1c61bfffff,Glencrest Hills E,,17.5,1.4
+8829a1c61dfffff,Burbank N 4,,29.7,2.37
+8829a1c621fffff,La Crescenta SW 4,,48.2,3.86
+8829a1c623fffff,Tujunga S 6,,56.6,4.53
+8829a1c625fffff,La Crescenta SW 3,,32.6,2.61
+8829a1c627fffff,La Crescenta W 5,,41.3,3.3
+8829a1c629fffff,Burbank NE 9,,46.7,3.74
+8829a1c62bfffff,Tujunga S 9,,58.5,4.68
+8829a1c62dfffff,Montrose W 6,,43.7,3.5
+8829a1c631fffff,Tujunga S 5,,54.5,4.36
+8829a1c633fffff,Tujunga SW 3,,42.9,3.43
+8829a1c635fffff,Tujunga S 4,,55.3,4.42
+8829a1c637fffff,Tujunga S 3,,41.1,3.29
+8829a1c639fffff,Tujunga S 8,,55.4,4.43
+8829a1c63bfffff,Tujunga SW 6,,58.1,4.65
+8829a1c63dfffff,Tujunga S 7,,67.6,5.41
+8829a1c641fffff,Burbank E,B,14.1,1.13
+8829a1c643fffff,Burbank NE,B,8.1,0.64
+8829a1c645fffff,Burbank E 2,A,12.7,1.02
+8829a1c647fffff,Burbank NE 2,A,21.4,1.71
+8829a1c649fffff,Burbank SE,C,10.1,0.81
+8829a1c64bfffff,Burbank,C,3.8,0.31
+8829a1c64dfffff,Burbank SE 2,B,8.9,0.71
+8829a1c651fffff,Burbank NW 2,C,2.4,0.19
+8829a1c653fffff,Glencrest Hills SE 4,C,11.8,0.95
+8829a1c655fffff,Burbank N,B,16.5,1.32
+8829a1c657fffff,Burbank N 2,,14.1,1.13
+8829a1c659fffff,Burbank W,B,4.6,0.37
+8829a1c65bfffff,Burbank NW 3,C,5.5,0.44
+8829a1c65dfffff,Burbank NW,C,9.9,0.79
+8829a1c661fffff,Burbank E 3,,21.9,1.75
+8829a1c663fffff,Burbank NE 7,,32.0,2.56
+8829a1c665fffff,Montrose W 5,,33.2,2.65
+8829a1c667fffff,Montrose W 7,,37.5,3.0
+8829a1c669fffff,North Glendale N 4,A,6.4,0.51
+8829a1c66bfffff,Burbank NE 5,,18.7,1.5
+8829a1c66dfffff,North Glendale N 5,,20.2,1.61
+8829a1c681fffff,Shadow Hills S 2,,41.0,3.28
+8829a1c683fffff,Shadow Hills S,,44.2,3.54
+8829a1c685fffff,Shadow Hills SE 2,,26.6,2.12
+8829a1c687fffff,Shadow Hills SE,,30.8,2.47
+8829a1c689fffff,Stonehurst SE 3,,53.8,4.3
+8829a1c68bfffff,Stonehurst E 2,,54.4,4.35
+8829a1c68dfffff,Shadow Hills SE 3,,40.8,3.26
+8829a1c691fffff,Stonehurst N,,27.1,2.17
+8829a1c693fffff,Stonehurst N 2,,18.0,1.44
+8829a1c695fffff,Shadow Hills W,,29.0,2.32
+8829a1c697fffff,Lake View Terrace SW,,13.9,1.11
+8829a1c699fffff,Stonehurst,,42.0,3.36
+8829a1c69bfffff,Stonehurst NW,,33.1,2.65
+8829a1c69dfffff,Stonehurst E,,40.2,3.21
+8829a1c6a1fffff,Sunland W 2,C,0.7,0.06
+8829a1c6a3fffff,Shadow Hills E 3,,15.6,1.25
+8829a1c6a5fffff,Sunland SW,C,16.0,1.28
+8829a1c6a7fffff,Sunland W,,16.3,1.31
+8829a1c6a9fffff,Sunland SW 3,C,14.8,1.19
+8829a1c6abfffff,Shadow Hills E 2,,15.2,1.22
+8829a1c6adfffff,Sunland SW 2,C,15.0,1.2
+8829a1c6b1fffff,Shadow Hills NE,,37.4,2.99
+8829a1c6b3fffff,Lake View Terrace E,,27.4,2.19
+8829a1c6b5fffff,Shadow Hills NE 2,,30.9,2.47
+8829a1c6b7fffff,Lake View Terrace E 2,,43.0,3.44
+8829a1c6b9fffff,Shadow Hills,,37.9,3.03
+8829a1c6bbfffff,Lake View Terrace SE,,23.5,1.88
+8829a1c6bdfffff,Shadow Hills E,,26.7,2.13
+8829a1c6c1fffff,Glencrest Hills N,,33.5,2.68
+8829a1c6c3fffff,Glencrest Hills N 2,,41.4,3.32
+8829a1c6c5fffff,Glencrest Hills NE 2,,37.4,2.99
+8829a1c6c7fffff,Glencrest Hills N 3,,47.7,3.82
+8829a1c6c9fffff,Glencrest Hills,,21.4,1.71
+8829a1c6cbfffff,Glencrest Hills NW,,27.9,2.24
+8829a1c6cdfffff,Glencrest Hills NE,,21.9,1.75
+8829a1c6d1fffff,Stonehurst S,,38.4,3.07
+8829a1c6d3fffff,Stonehurst SW,,50.3,4.02
+8829a1c6d5fffff,Stonehurst SE 2,,45.4,3.63
+8829a1c6d7fffff,Stonehurst SE,,53.6,4.29
+8829a1c6d9fffff,Sun Valley NE 2,,23.7,1.9
+8829a1c6dbfffff,Sun Valley NE 3,,37.1,2.97
+8829a1c6ddfffff,Glencrest Hills NW 3,,29.9,2.39
+8829a1c6e1fffff,Tujunga SW 5,,40.2,3.21
+8829a1c6e3fffff,Shadow Hills SE 4,,30.4,2.43
+8829a1c6e5fffff,Tujunga SW 2,,34.2,2.74
+8829a1c6e7fffff,Sunland SW 4,,26.0,2.08
+8829a1c6e9fffff,Glencrest Hills NE 4,,46.5,3.72
+8829a1c6ebfffff,Glencrest Hills NE 5,,46.0,3.68
+8829a1c6edfffff,Tujunga SW 4,,49.8,3.98
+8829a1c701fffff,Montrose N 2,C,13.3,1.06
+8829a1c703fffff,La Crescenta SE,C,14.7,1.18
+8829a1c705fffff,Montrose NE 2,B,17.4,1.39
+8829a1c707fffff,La Crescenta E,,26.4,2.11
+8829a1c709fffff,Montrose,C,10.1,0.81
+8829a1c70bfffff,Montrose N,C,16.1,1.29
+8829a1c70dfffff,Montrose NE,B,3.9,0.31
+8829a1c711fffff,La Crescenta W,C,13.5,1.08
+8829a1c713fffff,La Crescenta W 2,C,28.7,2.29
+8829a1c715fffff,La Crescenta,C,12.4,0.99
+8829a1c717fffff,La Crescenta NW,C,23.6,1.89
+8829a1c719fffff,La Crescenta SW 2,C,17.1,1.37
+8829a1c71bfffff,La Crescenta W 3,C,26.5,2.12
+8829a1c71dfffff,La Crescenta SW,C,3.3,0.26
+8829a1c721fffff,La Crescenta E 5,,44.1,3.53
+8829a1c723fffff,La Crescenta E 4,,48.4,3.87
+8829a1c725fffff,La Cañada Flintridge N 6,,53.8,4.3
+8829a1c727fffff,La Crescenta E 6,,58.8,4.71
+8829a1c729fffff,La Cañada Flintridge N 4,B,30.3,2.43
+8829a1c72bfffff,La Crescenta E 3,,32.8,2.63
+8829a1c72dfffff,La Cañada Flintridge N 5,,38.5,3.08
+8829a1c731fffff,La Crescenta NE 2,,38.6,3.09
+8829a1c733fffff,La Crescenta N 3,,43.5,3.48
+8829a1c735fffff,La Crescenta NE 3,,51.9,4.15
+8829a1c737fffff,La Crescenta NE 4,,53.5,4.28
+8829a1c739fffff,La Crescenta NE,,24.7,1.98
+8829a1c73bfffff,La Crescenta N,,28.0,2.24
+8829a1c73dfffff,La Crescenta E 2,,39.5,3.16
+8829a1c741fffff,Sparr Heights,B,13.0,1.04
+8829a1c743fffff,Montrose S,C,4.9,0.39
+8829a1c745fffff,La Cañada Flintridge W,,26.7,2.14
+8829a1c747fffff,Montrose E,C,14.2,1.14
+8829a1c749fffff,Sparr Heights S,B,22.2,1.78
+8829a1c74bfffff,Sparr Heights W,B,10.8,0.86
+8829a1c74dfffff,Emerald Isle NW,B,28.0,2.24
+8829a1c751fffff,Montrose W 2,,21.7,1.74
+8829a1c753fffff,Montrose W 3,,29.8,2.39
+8829a1c755fffff,Montrose W,C,6.5,0.52
+8829a1c757fffff,Montrose NW,C,18.8,1.5
+8829a1c759fffff,Montrose SW 2,,29.6,2.36
+8829a1c75bfffff,Montrose W 4,,37.2,2.98
+8829a1c75dfffff,Montrose SW,,14.3,1.14
+8829a1c761fffff,La Cañada Flintridge N,B,11.1,0.89
+8829a1c763fffff,La Cañada Flintridge N 2,B,19.4,1.56
+8829a1c765fffff,La Cañada Flintridge NE,B,14.9,1.19
+8829a1c767fffff,La Cañada Flintridge N 3,,23.7,1.89
+8829a1c769fffff,La Cañada Flintridge,B,13.2,1.06
+8829a1c76bfffff,La Cañada Flintridge NW,,17.9,1.44
+8829a1c76dfffff,La Cañada Flintridge E,B,4.3,0.34
+8829a1ce11fffff,La Crescenta NE 53,,185.8,14.86
+8829a1ce13fffff,La Crescenta NE 54,,190.0,15.2
+8829a1ce19fffff,La Crescenta NE 48,,170.2,13.62
+8829a1ce1bfffff,La Crescenta NE 49,,175.5,14.04
+8829a1ce51fffff,La Crescenta NE 44,,148.1,11.85
+8829a1ce53fffff,La Crescenta NE 41,,154.6,12.37
+8829a1ce59fffff,La Crescenta NE 38,,132.7,10.61
+8829a1ce5bfffff,La Crescenta NE 36,,139.1,11.12
+8829a1ce81fffff,La Crescenta NE 61,,217.3,17.39
+8829a1ce85fffff,La Crescenta NE 64,,227.4,18.19
+8829a1ce89fffff,La Crescenta NE 57,,201.9,16.15
+8829a1ce8bfffff,La Crescenta N 28,,208.0,16.64
+8829a1ce8dfffff,La Crescenta NE 60,,212.1,16.97
+8829a1ce99fffff,Sunland NE 45,,200.2,16.01
+8829a1cec1fffff,La Crescenta NE 51,,181.6,14.53
+8829a1cec3fffff,La Crescenta NE 52,,186.4,14.92
+8829a1cec5fffff,La Crescenta NE 55,,192.8,15.42
+8829a1cec7fffff,La Crescenta NE 56,,196.8,15.74
+8829a1cec9fffff,La Crescenta NE 46,,166.4,13.31
+8829a1cecbfffff,La Crescenta NE 47,,171.0,13.68
+8829a1cecdfffff,La Crescenta NE 50,,177.9,14.23
+8829a1ced1fffff,La Crescenta N 25,,183.8,14.7
+8829a1ced3fffff,Sunland NE 44,,186.4,14.91
+8829a1ced5fffff,La Crescenta N 26,,192.4,15.39
+8829a1ced7fffff,La Crescenta N 27,,199.4,15.95
+8829a1ced9fffff,La Crescenta N 23,,168.2,13.46
+8829a1cedbfffff,Sunland NE 42,,173.0,13.84
+8829a1ceddfffff,La Crescenta N 24,,176.9,14.15
+8829a1cee1fffff,La Crescenta NE 62,,219.4,17.55
+8829a1cee3fffff,La Crescenta NE 63,,222.9,17.83
+8829a1cee9fffff,La Crescenta NE 58,,204.6,16.37
+8829a1ceebfffff,La Crescenta NE 59,,207.8,16.62
+8829a1d083fffff,El Sereno E 3,B,24.8,1.99
+8829a1d089fffff,City Terrace NE 3,A,26.1,2.09
+8829a1d08bfffff,El Sereno SE 3,B,13.9,1.11
+8829a1d091fffff,El Sereno E,C,11.5,0.92
+8829a1d093fffff,Baird Park,D,7.7,0.62
+8829a1d095fffff,El Sereno E 2,C,14.8,1.19
+8829a1d097fffff,Newton Park E,C,0.5,0.04
+8829a1d099fffff,El Sereno S,C,7.0,0.56
+8829a1d09bfffff,El Sereno,C,8.8,0.7
+8829a1d09dfffff,El Sereno SE,C,13.2,1.06
+8829a1d0b3fffff,Newton Park NE 4,B,15.3,1.22
+8829a1d0b9fffff,El Sereno E 4,D,26.4,2.11
+8829a1d0bbfffff,Newton Park E 2,B,15.6,1.25
+8829a1d0c3fffff,City Terrace E 4,,31.3,2.5
+8829a1d0c9fffff,East Los Angeles NE 4,,12.4,0.99
+8829a1d0cbfffff,City Terrace E 3,,20.1,1.61
+8829a1d0d1fffff,City Terrace NE,D,9.9,0.79
+8829a1d0d3fffff,City Terrace N 3,C,14.9,1.19
+8829a1d0d5fffff,City Terrace NE 2,,16.1,1.28
+8829a1d0d7fffff,El Sereno SE 2,C,2.5,0.2
+8829a1d0d9fffff,City Terrace E,D,12.1,0.97
+8829a1d0dbfffff,City Terrace N,D,6.0,0.48
+8829a1d0ddfffff,City Terrace E 2,,21.1,1.69
+8829a1d213fffff,Bell Gardens N,,29.6,2.37
+8829a1d21bfffff,Bell Gardens,,17.9,1.43
+8829a1d253fffff,Bell Gardens S,,11.0,0.88
+8829a1d25bfffff,Bell Gardens S 2,,26.6,2.13
+8829a1d281fffff,Bandini NW,D,23.7,1.9
+8829a1d283fffff,East Los Angeles SW,D,10.2,0.81
+8829a1d285fffff,Bandini NE,C,23.8,1.91
+8829a1d287fffff,East Los Angeles SE,D,16.4,1.31
+8829a1d289fffff,Bandini SW,,27.0,2.16
+8829a1d28bfffff,Bandini W,,25.5,2.04
+8829a1d28dfffff,Bandini,B,13.9,1.11
+8829a1d291fffff,East Los Angeles W 2,D,10.0,0.8
+8829a1d293fffff,Boyle Heights S 2,D,6.7,0.54
+8829a1d295fffff,East Los Angeles W,D,4.7,0.37
+8829a1d297fffff,East Los Angeles NW 2,D,10.6,0.84
+8829a1d299fffff,Vernon E 4,D,21.1,1.69
+8829a1d29bfffff,Vernon NE 3,D,7.2,0.58
+8829a1d29dfffff,East Los Angeles SW 2,D,17.6,1.4
+8829a1d2a3fffff,East Los Angeles NE 3,B,4.9,0.39
+8829a1d2a9fffff,Commerce N,B,27.9,2.23
+8829a1d2abfffff,East Los Angeles E,C,19.6,1.56
+8829a1d2b1fffff,East Los Angeles N,D,16.6,1.33
+8829a1d2b3fffff,City Terrace S,D,2.5,0.2
+8829a1d2b5fffff,East Los Angeles NE 2,D,5.3,0.43
+8829a1d2b7fffff,City Terrace SE,D,18.1,1.45
+8829a1d2b9fffff,East Los Angeles,D,6.6,0.52
+8829a1d2bbfffff,East Los Angeles NW,D,14.4,1.15
+8829a1d2bdfffff,East Los Angeles NE,D,11.9,0.95
+8829a1d2c1fffff,Walker N,,11.4,0.91
+8829a1d2c3fffff,Maywood NE,,12.2,0.98
+8829a1d2c5fffff,Commerce S,,18.9,1.52
+8829a1d2c7fffff,Bandini S,,17.6,1.4
+8829a1d2c9fffff,Walker,C,15.4,1.23
+8829a1d2cbfffff,Maywood,C,4.7,0.38
+8829a1d2cdfffff,Walker E,,24.0,1.92
+8829a1d2d1fffff,Maywood NW,,21.9,1.76
+8829a1d2d3fffff,Vernon E 3,,29.3,2.35
+8829a1d2d5fffff,Maywood N 2,,24.5,1.96
+8829a1d2d7fffff,Bandini W 2,,32.9,2.63
+8829a1d2d9fffff,Maywood W,C,14.7,1.17
+8829a1d2dbfffff,Vernon SE 2,,29.2,2.34
+8829a1d2ddfffff,Maywood N,C,8.9,0.72
+8829a1d2e3fffff,Commerce,B,12.3,0.98
+8829a1d2ebfffff,Commerce SW,B,3.3,0.27
+8829a1d401fffff,Silver Lake Heights W,B,14.8,1.19
+8829a1d403fffff,Los Feliz E,B,15.7,1.25
+8829a1d405fffff,Silver Lake Heights,B,4.8,0.38
+8829a1d407fffff,Atwater Village S,B,11.4,0.91
+8829a1d409fffff,Silver Lake,B,14.2,1.13
+8829a1d40bfffff,Sunset Junction N,C,8.2,0.66
+8829a1d40dfffff,Silver Lake Heights SW,D,11.0,0.88
+8829a1d411fffff,Los Feliz NW,A,15.7,1.26
+8829a1d413fffff,Los Feliz NW 2,,21.4,1.72
+8829a1d415fffff,Los Feliz NE,A,16.1,1.29
+8829a1d417fffff,Los Feliz N,,27.2,2.17
+8829a1d419fffff,Thai Town E,C,14.3,1.15
+8829a1d41bfffff,Thai Town N,B,8.4,0.67
+8829a1d41dfffff,Los Feliz,C,0.5,0.04
+8829a1d421fffff,Glassell Park W 2,C,17.9,1.43
+8829a1d423fffff,Atwater Village E,,9.5,0.76
+8829a1d425fffff,Glassell Park W,C,2.6,0.21
+8829a1d427fffff,Adams Square S,C,16.4,1.31
+8829a1d429fffff,Silver Lake Heights NE,D,11.6,0.93
+8829a1d42bfffff,Atwater Village SE,C,15.8,1.27
+8829a1d42dfffff,Elysian Valley N,C,15.8,1.26
+8829a1d431fffff,Atwater Village NW,C,16.7,1.34
+8829a1d433fffff,Atwater Village NW 2,,23.5,1.88
+8829a1d435fffff,Atwater Village N,C,11.0,0.88
+8829a1d437fffff,Atwater Village N 2,D,11.7,0.94
+8829a1d439fffff,Atwater Village W,B,4.4,0.35
+8829a1d43bfffff,Atwater Village W 2,,19.4,1.55
+8829a1d43dfffff,Atwater Village,C,6.9,0.55
+8829a1d441fffff,Historic Filipinotown N,D,10.2,0.82
+8829a1d443fffff,Silver Lake SW,C,20.5,1.64
+8829a1d445fffff,Echo Park,C,5.9,0.47
+8829a1d447fffff,Silver Lake SE,C,15.5,1.24
+8829a1d449fffff,Historic Filipinotown,D,20.1,1.61
+8829a1d44bfffff,Historic Filipinotown NW,D,23.2,1.85
+8829a1d44dfffff,Angeleno Heights W,D,10.4,0.83
+8829a1d451fffff,East Hollywood,C,1.7,0.14
+8829a1d453fffff,Little Armenia,C,10.3,0.82
+8829a1d455fffff,Sunset Junction,D,7.5,0.6
+8829a1d457fffff,East Hollywood NE,C,8.3,0.66
+8829a1d459fffff,Bicycle District,C,17.1,1.37
+8829a1d45bfffff,East Hollywood SW,C,5.7,0.46
+8829a1d45dfffff,Virgil Village,D,15.3,1.22
+8829a1d461fffff,Elysian Valley SW,C,15.1,1.21
+8829a1d463fffff,Silver Lake Heights SE,C,7.2,0.58
+8829a1d465fffff,Elysian Valley SE,D,11.6,0.93
+8829a1d467fffff,Elysian Valley,D,8.8,0.7
+8829a1d469fffff,Echo Park NE,C,8.4,0.67
+8829a1d46bfffff,Echo Park N,C,19.7,1.58
+8829a1d46dfffff,Elysian Valley S,,22.1,1.77
+8829a1d481fffff,Beachwood Canyon N 3,,36.2,2.9
+8829a1d483fffff,Toluca Lake E 4,,22.2,1.77
+8829a1d485fffff,Beachwood Canyon NE 4,,39.7,3.18
+8829a1d487fffff,Burbank S 5,,24.5,1.96
+8829a1d489fffff,Beachwood Canyon N,,45.1,3.61
+8829a1d48bfffff,Beachwood Canyon N 2,,36.1,2.89
+8829a1d48dfffff,Beachwood Canyon NE 3,,50.2,4.02
+8829a1d491fffff,Toluca Lake E,,23.7,1.89
+8829a1d493fffff,Toluca Lake NE,C,21.7,1.74
+8829a1d495fffff,Toluca Lake E 3,B,10.8,0.87
+8829a1d497fffff,Toluca Lake NE 2,C,14.6,1.17
+8829a1d499fffff,Toluca Lake SE,A,29.1,2.33
+8829a1d49bfffff,Toluca Lake,A,24.7,1.98
+8829a1d49dfffff,Toluca Lake E 2,,26.4,2.11
+8829a1d4a1fffff,West Glendale NW 3,B,25.8,2.06
+8829a1d4a3fffff,Burbank S 2,C,22.0,1.76
+8829a1d4a5fffff,West Glendale NW 2,,18.2,1.46
+8829a1d4a7fffff,Burbank SE 3,C,11.3,0.91
+8829a1d4a9fffff,West Glendale W 4,,41.1,3.28
+8829a1d4abfffff,Burbank S 4,,33.5,2.68
+8829a1d4adfffff,West Glendale W 2,,33.2,2.66
+8829a1d4b1fffff,Burbank SW 2,B,3.2,0.25
+8829a1d4b3fffff,Burbank W 2,B,12.3,0.98
+8829a1d4b5fffff,Burbank S,C,13.1,1.05
+8829a1d4b7fffff,Burbank SW,,8.8,0.7
+8829a1d4b9fffff,Burbank SW 4,B,9.7,0.77
+8829a1d4bbfffff,Burbank SW 3,B,4.9,0.39
+8829a1d4bdfffff,Burbank S 3,B,18.3,1.47
+8829a1d4c1fffff,Beachwood Canyon,B,27.8,2.23
+8829a1d4c3fffff,Beachwood Canyon NW,,39.7,3.18
+8829a1d4c5fffff,Beachwood Canyon E,,28.5,2.28
+8829a1d4c7fffff,Beachwood Canyon NE,,40.4,3.23
+8829a1d4c9fffff,Beachwood Canyon S,B,20.1,1.61
+8829a1d4cbfffff,Beachwood Canyon W,,28.0,2.24
+8829a1d4cdfffff,Beachwood Canyon SE,A,13.7,1.1
+8829a1d4d1fffff,Hollywood Hills N,A,13.9,1.11
+8829a1d4d3fffff,Universal City E,,13.5,1.08
+8829a1d4d5fffff,Beachwood Canyon NW 2,,29.5,2.36
+8829a1d4d7fffff,Universal City E 2,,25.0,2.0
+8829a1d4d9fffff,Hollywood Hills,A,15.6,1.24
+8829a1d4dbfffff,Hollywood Hills NW,,2.1,0.17
+8829a1d4ddfffff,Hollywood Hills NE,,25.8,2.06
+8829a1d4e1fffff,West Glendale SW 2,,44.3,3.54
+8829a1d4e3fffff,West Glendale W 5,,54.0,4.32
+8829a1d4e5fffff,West Glendale SW,,28.7,2.3
+8829a1d4e7fffff,West Glendale W 3,,39.2,3.14
+8829a1d4e9fffff,Beachwood Canyon E 2,,36.5,2.92
+8829a1d4ebfffff,Beachwood Canyon NE 2,,43.8,3.5
+8829a1d4edfffff,Los Feliz N 2,,34.7,2.78
+8829a1d501fffff,Highland Park N,C,13.6,1.09
+8829a1d503fffff,Highland Park NW,C,13.6,1.09
+8829a1d505fffff,Highland Park NE,C,5.6,0.45
+8829a1d507fffff,Highland Park N 2,C,20.4,1.64
+8829a1d509fffff,Highland Park,C,13.6,1.09
+8829a1d50bfffff,Highland Park W,C,22.0,1.76
+8829a1d50dfffff,Highland Park E,C,6.8,0.54
+8829a1d511fffff,Glassell Park NE,C,14.4,1.15
+8829a1d513fffff,Adams Square E,B,19.1,1.53
+8829a1d515fffff,Eagle Rock S,C,3.6,0.29
+8829a1d517fffff,Eagle Rock SW,C,9.1,0.73
+8829a1d519fffff,Glassell Park,B,11.0,0.88
+8829a1d51bfffff,Glassell Park N,C,10.9,0.87
+8829a1d51dfffff,Glassell Park E,C,12.0,0.96
+8829a1d521fffff,Highland Park NE 4,A,15.1,1.2
+8829a1d523fffff,Highland Park NE 5,A,7.1,0.57
+8829a1d525fffff,Highland Park NE 8,A,22.2,1.77
+8829a1d527fffff,Highland Park NE 7,A,8.9,0.71
+8829a1d529fffff,Highland Park NE 3,C,14.7,1.17
+8829a1d52bfffff,Highland Park NE 2,C,19.6,1.56
+8829a1d52dfffff,Highland Park NE 6,B,19.2,1.54
+8829a1d531fffff,Eagle Rock E,C,14.8,1.18
+8829a1d533fffff,Eagle Rock NE,A,10.8,0.86
+8829a1d535fffff,Eagle Rock E 3,A,18.5,1.48
+8829a1d537fffff,Eagle Rock NE 3,A,23.7,1.9
+8829a1d539fffff,Eagle Rock SE 2,C,17.6,1.41
+8829a1d53bfffff,Eagle Rock SE,C,5.0,0.4
+8829a1d53dfffff,Eagle Rock E 2,C,22.6,1.81
+8829a1d541fffff,Montecito Heights,D,10.7,0.86
+8829a1d543fffff,Montecito Heights NW,B,2.2,0.18
+8829a1d545fffff,Newton Park NW,D,21.3,1.71
+8829a1d547fffff,Highland Park S,C,13.4,1.07
+8829a1d549fffff,Rose Hill,D,22.0,1.76
+8829a1d54bfffff,Montecito Heights W,D,11.6,0.93
+8829a1d54dfffff,Omaha Heights,D,23.2,1.86
+8829a1d551fffff,Mount Washington,B,17.1,1.37
+8829a1d553fffff,Glassell Park S,B,13.1,1.05
+8829a1d555fffff,Mount Washington NE,B,9.8,0.78
+8829a1d557fffff,Glassell Park SE,B,24.1,1.93
+8829a1d559fffff,Cypress Park,D,4.4,0.35
+8829a1d55bfffff,Mount Washington W,C,12.4,0.99
+8829a1d55dfffff,Mount Washington SE,C,13.5,1.08
+8829a1d561fffff,Newton Park NE 2,C,13.7,1.09
+8829a1d563fffff,Highland Park E 2,C,8.8,0.71
+8829a1d565fffff,Newton Park NE 3,B,1.8,0.14
+8829a1d567fffff,Highland Park E 3,B,15.3,1.22
+8829a1d569fffff,Newton Park,,15.1,1.21
+8829a1d56bfffff,Newton Park N,C,13.0,1.04
+8829a1d56dfffff,Newton Park NE,C,13.4,1.07
+8829a1d581fffff,Glendale City Center NE,B,14.5,1.16
+8829a1d583fffff,North Glendale NE,B,5.9,0.47
+8829a1d585fffff,Rancho San Rafael W 3,B,7.7,0.61
+8829a1d587fffff,Glendale City Center NE 2,A,15.6,1.25
+8829a1d589fffff,Glendale N,C,11.8,0.94
+8829a1d58bfffff,Glendale City Center,C,9.8,0.79
+8829a1d58dfffff,Glendale NE,C,7.5,0.6
+8829a1d591fffff,North Glendale NW,A,21.5,1.72
+8829a1d593fffff,North Glendale NW 3,A,9.3,0.74
+8829a1d595fffff,North Glendale N,A,18.1,1.45
+8829a1d597fffff,North Glendale N 2,A,14.1,1.13
+8829a1d599fffff,North Glendale W,B,20.8,1.67
+8829a1d59bfffff,North Glendale NW 2,C,7.1,0.57
+8829a1d59dfffff,North Glendale,C,12.5,1.0
+8829a1d5a1fffff,Rancho San Rafael NW,B,8.5,0.68
+8829a1d5a3fffff,Rancho San Rafael NW 2,B,9.9,0.8
+8829a1d5a5fffff,Emerald Isle SW,,16.0,1.28
+8829a1d5a7fffff,Emerald Isle W,,18.8,1.5
+8829a1d5a9fffff,Rancho San Rafael W,,9.9,0.79
+8829a1d5abfffff,Rancho San Rafael W 2,A,6.8,0.55
+8829a1d5adfffff,Rancho San Rafael,,2.8,0.22
+8829a1d5b1fffff,Sparr Heights SW 2,,32.6,2.61
+8829a1d5b3fffff,Sparr Heights W 3,,35.5,2.84
+8829a1d5b5fffff,Sparr Heights SW,B,24.3,1.95
+8829a1d5b7fffff,Sparr Heights W 2,,23.4,1.88
+8829a1d5b9fffff,North Glendale NE 2,,21.4,1.71
+8829a1d5bbfffff,North Glendale N 3,,28.3,2.26
+8829a1d5bdfffff,Rancho San Rafael NW 3,,18.3,1.46
+8829a1d5c1fffff,Adams Square NW,C,3.8,0.3
+8829a1d5c3fffff,Glendale SW,,0.3,0.03
+8829a1d5c5fffff,Adams Square NE,C,12.2,0.98
+8829a1d5c7fffff,Glendale,C,3.7,0.29
+8829a1d5c9fffff,Adams Square SW,C,15.0,1.2
+8829a1d5cbfffff,Adams Square W,C,7.7,0.62
+8829a1d5cdfffff,Adams Square,B,7.1,0.57
+8829a1d5d1fffff,West Glendale,C,15.9,1.27
+8829a1d5d3fffff,West Glendale NW,,20.9,1.67
+8829a1d5d5fffff,Glendale City Center SW,C,10.3,0.82
+8829a1d5d7fffff,North Glendale SW,C,6.0,0.48
+8829a1d5d9fffff,West Glendale S,,13.1,1.05
+8829a1d5dbfffff,West Glendale W,,25.5,2.04
+8829a1d5ddfffff,West Glendale SE,C,3.2,0.25
+8829a1d5e1fffff,Eagle Rock NW,A,16.4,1.31
+8829a1d5e3fffff,Rancho San Rafael SW,B,13.6,1.09
+8829a1d5e5fffff,Eagle Rock N,A,21.3,1.7
+8829a1d5e7fffff,Rancho San Rafael S,,15.6,1.25
+8829a1d5e9fffff,Eagle Rock W,C,10.5,0.84
+8829a1d5ebfffff,Glendale E,C,7.8,0.62
+8829a1d5edfffff,Eagle Rock,A,6.3,0.51
+8829a1d601fffff,Pico-Union SW,D,14.8,1.18
+8829a1d603fffff,Harvard Heights E,D,8.8,0.71
+8829a1d605fffff,Alvarado Terrace Historic District,D,12.5,1.0
+8829a1d607fffff,Pico-Union,C,13.8,1.1
+8829a1d609fffff,Adams-Normandie,C,14.7,1.17
+8829a1d60bfffff,Harvard Heights S,C,0.9,0.07
+8829a1d60dfffff,Saint James Park NW,D,10.5,0.84
+8829a1d611fffff,Country Club Park,B,19.5,1.56
+8829a1d613fffff,Country Club Park N,B,11.2,0.9
+8829a1d615fffff,Koreatown S,C,8.9,0.71
+8829a1d617fffff,Koreatown W,B,10.5,0.84
+8829a1d619fffff,Arlington Heights,C,14.9,1.19
+8829a1d61bfffff,Victoria Park NE,B,12.6,1.0
+8829a1d61dfffff,Harvard Heights,C,16.0,1.28
+8829a1d621fffff,Westlake S,D,7.9,0.63
+8829a1d623fffff,Westlake,C,12.6,1.01
+8829a1d625fffff,Bunker Hill,C,4.7,0.37
+8829a1d627fffff,Westlake E,C,13.9,1.11
+8829a1d629fffff,South Park NW,D,8.1,0.64
+8829a1d62bfffff,Alvarado Terrace Historic District N,D,3.1,0.25
+8829a1d62dfffff,Financial District,D,3.3,0.27
+8829a1d631fffff,Little Bangladesh,C,13.5,1.08
+8829a1d633fffff,Little Bangladesh NW,C,9.2,0.73
+8829a1d635fffff,Historic Filipinotown W,C,7.6,0.61
+8829a1d637fffff,Little Bangladesh NE,C,20.6,1.65
+8829a1d639fffff,Koreatown SE,C,8.1,0.65
+8829a1d63bfffff,Koreatown,C,2.7,0.22
+8829a1d63dfffff,Westlake W,C,5.0,0.4
+8829a1d641fffff,Exposition Park E,D,5.4,0.43
+8829a1d643fffff,Adams-Normandie S,D,8.5,0.68
+8829a1d645fffff,University Park S,D,1.7,0.14
+8829a1d647fffff,University Park,C,2.2,0.18
+8829a1d649fffff,Exposition Park SE,C,8.7,0.7
+8829a1d64bfffff,Exposition Park,C,9.7,0.78
+8829a1d64dfffff,Jefferson SW,C,6.9,0.55
+8829a1d651fffff,Jefferson Park E,D,7.5,0.6
+8829a1d653fffff,Jefferson Park N,C,10.5,0.84
+8829a1d655fffff,Adams-Normandie W,C,15.8,1.27
+8829a1d657fffff,Arlington Heights SE,C,16.5,1.32
+8829a1d659fffff,Jefferson Park S,C,8.1,0.65
+8829a1d65bfffff,Jefferson Park,C,13.0,1.04
+8829a1d65dfffff,Exposition Park NW,D,7.9,0.63
+8829a1d661fffff,South Park S,D,12.5,1.0
+8829a1d663fffff,Saint James Park NE,D,11.7,0.94
+8829a1d665fffff,Fashion District,,13.8,1.11
+8829a1d667fffff,South Park,,3.1,0.25
+8829a1d669fffff,Jefferson N,D,15.5,1.24
+8829a1d66bfffff,Saint James Park,C,4.3,0.34
+8829a1d66dfffff,Fashion District SW,D,0.4,0.03
+8829a1d681fffff,Fairfax NE,C,11.7,0.94
+8829a1d683fffff,Fairfax N 2,C,3.9,0.31
+8829a1d685fffff,Hollywood S,C,3.5,0.28
+8829a1d687fffff,Hollywood W,C,7.3,0.59
+8829a1d689fffff,Fairfax E,C,16.2,1.29
+8829a1d68bfffff,Fairfax N,C,11.2,0.9
+8829a1d68dfffff,Hancock Park N,B,18.1,1.45
+8829a1d691fffff,West Hollywood NE,C,13.5,1.08
+8829a1d693fffff,Hollywood Hills West S,B,17.2,1.38
+8829a1d695fffff,West Hollywood NE 2,B,16.1,1.29
+8829a1d697fffff,Hollywood Hills West SE,A,26.8,2.14
+8829a1d699fffff,West Hollywood,C,8.3,0.67
+8829a1d69bfffff,West Hollywood NW,A,3.9,0.31
+8829a1d69dfffff,West Hollywood E,C,4.5,0.36
+8829a1d6a1fffff,Hollywood E,C,2.4,0.19
+8829a1d6a3fffff,Whitley Heights Historic District E,B,10.6,0.85
+8829a1d6a5fffff,Thai Town,C,0.4,0.03
+8829a1d6a7fffff,Thai Town NW,A,7.2,0.58
+8829a1d6a9fffff,Hollywood SE,D,12.2,0.98
+8829a1d6abfffff,Hollywood,D,5.4,0.43
+8829a1d6adfffff,Little Armenia SW,C,11.8,0.95
+8829a1d6b1fffff,Whitley Heights Historic District W,A,8.3,0.67
+8829a1d6b3fffff,Hollywood Hills SW,,22.8,1.82
+8829a1d6b5fffff,Whitley Heights Historic District N,D,13.0,1.04
+8829a1d6b7fffff,Hollywood Hills SE,,21.0,1.68
+8829a1d6b9fffff,Whitley Heights Historic District SW,B,4.2,0.34
+8829a1d6bbfffff,Hollywood Hills S,B,14.8,1.18
+8829a1d6bdfffff,Whitley Heights Historic District,B,1.8,0.14
+8829a1d6c1fffff,Mid-Wilshire NE,B,9.7,0.77
+8829a1d6c3fffff,Park La Brea NE,B,7.5,0.6
+8829a1d6c5fffff,Hancock Park S,A,8.2,0.65
+8829a1d6c7fffff,Hancock Park,B,17.6,1.41
+8829a1d6c9fffff,Mid-Wilshire,B,19.1,1.52
+8829a1d6cbfffff,Miracle Mile,A,12.8,1.02
+8829a1d6cdfffff,Mid-Wilshire E,B,4.6,0.37
+8829a1d6d1fffff,Beverly Grove,C,8.6,0.69
+8829a1d6d3fffff,Beverly Grove NW,C,10.9,0.88
+8829a1d6d5fffff,Fairfax,C,7.8,0.62
+8829a1d6d7fffff,Beverly Grove NE,C,2.2,0.18
+8829a1d6d9fffff,Carthay,B,3.4,0.27
+8829a1d6dbfffff,Beverly Grove SW,C,7.6,0.61
+8829a1d6ddfffff,Park La Brea,C,10.5,0.84
+8829a1d6e1fffff,Larchmont,C,9.3,0.74
+8829a1d6e3fffff,Larchmont NW,C,14.6,1.17
+8829a1d6e5fffff,Wilton Historic District NE,C,9.1,0.73
+8829a1d6e7fffff,Larchmont NE,D,17.9,1.43
+8829a1d6e9fffff,Windsor Square,B,18.1,1.45
+8829a1d6ebfffff,Hancock Park E,B,23.2,1.85
+8829a1d6edfffff,Wilton Historic District,C,7.4,0.59
+8829a1d701fffff,Dogtown SE,D,5.3,0.43
+8829a1d703fffff,Dogtown,,11.3,0.9
+8829a1d705fffff,Lincoln Heights S,D,8.7,0.7
+8829a1d707fffff,Lincoln Heights SW,,11.9,0.95
+8829a1d709fffff,Arts District NE,D,14.7,1.17
+8829a1d70bfffff,Pueblo de Los Ángeles,,11.2,0.89
+8829a1d70dfffff,Boyle Heights NW,D,10.2,0.82
+8829a1d711fffff,New Chinatown NW,D,7.7,0.61
+8829a1d713fffff,Angeleno Heights,D,7.5,0.6
+8829a1d715fffff,Chinatown,,4.4,0.35
+8829a1d717fffff,Angeleno Heights NE,D,14.9,1.19
+8829a1d719fffff,Civic Center,D,7.0,0.56
+8829a1d71bfffff,Angeleno Heights S,D,4.9,0.39
+8829a1d71dfffff,New Chinatown,,4.9,0.4
+8829a1d721fffff,Lincoln Heights E 2,,5.8,0.46
+8829a1d723fffff,Lincoln Heights E,D,12.3,0.98
+8829a1d725fffff,Omaha Heights S,,11.8,0.94
+8829a1d727fffff,Omaha Heights SW,,20.1,1.61
+8829a1d729fffff,Lincoln Heights SE 2,D,7.3,0.59
+8829a1d72bfffff,Lincoln Heights SE,D,8.4,0.67
+8829a1d72dfffff,City Terrace N 2,D,15.9,1.28
+8829a1d731fffff,Dayton Avenue,,11.4,0.91
+8829a1d733fffff,Dayton Avenue NW,D,15.2,1.22
+8829a1d735fffff,Lincoln Heights N,D,10.4,0.84
+8829a1d737fffff,Dayton Avenue NE,D,18.8,1.5
+8829a1d739fffff,Dogtown NE,,0.7,0.06
+8829a1d73bfffff,Dayton Avenue SW,,15.0,1.2
+8829a1d73dfffff,Lincoln Heights,D,1.8,0.14
+8829a1d741fffff,Boyle Heights SW,D,12.2,0.98
+8829a1d743fffff,Arts District E,D,9.6,0.77
+8829a1d745fffff,Boyle Heights S,D,9.2,0.74
+8829a1d747fffff,Boyle Heights W,D,6.2,0.5
+8829a1d749fffff,Vernon N 2,D,19.8,1.58
+8829a1d74bfffff,Arts District S,,19.0,1.52
+8829a1d74dfffff,Boyle Heights S 3,D,11.4,0.91
+8829a1d751fffff,Skid Row,,1.2,0.1
+8829a1d753fffff,Historic Core,,5.4,0.43
+8829a1d755fffff,Arts District N,,9.0,0.72
+8829a1d757fffff,Los Angeles,,5.3,0.42
+8829a1d759fffff,Fashion District E,,12.2,0.97
+8829a1d75bfffff,Jewelry District,,3.4,0.27
+8829a1d75dfffff,Arts District,,6.6,0.53
+8829a1d761fffff,City Terrace W,D,9.7,0.77
+8829a1d763fffff,Boyle Heights NE,D,7.7,0.62
+8829a1d765fffff,City Terrace,D,14.3,1.15
+8829a1d767fffff,City Terrace NW,D,9.6,0.77
+8829a1d769fffff,Boyle Heights SE,D,9.7,0.78
+8829a1d76bfffff,Boyle Heights,D,8.0,0.64
+8829a1d76dfffff,City Terrace SW,D,13.2,1.05
+8829a56001fffff,Wilmington,D,17.6,1.41
+8829a56003fffff,Wilmington W,D,16.3,1.3
+8829a56005fffff,Wilmington E,,23.0,1.84
+8829a56007fffff,Wilmington N,D,8.7,0.7
+8829a56009fffff,Wilmington S,,9.8,0.79
+8829a5600bfffff,Wilmington SW,D,23.6,1.88
+8829a5600dfffff,Wilmington SE,,8.0,0.64
+8829a56011fffff,Harbor City E,,7.9,0.63
+8829a56013fffff,Harbor City NE,D,22.8,1.83
+8829a56015fffff,Wilmington NW,,10.6,0.85
+8829a56017fffff,Harbor City E 2,,18.3,1.47
+8829a56019fffff,Harbor Pines E,,16.6,1.33
+8829a5601bfffff,Harbor City S,D,22.4,1.79
+8829a5601dfffff,Wilmington W 2,,8.6,0.69
+8829a56021fffff,Wilmington NE 3,,25.7,2.06
+8829a56023fffff,Wilmington NE 2,,16.4,1.31
+8829a56025fffff,Wilmington E 5,,17.7,1.42
+8829a56027fffff,Wilmington NE 4,,28.7,2.29
+8829a56029fffff,Wilmington E 2,,28.3,2.26
+8829a5602bfffff,Wilmington NE,,13.0,1.04
+8829a5602dfffff,Wilmington E 4,,25.5,2.04
+8829a56031fffff,Avalon Village S,D,17.9,1.43
+8829a56033fffff,Avalon Village SW,,31.9,2.55
+8829a56035fffff,Avalon Village SE 2,,18.5,1.48
+8829a56037fffff,Avalon Village SE,,29.8,2.38
+8829a56039fffff,Wilmington N 2,D,7.4,0.59
+8829a5603bfffff,Avalon Village SW 3,D,22.4,1.79
+8829a5603dfffff,Wilmington N 3,D,3.1,0.25
+8829a56041fffff,Wilmington S 5,,24.4,1.95
+8829a56043fffff,Wilmington S 3,,19.3,1.54
+8829a56045fffff,Wilmington S 4,,23.3,1.86
+8829a56047fffff,Wilmington S 2,,9.2,0.74
+8829a56049fffff,San Pedro E 3,,28.6,2.29
+8829a5604bfffff,San Pedro NE 4,,27.7,2.22
+8829a5604dfffff,San Pedro E 6,,35.9,2.87
+8829a56051fffff,Harbor Pines SE 3,,38.2,3.06
+8829a56053fffff,Harbor Pines SE 2,,31.3,2.5
+8829a56055fffff,Wilmington SW 2,,24.9,1.99
+8829a56057fffff,Wilmington SW 3,,22.9,1.83
+8829a56059fffff,San Pedro N 3,,32.0,2.56
+8829a5605bfffff,Harbor Pines S 2,,46.4,3.71
+8829a5605dfffff,San Pedro NE 5,,33.9,2.71
+8829a56061fffff,Wilmington SE 4,,31.3,2.5
+8829a56063fffff,Wilmington SE 2,,22.8,1.82
+8829a56065fffff,Wilmington SE 6,,39.8,3.18
+8829a56067fffff,Wilmington E 3,,38.3,3.06
+8829a56069fffff,Wilmington SE 5,,31.3,2.51
+8829a5606bfffff,Wilmington SE 3,,17.0,1.36
+8829a5606dfffff,Wilmington SE 7,,43.7,3.5
+8829a56081fffff,Ironsides NW,,12.3,0.98
+8829a56083fffff,Ironsides NW 2,,4.4,0.35
+8829a56085fffff,West Carson W,,25.6,2.05
+8829a56087fffff,West Carson W 2,,17.0,1.36
+8829a56089fffff,Ironsides W,,7.6,0.61
+8829a5608bfffff,Lomita N,,7.8,0.63
+8829a5608dfffff,Ironsides,,21.2,1.69
+8829a56091fffff,Torrance SE,C,11.6,0.93
+8829a56093fffff,Torrance,,1.8,0.14
+8829a56095fffff,Torrance E,C,10.4,0.83
+8829a56097fffff,Torrance NE,,12.5,1.0
+8829a56099fffff,Torrance S,,12.3,0.99
+8829a5609bfffff,Torrance SW,,11.1,0.89
+8829a5609dfffff,Torrance SE 2,,4.2,0.33
+8829a560a1fffff,West Carson N,,18.7,1.49
+8829a560a3fffff,Dolanco Junction SE,,31.9,2.56
+8829a560a5fffff,Keystone NW,,6.8,0.54
+8829a560a7fffff,Dolanco Junction E 2,,21.9,1.76
+8829a560a9fffff,West Carson,,26.5,2.12
+8829a560abfffff,West Carson NW,,32.3,2.59
+8829a560adfffff,Keystone W,,12.1,0.97
+8829a560b1fffff,Harbor Gateway SW,,28.0,2.24
+8829a560b3fffff,Harbor Gateway W 2,,36.6,2.93
+8829a560b5fffff,Dolanco Junction,,39.8,3.18
+8829a560b7fffff,Harbor Gateway W,,43.6,3.49
+8829a560b9fffff,Dolanco Junction SW 2,D,12.7,1.02
+8829a560bbfffff,Torrance E 2,D,21.9,1.75
+8829a560bdfffff,Dolanco Junction SW,,26.6,2.12
+8829a560c1fffff,Lomita SE,D,10.8,0.86
+8829a560c3fffff,Lomita,D,1.8,0.14
+8829a560c5fffff,Harbor City N,,25.9,2.07
+8829a560c7fffff,Ironsides SW,,14.9,1.19
+8829a560c9fffff,Harbor Hills N,D,17.8,1.43
+8829a560cbfffff,Lomita S,D,7.3,0.58
+8829a560cdfffff,Harbor City,D,24.8,1.99
+8829a560d1fffff,Lomita W 2,,16.9,1.35
+8829a560d3fffff,Torrance S 2,,6.0,0.48
+8829a560d5fffff,Lomita NW,,12.5,1.0
+8829a560d7fffff,Lomita NW 2,,11.2,0.9
+8829a560d9fffff,Lomita W 3,,17.4,1.39
+8829a560dbfffff,Rolling Hills Estates NE 2,,9.3,0.75
+8829a560ddfffff,Lomita W,D,16.0,1.28
+8829a560e1fffff,West Carson S 2,,42.5,3.4
+8829a560e3fffff,West Carson S,,36.4,2.91
+8829a560e5fffff,Avalon Village W,,35.2,2.81
+8829a560e7fffff,West Carson SE,,27.1,2.17
+8829a560e9fffff,Harbor City NE 2,,32.1,2.57
+8829a560ebfffff,Ironsides SE,,30.5,2.44
+8829a560edfffff,Avalon Village SW 2,,33.1,2.65
+8829a56101fffff,Willowville S 2,C,14.3,1.14
+8829a56103fffff,Willowville SW,C,19.0,1.52
+8829a56105fffff,Willowville SE,D,10.2,0.82
+8829a56107fffff,Willowville S,D,5.2,0.41
+8829a56109fffff,Long Beach N,,9.9,0.79
+8829a5610bfffff,Willowville SW 3,C,23.4,1.87
+8829a5610dfffff,Long Beach NE 3,D,14.3,1.15
+8829a56111fffff,Willowville W 3,C,6.9,0.56
+8829a56113fffff,Lincoln Village S 2,,13.7,1.1
+8829a56115fffff,Willowville W 2,C,13.1,1.05
+8829a56117fffff,Vista del Mar SW,C,8.7,0.69
+8829a56119fffff,Willowville SW 4,,2.7,0.22
+8829a5611bfffff,Lincoln Village S 4,,16.1,1.29
+8829a5611dfffff,Willowville SW 2,,13.1,1.05
+8829a56121fffff,Signal Hill,D,10.9,0.87
+8829a56123fffff,Signal Hill NW,D,23.1,1.85
+8829a56125fffff,Signal Hill E,D,22.8,1.83
+8829a56127fffff,Signal Hill NE,D,26.5,2.12
+8829a56129fffff,Signal Hill S,D,3.7,0.29
+8829a5612bfffff,Signal Hill SW,D,13.4,1.07
+8829a5612dfffff,Signal Hill SE,D,13.2,1.05
+8829a56131fffff,Vista del Mar SE,D,20.0,1.6
+8829a56133fffff,Vista del Mar,D,17.1,1.37
+8829a56135fffff,California Heights S,D,15.2,1.22
+8829a56137fffff,Vista del Mar E,D,4.6,0.37
+8829a56139fffff,Willowville W,C,20.5,1.64
+8829a5613bfffff,Vista del Mar S,C,21.3,1.7
+8829a5613dfffff,Willowville,D,18.4,1.47
+8829a56141fffff,Long Beach,,6.2,0.5
+8829a56143fffff,Long Beach NW,D,7.3,0.59
+8829a56145fffff,Long Beach E,B,6.5,0.52
+8829a56147fffff,Long Beach NE,,6.8,0.55
+8829a56149fffff,Long Beach S,,18.0,1.44
+8829a5614bfffff,Long Beach SW,,4.8,0.38
+8829a5614dfffff,Long Beach SE,,21.3,1.7
+8829a56151fffff,Long Beach NW 3,,20.3,1.62
+8829a56153fffff,Long Beach NW 5,,11.3,0.9
+8829a56155fffff,Long Beach NW 2,,14.8,1.19
+8829a56157fffff,Long Beach NW 4,,9.6,0.77
+8829a56159fffff,Long Beach W 3,,24.1,1.93
+8829a5615bfffff,Long Beach W 5,,26.5,2.12
+8829a5615dfffff,Long Beach W,,8.6,0.69
+8829a56161fffff,Long Beach NE 4,C,12.9,1.03
+8829a56163fffff,Signal Hill S 3,D,5.2,0.42
+8829a56165fffff,Signal Hill S 4,C,1.3,0.11
+8829a56167fffff,Signal Hill S 2,D,15.3,1.23
+8829a56169fffff,Long Beach E 2,C,1.5,0.12
+8829a5616bfffff,Long Beach NE 2,C,10.4,0.83
+8829a5616dfffff,Long Beach E 4,C,11.0,0.88
+8829a56181fffff,Carson E,,30.9,2.47
+8829a56183fffff,Carson N,,25.4,2.03
+8829a56185fffff,Dominguez W,,46.5,3.72
+8829a56187fffff,Carson NE,,40.2,3.21
+8829a56189fffff,Carson SE,,27.9,2.24
+8829a5618bfffff,Carson,,15.4,1.23
+8829a5618dfffff,Lincoln Village W,,41.6,3.33
+8829a56191fffff,Carson NW 2,,23.7,1.89
+8829a56193fffff,Dolanco Junction E 4,,28.6,2.29
+8829a56195fffff,Carson N 2,,27.2,2.18
+8829a56197fffff,Carson N 4,,17.8,1.43
+8829a56199fffff,Keystone NE,,13.1,1.05
+8829a5619bfffff,Keystone N,,20.8,1.66
+8829a5619dfffff,Carson NW,,12.8,1.02
+8829a561a1fffff,Rancho Dominguez S,,33.9,2.71
+8829a561a3fffff,Rancho Dominguez SW,,48.4,3.87
+8829a561a5fffff,Rancho Dominguez SE 2,,23.6,1.89
+8829a561a7fffff,Rancho Dominguez SE,,38.9,3.11
+8829a561a9fffff,Dominguez,C,35.7,2.86
+8829a561abfffff,Dominguez NW,,47.3,3.78
+8829a561adfffff,Dominguez NE,,20.7,1.65
+8829a561b1fffff,Rancho Dominguez W 2,,24.0,1.92
+8829a561b3fffff,Rancho Dominguez W 3,,11.8,0.94
+8829a561b5fffff,Rancho Dominguez W,,37.9,3.03
+8829a561b7fffff,Rancho Dominguez NW 2,,27.4,2.19
+8829a561b9fffff,Carson N 3,,29.3,2.35
+8829a561bbfffff,Carson N 5,,14.2,1.14
+8829a561bdfffff,Rancho Dominguez SW 2,,38.3,3.07
+8829a561c1fffff,Avalon Village E 2,,40.5,3.24
+8829a561c3fffff,Carson S 2,,33.1,2.65
+8829a561c5fffff,Lincoln Village SW 3,,28.3,2.26
+8829a561c7fffff,Lincoln Village SW 2,,42.4,3.39
+8829a561c9fffff,Avalon Village SE 3,,29.2,2.34
+8829a561cbfffff,Avalon Village E,,34.1,2.73
+8829a561cdfffff,Lincoln Village S 3,,28.1,2.25
+8829a561d1fffff,Keystone SE,,18.5,1.48
+8829a561d3fffff,Keystone,,8.9,0.71
+8829a561d5fffff,Carson S,,17.8,1.42
+8829a561d7fffff,Carson W,,3.1,0.25
+8829a561d9fffff,Avalon Village,,33.9,2.72
+8829a561dbfffff,Keystone S,,20.4,1.63
+8829a561ddfffff,Avalon Village NE,,29.7,2.38
+8829a561e1fffff,Lincoln Village SE,C,34.6,2.77
+8829a561e3fffff,Lincoln Village,C,43.5,3.48
+8829a561e5fffff,Vista del Mar NW,,25.6,2.05
+8829a561e7fffff,Dominguez SE,,28.0,2.24
+8829a561e9fffff,Lincoln Village S,C,21.2,1.7
+8829a561ebfffff,Lincoln Village SW,,36.0,2.88
+8829a561edfffff,Vista del Mar W,C,24.3,1.94
+8829a56201fffff,San Pedro S 2,D,19.0,1.52
+8829a56203fffff,San Pedro S,D,21.0,1.68
+8829a56205fffff,San Pedro SE 3,,29.0,2.32
+8829a56207fffff,San Pedro SE,D,18.8,1.5
+8829a56209fffff,San Pedro S 4,D,4.1,0.33
+8829a5620bfffff,San Pedro S 3,B,19.2,1.54
+8829a5620dfffff,San Pedro S 5,,15.6,1.25
+8829a56211fffff,San Pedro SW 3,B,30.0,2.4
+8829a56213fffff,San Pedro W 3,,21.2,1.69
+8829a56215fffff,San Pedro SW,C,15.2,1.21
+8829a56217fffff,San Pedro W,B,22.1,1.77
+8829a56219fffff,San Pedro SW 4,,36.9,2.95
+8829a5621bfffff,San Pedro W 4,,21.7,1.73
+8829a5621dfffff,San Pedro SW 2,C,29.6,2.37
+8829a56221fffff,San Pedro E 4,,34.9,2.79
+8829a56223fffff,San Pedro E 2,,21.6,1.73
+8829a56225fffff,San Pedro E 7,,48.2,3.86
+8829a56227fffff,San Pedro E 5,,36.5,2.92
+8829a56229fffff,San Pedro SE 4,,38.7,3.09
+8829a5622bfffff,San Pedro SE 2,,23.4,1.87
+8829a5622dfffff,San Pedro SE 6,,49.2,3.93
+8829a56231fffff,San Pedro NE,D,6.1,0.49
+8829a56233fffff,San Pedro N,D,20.1,1.61
+8829a56235fffff,San Pedro NE 2,,13.5,1.08
+8829a56237fffff,San Pedro NE 3,D,19.2,1.54
+8829a56239fffff,San Pedro,D,7.1,0.57
+8829a5623bfffff,San Pedro NW,D,8.6,0.69
+8829a5623dfffff,San Pedro E,D,8.5,0.68
+8829a56243fffff,San Pedro S 8,,12.7,1.02
+8829a56247fffff,San Pedro S 7,,11.6,0.93
+8829a56251fffff,San Pedro SW 8,,32.1,2.57
+8829a56253fffff,San Pedro SW 6,,43.1,3.45
+8829a56255fffff,San Pedro S 6,,16.7,1.34
+8829a56257fffff,San Pedro SW 5,B,29.5,2.36
+8829a5625bfffff,San Pedro SW 10,,47.7,3.82
+8829a56261fffff,San Pedro SE 9,,39.3,3.15
+8829a56263fffff,San Pedro SE 5,,30.9,2.48
+8829a56265fffff,San Pedro SE 11,,54.7,4.37
+8829a56267fffff,San Pedro SE 7,,46.5,3.72
+8829a5626bfffff,San Pedro SE 8,,24.4,1.95
+8829a5626dfffff,San Pedro SE 12,,51.1,4.08
+8829a56281fffff,Rolling Hills SE,,14.1,1.13
+8829a56283fffff,Rolling Hills E,,29.5,2.36
+8829a56285fffff,Harbor Hills SW 2,,16.1,1.28
+8829a56287fffff,Rolling Hills E 2,,26.3,2.1
+8829a56289fffff,Rolling Hills SE 2,,14.1,1.13
+8829a5628bfffff,Rolling Hills S,,25.1,2.01
+8829a5628dfffff,Rolling Hills SE 3,,1.6,0.13
+8829a56291fffff,Rolling Hills NW,,15.8,1.27
+8829a56293fffff,Rolling Hills Estates SW,,8.9,0.71
+8829a56295fffff,Rolling Hills N,,31.5,2.52
+8829a56297fffff,Rolling Hills Estates S,,24.5,1.96
+8829a56299fffff,Rolling Hills W,,14.5,1.16
+8829a5629bfffff,Rolling Hills W 2,,0.4,0.03
+8829a5629dfffff,Rolling Hills,,26.7,2.14
+8829a562a1fffff,Harbor Hills S,,42.4,3.39
+8829a562a3fffff,Harbor Hills,,31.7,2.54
+8829a562a5fffff,Harbor Pines SE,,31.1,2.49
+8829a562a7fffff,Harbor Pines,D,32.5,2.6
+8829a562a9fffff,Harbor Hills S 2,,28.4,2.27
+8829a562abfffff,Harbor Hills SW,,31.6,2.53
+8829a562adfffff,Harbor Pines S,,42.9,3.43
+8829a562b1fffff,Rolling Hills Estates E 2,,25.3,2.03
+8829a562b3fffff,Rolling Hills Estates E,,10.4,0.83
+8829a562b5fffff,Harbor Hills NW,,22.5,1.8
+8829a562b7fffff,Lomita SW,,21.9,1.75
+8829a562b9fffff,Rolling Hills NE,,34.2,2.73
+8829a562bbfffff,Rolling Hills Estates SE,,20.0,1.6
+8829a562bdfffff,Harbor Hills W,,38.1,3.05
+8829a562c1fffff,Rolling Hills S 4,,9.5,0.76
+8829a562c3fffff,Rolling Hills S 3,,15.8,1.26
+8829a562c5fffff,San Pedro W 5,A,16.1,1.29
+8829a562c7fffff,Rolling Hills SE 4,,15.3,1.23
+8829a562c9fffff,Rancho Palos Verdes SE 6,,11.3,0.91
+8829a562cbfffff,Rancho Palos Verdes SE 3,,4.6,0.37
+8829a562cdfffff,San Pedro W 6,,6.6,0.53
+8829a562d1fffff,Rancho Palos Verdes E,,26.5,2.12
+8829a562d3fffff,Rancho Palos Verdes NE,,25.2,2.01
+8829a562d5fffff,Rolling Hills S 2,,24.3,1.94
+8829a562d7fffff,Rolling Hills SW,,29.8,2.39
+8829a562d9fffff,Rancho Palos Verdes SE,,22.2,1.78
+8829a562dbfffff,Rancho Palos Verdes,,36.1,2.89
+8829a562ddfffff,Rancho Palos Verdes E 2,,11.3,0.9
+8829a562e1fffff,San Pedro NW 3,,28.4,2.27
+8829a562e3fffff,Harbor Hills S 4,,17.2,1.38
+8829a562e5fffff,San Pedro N 2,,33.6,2.69
+8829a562e7fffff,Harbor Hills S 3,,32.8,2.63
+8829a562e9fffff,San Pedro W 2,,30.3,2.42
+8829a562ebfffff,San Pedro NW 4,A,16.6,1.33
+8829a562edfffff,San Pedro NW 2,D,23.8,1.9
+8829a56301fffff,Long Beach SW 10,,66.8,5.35
+8829a56303fffff,Long Beach SW 9,,60.4,4.83
+8829a56305fffff,Long Beach S 9,,60.7,4.85
+8829a56307fffff,Long Beach SW 7,,51.2,4.1
+8829a56309fffff,Long Beach SW 13,,82.5,6.6
+8829a5630bfffff,Long Beach SW 12,,75.8,6.06
+8829a5630dfffff,Long Beach S 13,,75.9,6.07
+8829a56311fffff,Wilmington SE 10,,53.6,4.29
+8829a56313fffff,Wilmington SE 8,,38.4,3.07
+8829a56315fffff,Long Beach SW 8,,57.4,4.59
+8829a56317fffff,Wilmington SE 9,,46.3,3.71
+8829a56319fffff,San Pedro E 10,,62.6,5.01
+8829a5631bfffff,San Pedro E 8,,49.5,3.96
+8829a5631dfffff,Long Beach SW 11,,68.9,5.51
+8829a56321fffff,Long Beach S 5,,44.6,3.57
+8829a56323fffff,Long Beach S 3,,31.5,2.52
+8829a56325fffff,Long Beach S 4,,40.1,3.21
+8829a56327fffff,Long Beach S 2,,31.3,2.5
+8829a56329fffff,Long Beach S 8,,58.2,4.65
+8829a5632bfffff,Long Beach S 6,,45.7,3.66
+8829a5632dfffff,Long Beach S 7,,55.6,4.44
+8829a56331fffff,Long Beach SW 3,,30.3,2.42
+8829a56333fffff,Long Beach W 4,,32.2,2.58
+8829a56335fffff,Long Beach SW 2,,20.1,1.6
+8829a56337fffff,Long Beach W 2,,16.9,1.35
+8829a56339fffff,Long Beach SW 5,,45.1,3.61
+8829a5633bfffff,Long Beach SW 6,,43.8,3.51
+8829a5633dfffff,Long Beach SW 4,,35.6,2.85
+8829a56341fffff,Long Beach S 26,,106.7,8.53
+8829a56343fffff,Long Beach SW 14,,98.1,7.85
+8829a56345fffff,Long Beach S 22,,101.6,8.13
+8829a56347fffff,Long Beach S 18,,91.2,7.3
+8829a5634bfffff,San Pedro SE 17,,95.4,7.63
+8829a5634dfffff,Long Beach S 28,,116.7,9.33
+8829a56351fffff,San Pedro E 11,,75.6,6.05
+8829a56353fffff,San Pedro E 9,,61.5,4.92
+8829a56355fffff,San Pedro E 13,,88.2,7.06
+8829a56357fffff,San Pedro E 12,,74.9,6.0
+8829a56359fffff,San Pedro SE 13,,70.1,5.61
+8829a5635bfffff,San Pedro SE 10,,62.1,4.97
+8829a5635dfffff,San Pedro SE 15,,85.7,6.85
+8829a56361fffff,Long Beach S 16,,84.9,6.79
+8829a56363fffff,Long Beach S 12,,72.2,5.77
+8829a56365fffff,Long Beach S 14,,78.6,6.29
+8829a56367fffff,Long Beach S 11,,71.1,5.69
+8829a56369fffff,Long Beach S 21,,98.8,7.9
+8829a5636bfffff,Long Beach S 17,,86.7,6.94
+8829a5636dfffff,Long Beach S 20,,94.2,7.53
+8829a56401fffff,Hermosa Beach W 4,,60.5,4.84
+8829a56403fffff,Hermosa Beach W 5,,67.3,5.38
+8829a56405fffff,Hermosa Beach SW 5,,46.1,3.69
+8829a56407fffff,Hermosa Beach W 3,,52.0,4.16
+8829a56409fffff,Hermosa Beach SW 8,,64.0,5.12
+8829a5640bfffff,Hermosa Beach W 6,,74.9,5.99
+8829a5640dfffff,Hermosa Beach SW 6,,48.8,3.9
+8829a56411fffff,Manhattan Beach SW 8,,83.5,6.68
+8829a56413fffff,Manhattan Beach W 14,,87.9,7.03
+8829a56415fffff,Manhattan Beach SW 6,,68.8,5.51
+8829a56417fffff,Manhattan Beach SW 7,,72.4,5.8
+8829a5641dfffff,Hermosa Beach W 7,,81.9,6.55
+8829a56421fffff,Hermosa Beach W,,22.1,1.77
+8829a56423fffff,Hermosa Beach NW 2,,26.8,2.15
+8829a56425fffff,Hermosa Beach,D,7.6,0.61
+8829a56427fffff,Hermosa Beach NW,D,11.2,0.9
+8829a56429fffff,Hermosa Beach SW 2,,30.9,2.47
+8829a5642bfffff,Hermosa Beach W 2,,36.9,2.95
+8829a5642dfffff,Hermosa Beach SW,,16.5,1.32
+8829a56431fffff,Manhattan Beach SW 3,,42.0,3.36
+8829a56433fffff,Manhattan Beach W 5,,47.7,3.81
+8829a56435fffff,Manhattan Beach SW,,27.5,2.2
+8829a56437fffff,Manhattan Beach W 3,,32.0,2.56
+8829a56439fffff,Manhattan Beach SW 4,,54.7,4.37
+8829a5643bfffff,Manhattan Beach SW 5,,57.1,4.57
+8829a5643dfffff,Manhattan Beach SW 2,,41.5,3.32
+8829a56441fffff,Redondo Beach W 7,,64.9,5.19
+8829a56443fffff,Hermosa Beach SW 9,,70.8,5.67
+8829a56445fffff,Redondo Beach W 6,,49.7,3.98
+8829a56447fffff,Hermosa Beach SW 7,,55.2,4.42
+8829a56449fffff,Palos Verdes Estates NW 10,,76.3,6.11
+8829a5644bfffff,Redondo Beach W 8,,80.2,6.41
+8829a5644dfffff,Redondo Beach SW 7,,60.7,4.86
+8829a56455fffff,Hermosa Beach SW 10,,79.4,6.35
+8829a5645dfffff,Hermosa Beach SW 11,,86.5,6.92
+8829a56461fffff,Redondo Beach W 3,,24.0,1.92
+8829a56463fffff,Hermosa Beach SW 4,,33.9,2.71
+8829a56465fffff,Redondo Beach W,,8.4,0.67
+8829a56467fffff,Hermosa Beach SW 3,,20.2,1.62
+8829a56469fffff,Redondo Beach W 4,,35.0,2.8
+8829a5646bfffff,Redondo Beach W 5,,39.6,3.17
+8829a5646dfffff,Redondo Beach W 2,,21.6,1.73
+8829a56481fffff,El Segundo W 14,,89.3,7.14
+8829a56483fffff,El Segundo W 15,,93.5,7.48
+8829a56485fffff,El Segundo W 12,,74.5,5.96
+8829a56487fffff,El Segundo W 13,,78.1,6.25
+8829a5648dfffff,Manhattan Beach W 15,,87.5,7.0
+8829a56495fffff,Playa del Rey SW 20,,100.0,8.0
+8829a56497fffff,Playa del Rey SW 21,,108.3,8.66
+8829a564a1fffff,El Segundo W 7,,47.7,3.82
+8829a564a3fffff,El Segundo W 8,,53.1,4.25
+8829a564a5fffff,El Segundo W 5,,33.1,2.65
+8829a564a7fffff,El Segundo W 6,,37.5,3.0
+8829a564a9fffff,El Segundo W 9,,60.3,4.82
+8829a564abfffff,El Segundo W 10,,62.8,5.03
+8829a564adfffff,El Segundo SW 4,,46.9,3.75
+8829a564b1fffff,Playa del Rey SW 14,,77.3,6.19
+8829a564b3fffff,Playa del Rey SW 15,,87.7,7.02
+8829a564b5fffff,Playa del Rey SW 11,,62.0,4.96
+8829a564b7fffff,Playa del Rey SW 12,,72.9,5.84
+8829a564b9fffff,Playa del Rey SW 17,,84.4,6.75
+8829a564bbfffff,Playa del Rey SW 18,,92.8,7.42
+8829a564bdfffff,El Segundo W 11,,68.8,5.5
+8829a564e1fffff,Manhattan Beach W 10,,72.2,5.78
+8829a564e3fffff,Manhattan Beach W 12,,74.0,5.92
+8829a564e5fffff,Manhattan Beach W 7,,57.0,4.56
+8829a564e7fffff,Manhattan Beach W 9,,61.6,4.93
+8829a564e9fffff,Manhattan Beach W 11,,78.9,6.31
+8829a564ebfffff,Manhattan Beach W 13,,87.6,7.01
+8829a564edfffff,Manhattan Beach W 8,,63.3,5.06
+8829a56501fffff,El Nido,,8.1,0.64
+8829a56503fffff,El Nido NW,D,4.0,0.32
+8829a56505fffff,El Nido E,,7.6,0.61
+8829a56507fffff,El Nido N,D,3.1,0.24
+8829a56509fffff,El Nido SW,,21.2,1.7
+8829a5650bfffff,El Nido W,,10.3,0.83
+8829a5650dfffff,El Nido SE,,13.8,1.1
+8829a56511fffff,Hill Section SE,,15.2,1.22
+8829a56513fffff,Hill Section E,,4.6,0.37
+8829a56515fffff,East Manhattan Beach SE 2,D,10.6,0.85
+8829a56517fffff,East Manhattan Beach SE,,4.2,0.34
+8829a56519fffff,Hermosa Beach NE,D,7.4,0.59
+8829a5651bfffff,Hill Section S,D,3.5,0.28
+8829a5651dfffff,El Nido W 2,D,6.0,0.48
+8829a56521fffff,La Fresa N,,6.3,0.51
+8829a56523fffff,Lawndale SE,D,15.3,1.23
+8829a56525fffff,Bridgedale,,11.7,0.93
+8829a56527fffff,Alondra Park,,9.7,0.78
+8829a56529fffff,La Fresa SW,,9.0,0.72
+8829a5652bfffff,La Fresa W,D,17.8,1.43
+8829a5652dfffff,La Fresa,,6.5,0.52
+8829a56531fffff,Lawndale SW,D,14.8,1.19
+8829a56533fffff,Lawndale W,,13.3,1.06
+8829a56535fffff,Lawndale,D,13.6,1.09
+8829a56537fffff,Lawndale NW,D,7.8,0.62
+8829a56539fffff,El Nido N 2,D,7.5,0.6
+8829a5653bfffff,East Manhattan Beach E 2,D,7.1,0.57
+8829a5653dfffff,Lawndale S,D,18.6,1.49
+8829a56541fffff,Torrance W 2,,4.7,0.38
+8829a56543fffff,Redondo Beach NE 2,,14.3,1.15
+8829a56545fffff,Torrance NW,,11.4,0.91
+8829a56547fffff,El Nido S,,18.0,1.44
+8829a56549fffff,Redondo Beach E 2,,10.2,0.82
+8829a5654bfffff,Redondo Beach E,,11.0,0.88
+8829a5654dfffff,Torrance W,,2.6,0.21
+8829a56551fffff,Redondo Beach N,D,10.7,0.85
+8829a56553fffff,Hermosa Beach SE,D,7.9,0.63
+8829a56555fffff,El Nido SW 2,,6.1,0.49
+8829a56557fffff,Hermosa Beach E,,11.8,0.95
+8829a56559fffff,Redondo Beach NW,D,2.6,0.21
+8829a5655bfffff,Hermosa Beach S,D,12.6,1.01
+8829a5655dfffff,Redondo Beach NE,D,10.7,0.86
+8829a56561fffff,La Fresa S 2,,14.7,1.18
+8829a56563fffff,La Fresa SW 2,,19.3,1.54
+8829a56565fffff,La Fresa SE 2,,29.9,2.39
+8829a56567fffff,La Fresa S,,16.3,1.3
+8829a56569fffff,Torrance N,,10.3,0.82
+8829a5656bfffff,El Nido SE 2,,5.2,0.41
+8829a5656dfffff,Torrance NE 2,,23.0,1.84
+8829a56581fffff,El Segundo SE,,16.2,1.3
+8829a56583fffff,El Segundo,,9.7,0.78
+8829a56585fffff,El Segundo E 2,,20.6,1.64
+8829a56587fffff,El Segundo E,,5.9,0.47
+8829a56589fffff,Tree Section NW,C,27.6,2.21
+8829a5658bfffff,El Segundo SW,,23.7,1.9
+8829a5658dfffff,Tree Section N,,29.8,2.39
+8829a56591fffff,El Segundo W 2,,6.3,0.5
+8829a56593fffff,El Segundo NW 3,,18.7,1.5
+8829a56595fffff,El Segundo NW,C,9.4,0.75
+8829a56597fffff,El Segundo NW 2,,12.8,1.02
+8829a56599fffff,El Segundo W 3,,20.1,1.61
+8829a5659bfffff,El Segundo W 4,,21.9,1.75
+8829a5659dfffff,El Segundo W,,14.1,1.13
+8829a565a1fffff,Lair Port W,,31.0,2.48
+8829a565a3fffff,Lair Port NW 2,,30.8,2.46
+8829a565a5fffff,Lair Port,,27.3,2.19
+8829a565a7fffff,Lair Port NW,,30.9,2.47
+8829a565a9fffff,Lair Port SW,,22.6,1.81
+8829a565abfffff,El Segundo E 3,,21.0,1.68
+8829a565adfffff,Lair Port S,,15.7,1.25
+8829a565b1fffff,El Segundo N 3,,18.5,1.48
+8829a565b3fffff,Playa del Rey SE 3,,28.5,2.28
+8829a565b5fffff,El Segundo NE 2,,30.4,2.44
+8829a565b7fffff,Westchester S 2,,30.0,2.4
+8829a565b9fffff,El Segundo N,C,3.2,0.26
+8829a565bbfffff,El Segundo N 2,C,14.9,1.19
+8829a565bdfffff,El Segundo NE,,17.0,1.36
+8829a565c1fffff,Manhattan Beach,C,1.2,0.1
+8829a565c3fffff,Manhattan Beach NW,C,16.5,1.32
+8829a565c5fffff,Hill Section N,C,9.0,0.72
+8829a565c7fffff,Tree Section,C,16.1,1.29
+8829a565c9fffff,Manhattan Beach S,,15.2,1.22
+8829a565cbfffff,Manhattan Beach W,,16.4,1.31
+8829a565cdfffff,Hill Section,C,14.1,1.13
+8829a565d1fffff,Manhattan Beach NW 3,,41.9,3.35
+8829a565d3fffff,El Segundo SW 3,,35.4,2.83
+8829a565d5fffff,Manhattan Beach NW 2,,31.8,2.55
+8829a565d7fffff,El Segundo SW 2,,28.2,2.26
+8829a565d9fffff,Manhattan Beach W 4,,42.1,3.36
+8829a565dbfffff,Manhattan Beach W 6,,50.9,4.07
+8829a565ddfffff,Manhattan Beach W 2,,27.9,2.23
+8829a565e1fffff,Manhattan Village,,9.1,0.73
+8829a565e3fffff,Manhattan Village NW,,17.8,1.42
+8829a565e5fffff,Manhattan Village E,,4.8,0.38
+8829a565e7fffff,Manhattan Village N,,7.9,0.63
+8829a565e9fffff,East Manhattan Beach,,10.5,0.84
+8829a565ebfffff,Tree Section NE,,19.6,1.57
+8829a565edfffff,East Manhattan Beach E,,7.2,0.58
+8829a56601fffff,Palos Verdes Estates W 14,,101.3,8.1
+8829a56603fffff,Palos Verdes Estates W 18,,111.1,8.89
+8829a56605fffff,Palos Verdes Estates W 9,,85.8,6.86
+8829a56607fffff,Palos Verdes Estates W 13,,96.0,7.68
+8829a56609fffff,Palos Verdes Estates W 15,,108.5,8.68
+8829a5660bfffff,Palos Verdes Estates W 19,,116.8,9.34
+8829a5660dfffff,Palos Verdes Estates W 11,,92.9,7.43
+8829a56611fffff,Palos Verdes Estates W 29,,137.0,10.96
+8829a56615fffff,Palos Verdes Estates W 22,,122.1,9.77
+8829a56617fffff,Palos Verdes Estates W 28,,133.9,10.71
+8829a56619fffff,Palos Verdes Estates W 30,,141.7,11.33
+8829a5661dfffff,Palos Verdes Estates W 23,,126.3,10.11
+8829a56621fffff,Palos Verdes Estates NW 5,,66.5,5.32
+8829a56623fffff,Palos Verdes Estates NW 9,,79.2,6.34
+8829a56625fffff,Palos Verdes Estates NW 4,,52.5,4.2
+8829a56627fffff,Palos Verdes Estates NW 7,,66.1,5.29
+8829a56629fffff,Palos Verdes Estates W 6,,70.4,5.63
+8829a5662bfffff,Palos Verdes Estates NW 8,,81.1,6.49
+8829a5662dfffff,Palos Verdes Estates NW 3,,55.1,4.41
+8829a56631fffff,Palos Verdes Estates NW 14,,105.9,8.47
+8829a56633fffff,Palos Verdes Estates NW 17,,111.1,8.89
+8829a56635fffff,Palos Verdes Estates NW 12,,91.3,7.3
+8829a56637fffff,Palos Verdes Estates NW 15,,95.6,7.65
+8829a56639fffff,Palos Verdes Estates NW 13,,107.4,8.59
+8829a5663bfffff,Palos Verdes Estates NW 16,,119.7,9.58
+8829a5663dfffff,Palos Verdes Estates NW 11,,93.1,7.45
+8829a56641fffff,Palos Verdes Estates W 16,,112.4,9.0
+8829a56643fffff,Palos Verdes Estates W 17,,117.5,9.4
+8829a56645fffff,Palos Verdes Estates W 10,,97.4,7.79
+8829a56647fffff,Palos Verdes Estates W 12,,102.0,8.16
+8829a56649fffff,Palos Verdes Estates SW 17,,124.0,9.92
+8829a5664bfffff,Palos Verdes Estates W 21,,127.7,10.21
+8829a5664dfffff,Palos Verdes Estates SW 13,,109.4,8.75
+8829a56651fffff,Palos Verdes Estates W 26,,139.8,11.18
+8829a56653fffff,Palos Verdes Estates W 32,,147.9,11.83
+8829a56655fffff,Palos Verdes Estates W 20,,124.2,9.93
+8829a56657fffff,Palos Verdes Estates W 25,,132.3,10.59
+8829a56659fffff,Palos Verdes Estates W 31,,148.5,11.88
+8829a5665bfffff,Palos Verdes Estates W 33,,155.4,12.43
+8829a5665dfffff,Palos Verdes Estates W 24,,133.0,10.64
+8829a56661fffff,Palos Verdes Estates W 5,,71.1,5.69
+8829a56663fffff,Palos Verdes Estates W 7,,77.3,6.18
+8829a56665fffff,Palos Verdes Estates W 3,A,55.9,4.47
+8829a56667fffff,Palos Verdes Estates W 4,,61.7,4.93
+8829a56669fffff,Palos Verdes Estates SW 7,,82.5,6.6
+8829a5666bfffff,Palos Verdes Estates W 8,,86.5,6.92
+8829a5666dfffff,Palos Verdes Estates SW 4,A,67.9,5.43
+8829a56701fffff,Palos Verdes Estates NE 2,A,15.7,1.26
+8829a56703fffff,Palos Verdes Estates N 6,A,20.1,1.61
+8829a56705fffff,Rolling Hills Estates NW 4,A,13.2,1.06
+8829a56707fffff,Redondo Beach S 4,A,4.5,0.36
+8829a56709fffff,Palos Verdes Estates NE,A,1.0,0.08
+8829a5670bfffff,Palos Verdes Estates N 3,A,14.5,1.16
+8829a5670dfffff,Rolling Hills Estates NW 3,A,16.5,1.32
+8829a56711fffff,Redondo Beach SW 5,,38.9,3.11
+8829a56713fffff,Redondo Beach SW 6,,45.1,3.61
+8829a56715fffff,Redondo Beach SW 4,,24.2,1.93
+8829a56717fffff,Redondo Beach SW 3,,29.5,2.36
+8829a56719fffff,Palos Verdes Estates N 4,,39.7,3.18
+8829a5671bfffff,Palos Verdes Estates NW 6,,54.1,4.33
+8829a5671dfffff,Palos Verdes Estates N 5,,29.8,2.39
+8829a56721fffff,Torrance SW 4,,21.5,1.72
+8829a56723fffff,Redondo Beach SE 2,,23.4,1.87
+8829a56725fffff,Torrance SW 3,,13.8,1.1
+8829a56727fffff,Torrance SW 2,,10.2,0.82
+8829a56729fffff,Rolling Hills Estates N 3,,13.6,1.09
+8829a5672bfffff,Redondo Beach SE 3,,11.2,0.9
+8829a5672dfffff,Rolling Hills Estates N 4,,9.1,0.73
+8829a56731fffff,Redondo Beach S,C,3.5,0.28
+8829a56733fffff,Redondo Beach SW,,6.2,0.49
+8829a56735fffff,Redondo Beach SE,D,17.8,1.42
+8829a56737fffff,Redondo Beach,D,9.7,0.78
+8829a56739fffff,Redondo Beach S 3,C,12.1,0.97
+8829a5673bfffff,Redondo Beach SW 2,,14.1,1.13
+8829a5673dfffff,Redondo Beach S 2,,14.0,1.12
+8829a56741fffff,Palos Verdes Estates E 2,A,19.4,1.55
+8829a56743fffff,Palos Verdes Estates E,A,15.6,1.25
+8829a56745fffff,Rolling Hills Estates W 2,,13.2,1.05
+8829a56747fffff,Palos Verdes Estates E 3,A,16.2,1.29
+8829a56749fffff,Palos Verdes Estates SE 2,,22.4,1.79
+8829a5674bfffff,Palos Verdes Estates SE,A,31.2,2.5
+8829a5674dfffff,Rolling Hills Estates SW 2,,6.8,0.54
+8829a56751fffff,Palos Verdes Estates NW,A,30.4,2.43
+8829a56753fffff,Palos Verdes Estates NW 2,,40.1,3.2
+8829a56755fffff,Palos Verdes Estates N,A,14.8,1.18
+8829a56757fffff,Palos Verdes Estates N 2,,25.8,2.06
+8829a56759fffff,Palos Verdes Estates W,A,40.9,3.27
+8829a5675bfffff,Palos Verdes Estates W 2,,46.0,3.68
+8829a5675dfffff,Palos Verdes Estates,A,26.7,2.14
+8829a56761fffff,Rolling Hills Estates N,A,16.6,1.33
+8829a56763fffff,Rolling Hills Estates NW 2,A,19.2,1.54
+8829a56765fffff,Rolling Hills Estates NE,,6.7,0.54
+8829a56767fffff,Rolling Hills Estates N 2,,5.6,0.45
+8829a56769fffff,Rolling Hills Estates W,,21.4,1.71
+8829a5676bfffff,Rolling Hills Estates NW,A,27.7,2.22
+8829a5676dfffff,Rolling Hills Estates,,10.1,0.81
+8829a56883fffff,Hollydale E,,25.4,2.03
+8829a5688bfffff,Hollydale SE,,25.8,2.06
+8829a56891fffff,Hollydale NW,,2.0,0.16
+8829a56893fffff,Hollydale NW 2,,17.3,1.38
+8829a56895fffff,Hollydale NE,,15.3,1.22
+8829a56897fffff,Hollydale N,,17.1,1.37
+8829a56899fffff,Hollydale SW,,14.2,1.14
+8829a5689bfffff,Hollydale W,,16.2,1.3
+8829a5689dfffff,Hollydale,,13.4,1.07
+8829a568b3fffff,Hollydale N 4,,42.5,3.4
+8829a568bbfffff,Hollydale N 2,,27.9,2.23
+8829a568c3fffff,Paramount SE 2,C,1.8,0.15
+8829a568cbfffff,Paramount SE 3,C,10.5,0.84
+8829a568d1fffff,Paramount,C,14.8,1.18
+8829a568d3fffff,Paramount NW,,22.0,1.76
+8829a568d5fffff,Paramount E,C,15.4,1.23
+8829a568d7fffff,Paramount NE,,24.7,1.98
+8829a568d9fffff,Paramount S,,6.8,0.54
+8829a568dbfffff,Paramount SW,,8.7,0.7
+8829a568ddfffff,Paramount SE,C,6.2,0.49
+8829a56a13fffff,Signal Hill NE 3,,50.9,4.07
+8829a56a1bfffff,Signal Hill NE 2,,36.9,2.95
+8829a56a5bfffff,Signal Hill SE 2,D,14.5,1.16
+8829a56a81fffff,Bixby Knolls NE 3,,20.5,1.64
+8829a56a83fffff,North Long Beach SE,C,5.1,0.41
+8829a56a85fffff,Bixby Knolls NE 4,,31.4,2.51
+8829a56a87fffff,North Long Beach E 2,,18.9,1.51
+8829a56a89fffff,Bixby Knolls NE,,28.1,2.25
+8829a56a8bfffff,Bixby Knolls N,,18.5,1.48
+8829a56a8dfffff,Bixby Knolls NE 2,,35.8,2.86
+8829a56a91fffff,North Long Beach W,C,11.8,0.94
+8829a56a93fffff,North Long Beach NW,C,23.7,1.9
+8829a56a95fffff,North Long Beach,C,3.9,0.31
+8829a56a97fffff,North Long Beach N,,14.3,1.14
+8829a56a99fffff,North Long Beach SW,C,21.2,1.7
+8829a56a9bfffff,Rancho Dominguez E,,27.4,2.19
+8829a56a9dfffff,North Long Beach S,C,13.6,1.09
+8829a56aa3fffff,North Long Beach E 5,,12.5,1.0
+8829a56aabfffff,North Long Beach E 4,,26.0,2.08
+8829a56ab1fffff,North Long Beach NE 2,C,20.1,1.61
+8829a56ab3fffff,North Long Beach NE 3,C,19.0,1.52
+8829a56ab5fffff,Paramount SE 4,C,4.6,0.37
+8829a56ab7fffff,Paramount S 2,C,10.7,0.86
+8829a56ab9fffff,North Long Beach E,C,14.1,1.13
+8829a56abbfffff,North Long Beach NE,C,18.3,1.46
+8829a56abdfffff,North Long Beach E 3,,17.5,1.4
+8829a56ac1fffff,California Heights E,B,25.5,2.04
+8829a56ac3fffff,Bixby Knolls,,19.8,1.59
+8829a56ac5fffff,California Heights E 2,,41.1,3.29
+8829a56ac7fffff,Bixby Knolls E,,35.1,2.81
+8829a56ac9fffff,California Heights SE,D,23.0,1.84
+8829a56acbfffff,California Heights,C,10.0,0.8
+8829a56acdfffff,California Heights SE 2,,36.3,2.9
+8829a56ad1fffff,Bixby Knolls W,,7.1,0.57
+8829a56ad3fffff,Dominguez NE 2,C,8.3,0.66
+8829a56ad5fffff,Bixby Knolls NW,,13.7,1.1
+8829a56ad7fffff,Bixby Knolls NW 2,C,14.1,1.13
+8829a56ad9fffff,Vista del Mar N,B,12.2,0.98
+8829a56adbfffff,Dominguez E,,13.2,1.05
+8829a56addfffff,California Heights NW,A,6.7,0.53
+8829a56ae3fffff,Bixby Knolls E 3,A,45.6,3.65
+8829a56aebfffff,Bixby Knolls E 2,,50.5,4.04
+8829a56c01fffff,Green Meadows,C,27.3,2.18
+8829a56c03fffff,Broadway-Manchester,C,14.8,1.18
+8829a56c05fffff,Green Meadows E,C,12.2,0.98
+8829a56c07fffff,Green Meadows N,C,20.6,1.65
+8829a56c09fffff,Broadway-Manchester S,C,14.9,1.19
+8829a56c0bfffff,Broadway-Manchester SW,C,22.4,1.79
+8829a56c0dfffff,Green Meadows S,C,19.1,1.53
+8829a56c11fffff,Vermont Vista NW,C,12.1,0.97
+8829a56c13fffff,Gramercy Park NE,C,26.0,2.08
+8829a56c15fffff,Vermont Vista NE,C,6.3,0.51
+8829a56c17fffff,Vermont Knolls S,C,18.2,1.46
+8829a56c19fffff,Westmont E,C,8.5,0.68
+8829a56c1bfffff,Westmont N,C,13.6,1.09
+8829a56c1dfffff,Vermont Vista,C,9.5,0.76
+8829a56c21fffff,Watts N,D,8.5,0.68
+8829a56c23fffff,Florence-Firestone SW,D,16.9,1.35
+8829a56c25fffff,Firestone Park S,D,14.9,1.19
+8829a56c27fffff,Firestone Park SW,D,1.6,0.13
+8829a56c29fffff,Watts,D,2.5,0.2
+8829a56c2bfffff,Green Meadows NE,D,9.1,0.73
+8829a56c2dfffff,Watts NE,D,8.3,0.66
+8829a56c31fffff,Florence S,C,16.3,1.3
+8829a56c33fffff,Florence SW,C,11.0,0.88
+8829a56c35fffff,Florence-Firestone W,C,13.8,1.1
+8829a56c37fffff,Florence SE,C,2.0,0.16
+8829a56c39fffff,Broadway-Manchester N,C,20.5,1.64
+8829a56c3bfffff,Vermont Knolls SE,C,21.8,1.75
+8829a56c3dfffff,Green Meadows N 2,C,24.3,1.94
+8829a56c41fffff,Athens SE,,9.3,0.75
+8829a56c43fffff,Athens E,C,11.4,0.91
+8829a56c45fffff,Willowbrook W,,7.6,0.61
+8829a56c47fffff,Athens E 2,C,4.4,0.35
+8829a56c49fffff,Athens SE 2,,23.7,1.89
+8829a56c4bfffff,Athens S,,23.0,1.84
+8829a56c4dfffff,Willowbrook SW 2,,16.7,1.33
+8829a56c51fffff,West Athens E,,27.6,2.21
+8829a56c53fffff,West Athens N,C,13.1,1.05
+8829a56c55fffff,Athens N,C,23.8,1.91
+8829a56c57fffff,Vermont Vista S,B,20.7,1.65
+8829a56c59fffff,West Athens SE,,24.4,1.95
+8829a56c5bfffff,West Athens,,27.5,2.2
+8829a56c5dfffff,Athens,,27.0,2.16
+8829a56c61fffff,Willowbrook N,D,7.4,0.59
+8829a56c63fffff,Watts SW,D,17.5,1.4
+8829a56c65fffff,Willowbrook NE,D,12.5,1.0
+8829a56c67fffff,Watts SE,,17.1,1.37
+8829a56c69fffff,Willowbrook,,14.8,1.18
+8829a56c6bfffff,Willowbrook NW,D,18.1,1.44
+8829a56c6dfffff,Willowbrook E,,6.8,0.55
+8829a56c81fffff,Chesterfield Square,C,15.6,1.25
+8829a56c83fffff,Van Ness,C,8.9,0.71
+8829a56c85fffff,Harvard Park,C,20.9,1.68
+8829a56c87fffff,Chesterfield Square N,C,15.8,1.26
+8829a56c89fffff,Van Ness S,C,1.6,0.13
+8829a56c8bfffff,Hyde Park SE,C,16.7,1.34
+8829a56c8dfffff,Chesterfield Square SE,C,14.3,1.14
+8829a56c91fffff,View Park-Windsor Hills SW,B,3.2,0.25
+8829a56c93fffff,View Park-Windsor Hills W,,16.1,1.29
+8829a56c95fffff,View Park-Windsor Hills SE,B,11.0,0.88
+8829a56c97fffff,View Park-Windsor Hills,A,18.6,1.49
+8829a56c99fffff,Windsor Hills E,C,12.7,1.01
+8829a56c9bfffff,Windsor Hills NE,A,13.3,1.07
+8829a56c9dfffff,Hyde Park,C,15.1,1.21
+8829a56ca1fffff,Wildasin NE,C,9.1,0.73
+8829a56ca3fffff,Vermont Square,C,6.2,0.5
+8829a56ca5fffff,South Park W,C,12.7,1.01
+8829a56ca7fffff,Vermont Square E,C,13.0,1.04
+8829a56ca9fffff,Wildasin,C,11.3,0.9
+8829a56cabfffff,Wildasin NW,C,14.2,1.14
+8829a56cadfffff,Vermont-Slauson NE,C,17.5,1.4
+8829a56cb1fffff,Leimert Park E,C,7.8,0.63
+8829a56cb3fffff,Leimert Park NE,A,16.5,1.32
+8829a56cb5fffff,Vermont Square NW,C,10.6,0.85
+8829a56cb7fffff,Exposition Park W,C,6.9,0.55
+8829a56cb9fffff,Leimert Park Village SE,C,7.4,0.6
+8829a56cbbfffff,Leimert Park Village,B,9.0,0.72
+8829a56cbdfffff,Vermont Square W,C,17.9,1.43
+8829a56cc1fffff,Manchester Square S,B,18.1,1.45
+8829a56cc3fffff,Morningside Park NE,A,13.2,1.06
+8829a56cc5fffff,Manchester Square SE,B,29.3,2.34
+8829a56cc7fffff,Manchester Square,B,14.0,1.12
+8829a56cc9fffff,Gramercy Park W,B,20.3,1.63
+8829a56ccbfffff,Morningside Park,B,5.0,0.4
+8829a56ccdfffff,Gramercy Park,B,27.7,2.22
+8829a56cd1fffff,Morningside Park NW 2,,23.2,1.86
+8829a56cd3fffff,Windsor Hills SE,C,20.4,1.63
+8829a56cd5fffff,Hyde Park S,B,17.0,1.36
+8829a56cd7fffff,Hyde Park SW,C,24.8,1.98
+8829a56cd9fffff,Inglewood NE,C,15.4,1.23
+8829a56cdbfffff,Inglewood N,D,7.6,0.61
+8829a56cddfffff,Morningside Park NW,,10.3,0.83
+8829a56ce1fffff,Vermont Knolls N,C,15.8,1.26
+8829a56ce3fffff,Harvard Park SE,C,10.5,0.84
+8829a56ce5fffff,Florence W,C,9.6,0.77
+8829a56ce7fffff,Vermont-Slauson,C,5.8,0.47
+8829a56ce9fffff,Vermont Knolls,C,30.8,2.47
+8829a56cebfffff,Vermont Knolls NW,B,24.0,1.92
+8829a56cedfffff,Vermont Knolls E,C,20.5,1.64
+8829a56d01fffff,South Gate NE,,18.7,1.5
+8829a56d03fffff,South Gate N,C,19.5,1.56
+8829a56d05fffff,Cudahy S,,15.6,1.24
+8829a56d07fffff,Cudahy W,,24.1,1.93
+8829a56d09fffff,South Gate,C,6.0,0.48
+8829a56d0bfffff,South Gate NW,B,12.5,1.0
+8829a56d0dfffff,South Gate E,,4.1,0.32
+8829a56d11fffff,Walnut Park SE,C,17.8,1.42
+8829a56d13fffff,Walnut Park,C,20.9,1.68
+8829a56d15fffff,Walnut Park E 2,B,20.8,1.66
+8829a56d17fffff,Walnut Park E,C,15.6,1.24
+8829a56d19fffff,Firestone Park SE,B,12.8,1.03
+8829a56d1bfffff,Firestone Park,C,14.1,1.13
+8829a56d1dfffff,South Gate NW 2,B,5.2,0.42
+8829a56d21fffff,Cudahy E,,12.0,0.96
+8829a56d23fffff,Bell SE,B,20.8,1.66
+8829a56d25fffff,Bell Gardens W,,13.6,1.09
+8829a56d27fffff,Walker SE,,26.8,2.14
+8829a56d29fffff,Cudahy SE,,5.1,0.41
+8829a56d2bfffff,Cudahy,,10.8,0.87
+8829a56d2dfffff,Bell Gardens SW,,17.0,1.36
+8829a56d31fffff,Bell W,C,9.9,0.79
+8829a56d33fffff,Maywood W 2,C,20.3,1.63
+8829a56d35fffff,Bell,C,6.5,0.52
+8829a56d37fffff,Maywood SW,C,6.9,0.55
+8829a56d39fffff,Bell SW,C,23.6,1.89
+8829a56d3bfffff,Bell W 2,C,23.1,1.85
+8829a56d3dfffff,Bell S,C,15.8,1.27
+8829a56d41fffff,Lynwood NE,,8.9,0.72
+8829a56d43fffff,South Gate S,C,14.4,1.15
+8829a56d45fffff,Lynwood E 2,C,19.9,1.59
+8829a56d47fffff,South Gate SE,C,10.9,0.87
+8829a56d49fffff,Lynwood SE,C,8.7,0.69
+8829a56d4bfffff,Lynwood,C,2.8,0.22
+8829a56d4dfffff,Lynwood E,C,17.7,1.42
+8829a56d51fffff,South Gate W 2,C,20.1,1.61
+8829a56d53fffff,Watts E 2,B,22.4,1.79
+8829a56d55fffff,South Gate SW,C,9.8,0.78
+8829a56d57fffff,South Gate W,B,10.5,0.84
+8829a56d59fffff,Lynwood NW 2,C,13.0,1.04
+8829a56d5bfffff,Watts E,D,22.7,1.81
+8829a56d5dfffff,Lynwood NW,C,7.8,0.63
+8829a56d61fffff,Cudahy SE 3,,22.7,1.82
+8829a56d63fffff,Cudahy S 2,,12.0,0.96
+8829a56d65fffff,Bell Gardens S 3,,35.4,2.83
+8829a56d67fffff,Cudahy SE 2,,20.1,1.61
+8829a56d69fffff,Hollydale NW 3,,24.6,1.97
+8829a56d6bfffff,South Gate E 2,C,9.5,0.76
+8829a56d6dfffff,Hollydale N 3,,32.7,2.62
+8829a56d81fffff,Central-Alameda SE,D,6.5,0.52
+8829a56d83fffff,Central-Alameda,D,8.7,0.69
+8829a56d85fffff,Vernon SW,,15.8,1.26
+8829a56d87fffff,Central-Alameda E,,9.8,0.78
+8829a56d89fffff,Central-Alameda S,D,9.4,0.75
+8829a56d8bfffff,Central-Alameda SW,D,9.8,0.78
+8829a56d8dfffff,Huntington Park NW 2,,17.0,1.36
+8829a56d91fffff,Historic South-Central S,D,14.9,1.19
+8829a56d93fffff,Jefferson,D,16.1,1.29
+8829a56d95fffff,Historic South-Central SE,D,13.9,1.11
+8829a56d97fffff,Historic South-Central,D,13.5,1.08
+8829a56d99fffff,South Park N,D,5.6,0.45
+8829a56d9bfffff,South Park NW 2,C,9.9,0.79
+8829a56d9dfffff,South Park NE,D,7.0,0.56
+8829a56da1fffff,Vernon NE,,22.7,1.82
+8829a56da3fffff,Vernon N,,24.4,1.95
+8829a56da5fffff,Vernon E 2,,15.4,1.23
+8829a56da7fffff,Vernon NE 2,D,8.9,0.71
+8829a56da9fffff,Vernon S,,30.7,2.46
+8829a56dabfffff,Vernon,,23.6,1.89
+8829a56dadfffff,Vernon E,,30.1,2.41
+8829a56db1fffff,Nevin N,D,19.4,1.55
+8829a56db3fffff,Fashion District SE,,14.0,1.12
+8829a56db5fffff,Nevin NE,,30.6,2.44
+8829a56db7fffff,Arts District SW,,22.2,1.77
+8829a56db9fffff,Nevin,D,5.3,0.42
+8829a56dbbfffff,Nevin NW,D,5.9,0.47
+8829a56dbdfffff,Nevin E,,17.0,1.36
+8829a56dc1fffff,Florence-Firestone N,D,13.5,1.08
+8829a56dc3fffff,Florence-Firestone N 2,D,22.9,1.83
+8829a56dc5fffff,Huntington Park SW,D,21.8,1.74
+8829a56dc7fffff,Huntington Park W,D,23.5,1.88
+8829a56dc9fffff,Florence-Firestone,D,3.2,0.26
+8829a56dcbfffff,Florence-Firestone NW,D,11.2,0.89
+8829a56dcdfffff,Firestone Park NW,D,14.6,1.17
+8829a56dd1fffff,Florence N,C,21.5,1.72
+8829a56dd3fffff,South Park SW,C,15.0,1.2
+8829a56dd5fffff,South Park SE 2,D,19.4,1.55
+8829a56dd7fffff,South Park SE,D,8.5,0.68
+8829a56dd9fffff,Florence,C,6.8,0.55
+8829a56ddbfffff,Florence NW,C,15.9,1.27
+8829a56dddfffff,Florence NE,,15.1,1.21
+8829a56de1fffff,Huntington Park NE,C,11.4,0.91
+8829a56de3fffff,Huntington Park N,,25.1,2.01
+8829a56de5fffff,Huntington Park NE 2,,21.0,1.68
+8829a56de7fffff,Vernon SE,,26.6,2.13
+8829a56de9fffff,Huntington Park,C,6.4,0.51
+8829a56debfffff,Huntington Park NW,D,17.6,1.41
+8829a56dedfffff,Huntington Park E,C,9.9,0.79
+8829a56e01fffff,Gardena,D,25.5,2.04
+8829a56e03fffff,Gardena NW,D,13.9,1.11
+8829a56e05fffff,Gardena E,,32.1,2.57
+8829a56e07fffff,Gardena NE,,29.1,2.32
+8829a56e09fffff,Gardena S,,28.6,2.29
+8829a56e0bfffff,Gardena SW,D,13.4,1.07
+8829a56e0dfffff,Gardena SE,,26.9,2.16
+8829a56e11fffff,Strawberry Park S,,15.2,1.22
+8829a56e13fffff,Strawberry Park SW,,9.9,0.79
+8829a56e15fffff,Strawberry Park SE,,13.6,1.09
+8829a56e17fffff,Strawberry Park,,23.7,1.89
+8829a56e19fffff,Moneta,,14.6,1.17
+8829a56e1bfffff,Alondra Park E,D,20.4,1.63
+8829a56e1dfffff,Moneta NE,D,2.0,0.16
+8829a56e21fffff,Gardena NE 4,,43.0,3.44
+8829a56e23fffff,Athens S 3,,28.9,2.31
+8829a56e25fffff,Compton W 3,,43.4,3.47
+8829a56e27fffff,Athens SE 3,,31.4,2.51
+8829a56e29fffff,Gardena E 3,,29.0,2.32
+8829a56e2bfffff,Gardena NE 2,,33.2,2.66
+8829a56e2dfffff,Compton W 4,,33.8,2.71
+8829a56e31fffff,Strawberry Park E 2,,2.6,0.21
+8829a56e33fffff,Strawberry Park NE 2,,12.7,1.02
+8829a56e35fffff,Athens S 2,,16.9,1.35
+8829a56e37fffff,Athens SW,,14.3,1.14
+8829a56e39fffff,Gardena N,,17.2,1.38
+8829a56e3bfffff,Strawberry Park E,,14.8,1.18
+8829a56e3dfffff,Gardena NE 3,,17.9,1.43
+8829a56e41fffff,Harbor Gateway NE,,39.7,3.18
+8829a56e43fffff,Roosevelt E,,37.6,3.01
+8829a56e45fffff,Dolanco Junction NE,,25.1,2.01
+8829a56e47fffff,Roosevelt E 2,,30.1,2.41
+8829a56e49fffff,Dolanco Junction E,,37.3,2.98
+8829a56e4bfffff,Harbor Gateway,,50.0,4.0
+8829a56e4dfffff,Dolanco Junction E 3,,33.2,2.66
+8829a56e51fffff,Roosevelt W,,27.6,2.21
+8829a56e53fffff,Moneta SW,,21.7,1.73
+8829a56e55fffff,Roosevelt N,,23.4,1.87
+8829a56e57fffff,Moneta SE,,12.0,0.96
+8829a56e59fffff,Roosevelt SW,,36.1,2.89
+8829a56e5bfffff,La Fresa SE,,20.9,1.68
+8829a56e5dfffff,Roosevelt,,37.4,2.99
+8829a56e61fffff,Gardena SE 3,,2.6,0.21
+8829a56e63fffff,Gardena E 2,,16.9,1.35
+8829a56e65fffff,Compton SW 5,,12.7,1.01
+8829a56e67fffff,Gardena E 4,,18.2,1.46
+8829a56e69fffff,Gardena SE 4,,13.0,1.04
+8829a56e6bfffff,Gardena SE 2,,14.6,1.17
+8829a56e6dfffff,Carson N 6,,3.4,0.28
+8829a56e81fffff,Hawthorne N,C,17.2,1.38
+8829a56e83fffff,Lennox SE,C,4.4,0.35
+8829a56e85fffff,Hawthorne NE 2,,12.1,0.97
+8829a56e87fffff,Lennox E 2,D,12.9,1.03
+8829a56e89fffff,Hawthorne,D,17.5,1.4
+8829a56e8bfffff,Hawthorne NW,C,11.8,0.95
+8829a56e8dfffff,Hawthorne NE,,27.7,2.21
+8829a56e91fffff,Lennox SW,C,17.7,1.42
+8829a56e93fffff,Lennox W,C,24.8,1.98
+8829a56e95fffff,Lennox,C,2.4,0.19
+8829a56e97fffff,Lennox NW,C,15.4,1.23
+8829a56e99fffff,Del Aire N,C,25.3,2.02
+8829a56e9bfffff,Lair Port NE,,32.0,2.56
+8829a56e9dfffff,Lennox S,C,17.8,1.42
+8829a56ea1fffff,Westmont W,,18.7,1.5
+8829a56ea3fffff,Gramercy Park SW,,19.2,1.54
+8829a56ea5fffff,Westmont,C,7.2,0.57
+8829a56ea7fffff,Gramercy Park S,B,20.0,1.6
+8829a56ea9fffff,West Athens W 2,,15.2,1.21
+8829a56eabfffff,Westmont W 2,D,3.8,0.3
+8829a56eadfffff,West Athens NW,,20.1,1.61
+8829a56eb1fffff,Inglewood SE,,24.8,1.99
+8829a56eb3fffff,Inglewood E,C,18.3,1.47
+8829a56eb5fffff,Morningside Park S,,19.1,1.52
+8829a56eb7fffff,Morningside Park SW,,14.5,1.16
+8829a56eb9fffff,Lennox E,C,11.3,0.91
+8829a56ebbfffff,Lennox NE,C,13.5,1.08
+8829a56ebdfffff,Morningside Park S 2,D,16.4,1.31
+8829a56ec1fffff,Hawthorne S,D,17.4,1.39
+8829a56ec3fffff,Hawthorne SW,D,20.6,1.65
+8829a56ec5fffff,Alondra Park N 2,D,6.4,0.51
+8829a56ec7fffff,Hawthorne SE,D,21.3,1.7
+8829a56ec9fffff,Lawndale E,D,20.6,1.64
+8829a56ecbfffff,Lawndale NE,D,7.9,0.63
+8829a56ecdfffff,Alondra Park N,D,11.1,0.89
+8829a56ed1fffff,Del Aire SE,D,15.8,1.26
+8829a56ed3fffff,Del Aire,,16.4,1.31
+8829a56ed5fffff,Hawthorne W,C,5.8,0.46
+8829a56ed7fffff,Del Aire E,C,10.1,0.8
+8829a56ed9fffff,Lawndale NW 2,D,15.0,1.2
+8829a56edbfffff,Del Aire S,,0.8,0.06
+8829a56eddfffff,Lawndale N,D,13.1,1.05
+8829a56ee1fffff,Strawberry Park N,,30.4,2.43
+8829a56ee3fffff,West Athens W 3,,24.4,1.95
+8829a56ee5fffff,West Athens SW,,28.1,2.25
+8829a56ee7fffff,West Athens W,,30.2,2.42
+8829a56ee9fffff,Strawberry Park NW,,16.3,1.31
+8829a56eebfffff,Hawthorne E,,21.1,1.69
+8829a56eedfffff,Strawberry Park NE,,24.7,1.97
+8829a56f01fffff,Compton E,B,11.4,0.91
+8829a56f03fffff,Compton N,C,3.9,0.31
+8829a56f05fffff,Compton E 2,B,13.9,1.11
+8829a56f07fffff,Compton NE,B,14.2,1.13
+8829a56f09fffff,Compton SE,,19.2,1.54
+8829a56f0bfffff,Compton,C,6.9,0.55
+8829a56f0dfffff,Compton SE 2,B,24.4,1.95
+8829a56f11fffff,Willowbrook S 2,D,25.7,2.06
+8829a56f13fffff,Willowbrook SW,,22.0,1.76
+8829a56f15fffff,Compton N 2,D,16.2,1.3
+8829a56f17fffff,Willowbrook S,D,12.6,1.01
+8829a56f19fffff,Compton W,,28.3,2.27
+8829a56f1bfffff,Willowbrook SW 3,,30.6,2.45
+8829a56f1dfffff,Compton NW,C,14.0,1.12
+8829a56f21fffff,Lynwood S 2,C,13.1,1.05
+8829a56f23fffff,Lynwood S,,15.3,1.22
+8829a56f25fffff,Paramount NW 2,C,13.5,1.08
+8829a56f27fffff,Lynwood SE 2,C,2.7,0.21
+8829a56f29fffff,Paramount W 2,C,3.0,0.24
+8829a56f2bfffff,Lynwood S 3,C,16.6,1.33
+8829a56f2dfffff,Paramount W,C,17.7,1.42
+8829a56f31fffff,Lynwood SW 2,C,18.9,1.51
+8829a56f33fffff,Willowbrook E 2,,9.0,0.72
+8829a56f35fffff,Lynwood SW,C,13.7,1.09
+8829a56f37fffff,Lynwood W,C,7.8,0.62
+8829a56f39fffff,Compton N 3,C,17.9,1.43
+8829a56f3bfffff,Willowbrook SE,D,3.8,0.3
+8829a56f3dfffff,Lynwood SW 3,C,27.5,2.2
+8829a56f41fffff,Rancho Dominguez N,,45.7,3.66
+8829a56f43fffff,Compton S 2,,32.6,2.61
+8829a56f45fffff,Rancho Dominguez NE 2,C,38.2,3.05
+8829a56f47fffff,Compton SE 3,,34.1,2.73
+8829a56f49fffff,Rancho Dominguez,,52.4,4.19
+8829a56f4bfffff,Rancho Dominguez NW,,43.0,3.44
+8829a56f4dfffff,Rancho Dominguez NE,,37.6,3.01
+8829a56f51fffff,Compton SW 2,,33.6,2.69
+8829a56f53fffff,Compton W 2,,35.8,2.86
+8829a56f55fffff,Compton S,,22.5,1.8
+8829a56f57fffff,Compton SW,,20.5,1.64
+8829a56f59fffff,Compton SW 4,,23.1,1.85
+8829a56f5bfffff,Compton SW 3,,28.1,2.25
+8829a56f5dfffff,Compton S 3,,37.4,2.99
+8829a56f61fffff,North Long Beach N 3,,24.4,1.95
+8829a56f63fffff,Compton E 3,B,12.6,1.01
+8829a56f65fffff,Paramount SW 2,C,12.6,1.0
+8829a56f67fffff,Paramount SW 3,,14.5,1.16
+8829a56f69fffff,North Long Beach NW 2,C,29.4,2.35
+8829a56f6bfffff,Compton SE 4,C,28.2,2.26
+8829a56f6dfffff,North Long Beach N 2,C,27.0,2.16
+8829a571b3fffff,San Pedro SE 14,,65.4,5.24
+8829a571b7fffff,San Pedro SE 16,,80.3,6.42
+8829a57421fffff,Rancho Palos Verdes SW 18,,107.7,8.62
+8829a57423fffff,Rancho Palos Verdes SW 16,,110.4,8.83
+8829a57425fffff,Rancho Palos Verdes SW 14,,93.6,7.49
+8829a57427fffff,Rancho Palos Verdes SW 13,,95.4,7.63
+8829a57431fffff,Rancho Palos Verdes SW 20,,130.5,10.44
+8829a57433fffff,Rancho Palos Verdes SW 21,,134.6,10.77
+8829a57435fffff,Rancho Palos Verdes SW 15,,115.0,9.2
+8829a57437fffff,Rancho Palos Verdes SW 17,,121.1,9.69
+8829a57439fffff,Rancho Palos Verdes SW 22,,140.7,11.26
+8829a5743bfffff,Rancho Palos Verdes SW 23,,146.0,11.68
+8829a5743dfffff,Rancho Palos Verdes SW 19,,125.5,10.04
+8829a57485fffff,Palos Verdes Estates SW 27,,157.9,12.64
+8829a57487fffff,Palos Verdes Estates SW 29,,163.5,13.08
+8829a5748dfffff,Palos Verdes Estates SW 31,,168.5,13.48
+8829a574a1fffff,Palos Verdes Estates SW 18,,132.7,10.62
+8829a574a3fffff,Palos Verdes Estates SW 20,,136.4,10.91
+8829a574a5fffff,Palos Verdes Estates SW 14,,117.2,9.37
+8829a574a7fffff,Palos Verdes Estates SW 15,,122.2,9.78
+8829a574a9fffff,Palos Verdes Estates SW 22,,142.5,11.4
+8829a574abfffff,Palos Verdes Estates SW 23,,148.3,11.86
+8829a574adfffff,Palos Verdes Estates SW 19,,127.2,10.17
+8829a574b1fffff,Palos Verdes Estates SW 26,,153.9,12.31
+8829a574b3fffff,Palos Verdes Estates W 34,,158.3,12.67
+8829a574b5fffff,Palos Verdes Estates SW 21,,138.9,11.11
+8829a574b7fffff,Palos Verdes Estates W 27,,143.0,11.44
+8829a574b9fffff,Palos Verdes Estates SW 30,,165.6,13.25
+8829a574bbfffff,Palos Verdes Estates W 35,,169.0,13.52
+8829a574bdfffff,Palos Verdes Estates SW 25,,150.9,12.07
+8829a574e1fffff,Rancho Palos Verdes W 17,,150.1,12.01
+8829a574e3fffff,Palos Verdes Estates SW 28,,153.3,12.26
+8829a574e5fffff,Rancho Palos Verdes W 16,,135.6,10.84
+8829a574e7fffff,Palos Verdes Estates SW 24,,138.2,11.06
+8829a574e9fffff,Rancho Palos Verdes SW 25,,162.6,13.01
+8829a574ebfffff,Rancho Palos Verdes W 18,,164.9,13.19
+8829a574edfffff,Rancho Palos Verdes SW 24,,148.4,11.87
+8829a57501fffff,Rancho Palos Verdes S 13,,63.1,5.05
+8829a57503fffff,Rancho Palos Verdes S 10,,56.1,4.49
+8829a57505fffff,Rancho Palos Verdes S 14,,56.3,4.51
+8829a57507fffff,Rancho Palos Verdes S 9,,47.5,3.8
+8829a5750bfffff,Rancho Palos Verdes S 15,,71.6,5.73
+8829a57511fffff,Rancho Palos Verdes S 8,,66.4,5.31
+8829a57513fffff,Rancho Palos Verdes SW 6,,68.9,5.51
+8829a57515fffff,Rancho Palos Verdes S 7,,52.8,4.23
+8829a57517fffff,Rancho Palos Verdes S 5,,53.8,4.31
+8829a57519fffff,Rancho Palos Verdes S 12,,80.0,6.4
+8829a5751bfffff,Rancho Palos Verdes SW 10,,80.7,6.45
+8829a5751dfffff,Rancho Palos Verdes S 11,,67.3,5.38
+8829a57521fffff,San Pedro SW 11,,32.8,2.63
+8829a57523fffff,Rancho Palos Verdes SE 8,,25.6,2.05
+8829a57525fffff,San Pedro SW 7,,31.3,2.5
+8829a57527fffff,San Pedro W 7,,17.8,1.43
+8829a57529fffff,San Pedro SW 13,,48.2,3.86
+8829a5752bfffff,Rancho Palos Verdes SE 9,,40.9,3.27
+8829a5752dfffff,San Pedro SW 9,,44.4,3.55
+8829a57531fffff,Rancho Palos Verdes SE 4,,25.8,2.06
+8829a57533fffff,Rancho Palos Verdes S 2,,27.8,2.22
+8829a57535fffff,Rancho Palos Verdes SE 5,,16.7,1.34
+8829a57537fffff,Rancho Palos Verdes SE 2,,12.3,0.98
+8829a57539fffff,Rancho Palos Verdes S 6,,40.8,3.26
+8829a5753bfffff,Rancho Palos Verdes S 4,,39.2,3.14
+8829a5753dfffff,Rancho Palos Verdes SE 7,,32.0,2.56
+8829a57567fffff,San Pedro SW 12,,58.8,4.7
+8829a57581fffff,Rancho Palos Verdes W 7,,67.0,5.36
+8829a57583fffff,Palos Verdes Estates S 6,,70.7,5.65
+8829a57585fffff,Rancho Palos Verdes W 4,,52.9,4.23
+8829a57587fffff,Rancho Palos Verdes W 6,,55.3,4.43
+8829a57589fffff,Rancho Palos Verdes W 8,,80.1,6.41
+8829a5758bfffff,Rancho Palos Verdes W 9,,81.7,6.54
+8829a5758dfffff,Rancho Palos Verdes W 5,,66.8,5.35
+8829a57591fffff,Palos Verdes Estates SW 8,,92.8,7.43
+8829a57593fffff,Palos Verdes Estates SW 9,,95.0,7.6
+8829a57595fffff,Palos Verdes Estates SW 6,,77.2,6.18
+8829a57597fffff,Palos Verdes Estates SW 5,,81.2,6.49
+8829a57599fffff,Palos Verdes Estates SW 12,,101.6,8.13
+8829a5759bfffff,Palos Verdes Estates SW 11,,108.4,8.67
+8829a5759dfffff,Palos Verdes Estates SW 10,,86.1,6.89
+8829a575a1fffff,Rancho Palos Verdes NW 2,,25.7,2.05
+8829a575a3fffff,Palos Verdes Estates S 3,,30.3,2.43
+8829a575a5fffff,Rancho Palos Verdes N,,13.8,1.1
+8829a575a7fffff,Rancho Palos Verdes N 2,,14.8,1.18
+8829a575a9fffff,Rancho Palos Verdes W 2,,39.8,3.19
+8829a575abfffff,Rancho Palos Verdes NW 3,,40.2,3.21
+8829a575adfffff,Rancho Palos Verdes NW,,29.4,2.35
+8829a575b1fffff,Palos Verdes Estates S 2,A,53.7,4.29
+8829a575b3fffff,Palos Verdes Estates SW 2,A,53.9,4.32
+8829a575b5fffff,Palos Verdes Estates S,,38.0,3.04
+8829a575b7fffff,Palos Verdes Estates SW,A,41.2,3.3
+8829a575b9fffff,Palos Verdes Estates S 5,A,61.6,4.93
+8829a575bbfffff,Palos Verdes Estates SW 3,A,68.1,5.45
+8829a575bdfffff,Palos Verdes Estates S 4,,46.0,3.68
+8829a575c1fffff,Rancho Palos Verdes SW 7,,90.2,7.22
+8829a575c3fffff,Rancho Palos Verdes SW 9,,94.0,7.52
+8829a575c5fffff,Rancho Palos Verdes SW 4,,74.6,5.97
+8829a575c7fffff,Rancho Palos Verdes SW 5,,81.4,6.51
+8829a575c9fffff,Rancho Palos Verdes SW 11,,99.6,7.97
+8829a575cbfffff,Rancho Palos Verdes SW 12,,105.8,8.47
+8829a575cdfffff,Rancho Palos Verdes SW 8,,84.2,6.73
+8829a575d1fffff,Rancho Palos Verdes W 13,,108.6,8.69
+8829a575d3fffff,Palos Verdes Estates SW 16,,111.9,8.95
+8829a575d5fffff,Rancho Palos Verdes W 10,,94.1,7.53
+8829a575d7fffff,Rancho Palos Verdes W 11,,96.7,7.74
+8829a575d9fffff,Rancho Palos Verdes W 14,,121.3,9.7
+8829a575dbfffff,Rancho Palos Verdes W 15,,123.3,9.86
+8829a575ddfffff,Rancho Palos Verdes W 12,,107.3,8.59
+8829a575e1fffff,Rancho Palos Verdes SW,,51.9,4.15
+8829a575e3fffff,Rancho Palos Verdes W 3,,54.8,4.38
+8829a575e5fffff,Rancho Palos Verdes S,,36.7,2.94
+8829a575e7fffff,Rancho Palos Verdes W,,45.0,3.6
+8829a575e9fffff,Rancho Palos Verdes SW 3,,59.0,4.72
+8829a575ebfffff,Rancho Palos Verdes SW 2,,67.3,5.38
+8829a575edfffff,Rancho Palos Verdes S 3,,43.3,3.47
+8829a5788bfffff,Long Beach SE 9,,39.2,3.13
+8829a57891fffff,Long Beach SE 4,,17.2,1.37
+8829a57893fffff,Long Beach SE 2,B,10.6,0.85
+8829a57895fffff,Long Beach E 5,,13.8,1.11
+8829a57897fffff,Long Beach E 3,B,6.7,0.54
+8829a57899fffff,Long Beach SE 5,,32.1,2.57
+8829a5789bfffff,Long Beach SE 3,,24.8,1.99
+8829a5789dfffff,Long Beach SE 6,,29.5,2.36
+8829a578bbfffff,Long Beach E 6,B,1.8,0.15
+8829a578cbfffff,Long Beach SE 14,,80.2,6.41
+8829a578d1fffff,Long Beach SE 10,,58.1,4.65
+8829a578d3fffff,Long Beach SE 7,,47.5,3.8
+8829a578d5fffff,Long Beach SE 11,,54.2,4.33
+8829a578d7fffff,Long Beach SE 8,,43.8,3.51
+8829a578d9fffff,Long Beach S 15,,73.0,5.84
+8829a578dbfffff,Long Beach S 10,,63.0,5.04
+8829a578ddfffff,Long Beach SE 12,,69.4,5.55
+8829a57a93fffff,Long Beach S 27,,113.1,9.05
+8829a57a97fffff,Long Beach S 25,,109.7,8.78
+8829a57ab1fffff,Long Beach S 24,,99.1,7.93
+8829a57ab3fffff,Long Beach S 19,,88.1,7.05
+8829a57ab5fffff,Long Beach SE 15,,95.1,7.61
+8829a57ab7fffff,Long Beach SE 13,,84.6,6.77
+8829a57ab9fffff,Long Beach S 29,,114.0,9.12
+8829a57abbfffff,Long Beach S 23,,103.4,8.27
+8829a57abdfffff,Long Beach S 30,,110.2,8.81
