@@ -208,6 +208,26 @@ in other than being dropped on a map.
 4. **`README.md` written** — run instructions, pipeline order, score and ROI
    formulas, provenance, and an explicit "what's estimated" section.
 
+### Still open after Phase 7 — verify these two before presenting
+
+Everything else in Phase 7 was checked in a real browser (console clean, layer
+toggles confirmed to repaint the map via `queryRenderedFeatures` and not just the
+legend, live model checked against `la.geojson`, units checked including the
+temperature *delta*). These two landed after the last browser pass:
+
+1. **The intro canvas backdrop.** First render came out as a horizontal smear —
+   mercator y was in radians against longitude in degrees (fixed bug 14). The
+   `180/π` fix and the switch to a cover-fit pushed right of centre are **not yet
+   seen on screen.** Open `/app/` and check LA is a recognisable city shape
+   behind the card, not a band.
+2. **`?flat=1` still at zero off-host requests.** Audited statically — the only
+   external URL left in the page is CARTO's style, and both typefaces are local —
+   but confirm in the Network tab, because that property is the whole answer to
+   "what if the venue Wi-Fi dies".
+
+Revert path if any of Phase 7 is unwanted: `git checkout pre-redesign -- app/`
+(tag `pre-redesign` is the last pre-rebuild commit).
+
 ### Still open
 
 - **Record the 60s screen capture.** Manual; steps at the bottom of `DEMO.md`.
