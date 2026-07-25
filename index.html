@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  Root redirect, for GitHub Pages.
+
+  The app lives at /app/ because it reads ../data/ — the pipeline writes into
+  data/ at the repo root, and the front end walks up one level to find it. That
+  is deliberate (see README, "Run it": serve from the repo root, not from app/),
+  and Pages serves the repo root, so the layout works unchanged.
+
+  This file exists only so the shareable link can be the short one. Both a meta
+  refresh and a script: the meta tag works with JS disabled, the script fires
+  faster and uses replace() so the redirect does not land in the back button.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=./app/">
+<link rel="canonical" href="./app/">
+<title>CoolEquity — Heat &amp; Cooling Equity Mapper</title>
+<style>
+  html{color-scheme:dark}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:#080b10;color:#8a93a0;font:400 14px/1.6 ui-sans-serif,system-ui,-apple-system,sans-serif}
+  a{color:#ffb703}
+</style>
+<script>location.replace('./app/');</script>
+</head>
+<body>
+  <p>Opening CoolEquity… if nothing happens, <a href="./app/">continue to the map</a>.</p>
+</body>
+</html>
