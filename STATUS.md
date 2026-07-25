@@ -34,11 +34,15 @@ is how you get 504'd an hour before the demo.
 | 3 ACS census | done | `data/census.csv`, `data/acs.csv` |
 | 4 Overlays | done | `data/overlays.csv`, `centers.geojson`, `holc_la.geojson`, `places.geojson` |
 | 5 Score + rank | done | `data/la.geojson` — 3008 scored hexes, **app now on real data** |
-| 6 Polish + demo | **next** | see "Phase 6 to-do" below |
+| 6 Polish + demo | done bar the video | `README.md`, `DEMO.md`, `app/vendor/` |
 
 Verified in the browser at 1440×860: priority, redlining and cooling-access
 layers all render and the legend matches the map; ROI panel produces sane
-numbers on the #1 hex.
+numbers on the #1 hex. Re-verified after the Phase 6 edits, on both the CARTO
+and the flat basemap paths — `?flat=1` shows **zero** off-host requests.
+
+**The only thing left on the whole build is the 60s screen capture**, which is a
+manual step; instructions are at the bottom of `DEMO.md`.
 
 ## Bugs already fixed — do not reintroduce
 
@@ -74,7 +78,14 @@ numbers on the #1 hex.
     la.geojson", sending you to debug the wrong layer. `fitData()` clamps padding
     and defers on a zero-sized container; the catch handler now distinguishes
     "data failed" from "map failed".
-11. **`setLayer` gated on `map.getLayer('fill')`** — `getLayer()` returns
+11. **MapLibre loaded from unpkg** — the risk register's whole answer to "venue
+    Wi-Fi dies" is *"app + all data are static/local"*, and a `<script src=unpkg>`
+    quietly made that false. With no network `maplibregl` is undefined and the map
+    never gets as far as the basemap fallback that was built for exactly this.
+    Now vendored at `app/vendor/` (v4.7.1, BSD-3; its CSS inlines every icon as a
+    `data:` URI, so nothing else leaks out). **Audit the whole page for off-host
+    requests, not just the ones you wrote a fallback for.**
+12. **`setLayer` gated on `map.getLayer('fill')`** — `getLayer()` returns
     undefined until the style parses, so a layer toggled during the basemap fetch
     updated the legend, chip and caption while the map kept the old ramp. **The
     legend silently lying about the map is the worst failure mode here.**
@@ -113,10 +124,11 @@ numbers on the #1 hex.
   of the hex layer around El Monte / Whittier. Not a bug; know it before a judge
   points at it.
 
-## Phase 6 to-do
+## Phase 6 — what was done
 
-1. **The demo script in the spec (Section 10) contains two false claims.** Fix
-   before rehearsing — the numbers below are what this dataset actually says:
+1. **The two false claims in spec Section 10 are corrected**, in the spec itself
+   (with a "superseded, rehearse from DEMO.md" banner) and in the new `DEMO.md`,
+   which is now the rehearsal doc. The real table:
 
    | HOLC | hexes | mean LST | mean green | mean walk | mean score |
    |---|---|---|---|---|---|
@@ -125,19 +137,28 @@ numbers on the #1 hex.
    | C | 450 | 45.1 °C | 12.2% | 13.2 min | 52.0 |
    | D | 260 | 45.4 °C |  9.4% | 12.2 min | 54.1 |
 
-   - Spec says D runs "~10°C hotter". Real gap A→D is **+6.7 °C**. Still a strong,
-     monotonic result — just quote the real number.
-   - Spec says D areas are "twice as far from relief". **This is backwards.**
-     D-graded areas are *closer* to cooling centers (12.2 min vs 20.3 min) —
-     they are dense inner-city blocks with libraries; A-graded areas are leafy
-     low-density suburbs. Drop the claim, or reframe it honestly: redlining shows
-     up as heat and missing canopy here, not as distance to relief.
-2. **Real ROI numbers for the closing beat** (hex #1, Westlake S): canopy 3% → 15%
-   gives −0.36 °C, 15,759 residents, 1,797 aged 65+, ~2,470 trees over 0.82 km²,
-   ≈ $1.2M, $78/resident.
-3. Record the 60s screen capture as the offline fallback.
-4. Consider committing `data/_cache/` exclusions — check the repo has everything
-   needed to run with no network at all.
+   A→D gap is **+6.7 °C**, not ~10. And D areas are **closer** to relief
+   (12.2 vs 20.3 min), not twice as far — dense inner-city blocks have libraries;
+   A-graded areas are leafy low-density suburbs. Reframed in `DEMO.md` as
+   "redlining shows up here as heat and missing canopy, not as distance."
+2. **Real ROI numbers are in the closing beat** (hex #1, Westlake S): canopy
+   3% → 15%, −0.36 °C, 15,759 residents, 1,797 aged 65+, ~2,470 trees over
+   0.82 km², ≈ $1.2M, $78/resident. Re-verified against the live app, not just
+   recomputed from the geojson.
+3. **The repo now genuinely runs with no network** — see fixed bug 11. Confirmed
+   by counting off-host requests in the page: 0 on `?flat=1`, and on the normal
+   path the only ones are CARTO's own basemap assets. `data/_cache/` stays
+   gitignored; it is pipeline scratch, nothing the app reads.
+4. **`README.md` written** — run instructions, pipeline order, score and ROI
+   formulas, provenance, and an explicit "what's estimated" section.
+
+### Still open
+
+- **Record the 60s screen capture.** Manual; steps at the bottom of `DEMO.md`.
+  It covers the failure vendoring doesn't: this laptop dying and someone else
+  having to present.
+- Stretch goals in spec Section 11 (city selector, budget optimizer, CSV export)
+  are untouched and remain optional.
 
 ## Contract between pipeline and front end
 
@@ -158,5 +179,9 @@ fill expression's `match` default handles it. Score weights live in
 - Overpass mirrors are tried in order with backoff; `overpass.kumi.systems` leads
   because the main instance throttles hardest.
 - `?data=<name>` on the app URL swaps the hex file (e.g. `?data=grid`).
+- `?flat=1` forces the flat basemap, so the no-network look is rehearsable
+  without actually killing the Wi-Fi. The county outline is drawn only on that
+  path — over CARTO's streets it is clutter, over nothing it is the only thing
+  telling you the holes over the bay are holes.
 - The app needs ~700px of width before the map column is usable; below that the
   366px panel eats the grid. Fine for a projector, worth knowing on a laptop.

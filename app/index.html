@@ -4,8 +4,12 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>CoolEquity — Heat & Cooling Equity Mapper</title>
-<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<!-- MapLibre is vendored, not CDN'd. The whole risk register hangs on "the app is
+     static and local"; a <script src=unpkg> makes that false — no venue Wi-Fi means
+     no `maplibregl` at all, and the map never gets as far as the basemap fallback.
+     v4.7.1, BSD-3, self-contained (its CSS inlines every icon as a data: URI). -->
+<link href="vendor/maplibre-gl.css" rel="stylesheet"/>
+<script src="vendor/maplibre-gl.js"></script>
 <style>
   :root{
     --bg:#0b0f14;--panel:#121821;--panel2:#0f141b;--edge:#1e2733;
@@ -163,7 +167,10 @@
 
   <div id="mapwrap">
     <div id="map"></div>
-    <div id="chip" class="float">Los Angeles · <b id="chip-n">211 hexes</b> · <b id="chip-layer">Priority score</b></div>
+    <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
+         count here would keep reading as true on the one screen where it isn't —
+         when the data failed to load. -->
+    <div id="chip" class="float">Los Angeles · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
   </div>
 
   <aside id="detail">
@@ -196,8 +203,9 @@
 // ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
 // pointing the same app at another city's output.
 const _q = new URLSearchParams(location.search);
-const DATA_URL    = `../data/${_q.get('data') || 'la'}.geojson`;
-const CENTERS_URL = '../data/centers.geojson';
+const DATA_URL     = `../data/${_q.get('data') || 'la'}.geojson`;
+const CENTERS_URL  = '../data/centers.geojson';
+const BOUNDARY_URL = '../data/boundary.geojson';   // only drawn on the flat fallback
 
 const INFERNO=['#000004','#1b0c41','#4a0c6b','#781c6d','#a52c60','#cf4446','#ed6925','#fb9b06','#f7d13d','#fcffa4'];
 const GREENS=['#04170f','#0a2f22','#0f4c36','#13694a','#178a5e','#1fae72','#4cc9a4','#8fe3c6'];
@@ -240,7 +248,7 @@ const FLAT_STYLE={version:8,sources:{},layers:[
   {id:'bg',type:'background',paint:{'background-color':'#0b0f14'}}]};
 
 // ---- state populated once the data lands ----
-let HEX=null, CENTERS=null, map=null;
+let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
 const vals={};
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
 let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
@@ -276,12 +284,17 @@ function fillExpr(k){
     lo,colorFor(k,lo),mid,colorFor(k,mid),hi,colorFor(k,hi)];
 }
 
+const EMPTY={type:'FeatureCollection',features:[]};
+const optional=url=>fetch(url).then(r=>r.ok?r.json():EMPTY).catch(()=>EMPTY);
+
 async function boot(){
-  const [h,c]=await Promise.all([
+  // Only the hex file is load-bearing; the other two degrade to nothing.
+  const [h,c,b]=await Promise.all([
     fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.json();}),
-    fetch(CENTERS_URL).then(r=>r.ok?r.json():{type:'FeatureCollection',features:[]}).catch(()=>({type:'FeatureCollection',features:[]}))
+    optional(CENTERS_URL),
+    optional(BOUNDARY_URL)
   ]);
-  HEX=h;CENTERS=c;
+  HEX=h;CENTERS=c;BOUNDARY=b;
   computeRanges();
   document.getElementById('chip-n').textContent=`${HEX.features.length} hexes`;
 
@@ -300,6 +313,10 @@ async function boot(){
  *  render, so a backgrounded tab (rAF suspended) looks identical to a dead CDN, and
  *  a fallback keyed on it will tear down a perfectly good map. */
 async function basemapStyle(){
+  // ?flat=1 forces the no-network look. The fallback is the one path you can't
+  // rehearse without actually killing the Wi-Fi, which is not a thing to discover
+  // for the first time on stage.
+  if(_q.has('flat')){console.warn('Basemap skipped (?flat) — flat background');return FLAT_STYLE;}
   try{
     const ctl=new AbortController();
     const t=setTimeout(()=>ctl.abort(),BASEMAP_TIMEOUT_MS);
@@ -333,6 +350,17 @@ function initMap(style){
   const s={...style,sources:{...style.sources},layers:[...style.layers]};
   s.sources.hex={type:'geojson',data:HEX};
   s.sources.centers={type:'geojson',data:CENTERS};
+
+  // No basemap means no coastline, and the hex layer's honest holes over the bay
+  // and Griffith Park then read as nothing at all. The county outline is a local
+  // file, so it costs nothing offline and gives the shapes something to sit in.
+  // Skipped when CARTO answered — over real streets it is just clutter.
+  if(style===FLAT_STYLE&&BOUNDARY&&BOUNDARY.features.length){
+    s.sources.boundary={type:'geojson',data:BOUNDARY};
+    s.layers.push({id:'boundary',type:'line',source:'boundary',
+      paint:{'line-color':'#243141','line-width':1.2}});
+  }
+
   s.layers.push(
     {id:'fill',type:'fill',source:'hex',
       paint:{'fill-color':fillExpr(current),'fill-opacity':0.75}},
