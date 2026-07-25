@@ -115,7 +115,12 @@
   .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
   .brand p{margin:8px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5;letter-spacing:.005em}
   .brandtop{display:flex;align-items:center;gap:10px}
-  .seg{margin-left:auto;display:flex;gap:2px;padding:2px;background:#0c1219;border:1px solid var(--edge);border-radius:8px}
+  .home{margin-left:auto;display:flex;align-items:center;justify-content:center;width:28px;height:26px;
+    background:#0c1219;border:1px solid var(--edge);border-radius:8px;color:var(--muted2);
+    cursor:pointer;padding:0;transition:.14s;flex:none}
+  .home:hover{color:var(--txt);border-color:var(--accent)}
+  .home svg{width:14px;height:14px}
+  .seg{display:flex;gap:2px;padding:2px;background:#0c1219;border:1px solid var(--edge);border-radius:8px}
   .seg button{font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.01em;color:var(--muted2);
     background:none;border:0;padding:4px 8px;border-radius:6px;cursor:pointer;transition:.14s;white-space:nowrap}
   .seg button:hover{color:var(--txt)}
@@ -265,6 +270,10 @@
   .stat .k{font-size:10px;color:var(--muted2);margin-top:3px;line-height:1.25}
   .stat.hero .v{color:var(--good)}
   .roi-note{font-size:9.5px;color:var(--muted2);margin-top:11px;line-height:1.4}
+  .roi-src{font-size:9.5px;color:var(--muted2);margin-top:9px;line-height:1.5;
+    border-top:1px solid var(--edge);padding-top:9px}
+  .roi-src b{color:var(--muted);font-weight:600}
+  .roi-src div{margin-top:3px}
   .maplibregl-popup{max-width:230px!important}
   .maplibregl-popup-content{background:#0d1219;color:var(--txt);border:1px solid var(--edge);border-radius:10px;padding:9px 12px;font-size:12px;box-shadow:var(--shadow)}
   .maplibregl-popup-content .tt-row{display:flex;justify-content:space-between;gap:16px;color:var(--muted);margin-top:4px}
@@ -292,6 +301,13 @@
     <p class="lede">Heat is the deadliest weather hazard on Earth, and it lands hardest on the
       poorest, least-shaded blocks. Cities have cooling budgets. What they don’t have is a
       precise way to aim them.</p>
+    <!-- The product is, in practice, a tree-planting targeting tool. Saying so on
+         the landing screen: canopy is the only input in the model a city can
+         actually change, and it is the one the ROI panel prices. -->
+    <p class="lede">Tree canopy is the lever. It is the one input in the model a city can
+      change directly, and the cheapest durable cooling available to it — so every
+      neighborhood here is measured for the shade it is missing, and each one can be priced:
+      how many trees, at what cost, cooling how many people.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Choose a city</p>
     <div class="picker" id="picker">
@@ -316,6 +332,15 @@
     <div class="brand">
       <div class="brandtop">
         <h1><span class="dot"></span> CoolEquity</h1>
+        <!-- Back to the landing screen. A reload rather than re-inserting the
+             overlay: the intro is built once from HEX/CENTERS during boot, so
+             rebuilding it live would mean a second construction path to keep
+             correct. Everything is local, so the reload is instant. -->
+        <button class="home" id="go-home" type="button" title="Back to the start screen"
+          aria-label="Back to the start screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        </button>
         <div class="seg" id="units" role="group" aria-label="Units">
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
@@ -347,9 +372,13 @@
         </button>
         <div id="wadv" hidden>
           <p class="wexp">Each input is scaled 0–1 <b>within this city</b>, multiplied by its
-            weight, and the four are added. That sum is then scaled by how many people live in
-            the hex. Weights are relative — they are normalised to 100%, so raising one lowers
-            the rest. Defaults come from <code>pipeline/config.py</code>.</p>
+            weight, and the results are added. That sum is then scaled by how many people live
+            in the hex. Weights are relative: they are normalised to 100%, so raising one
+            lowers the rest — which is why moving a single slider changes less than you expect,
+            and why the presets move all of them at once. The first four defaults come from
+            <code>pipeline/config.py</code>. <b>Walk to relief is a fifth input the shipped
+            pipeline does not use</b>, so it starts at 0; raise it to weigh distance to a
+            cooling site alongside the rest.</p>
           <div id="w-rows"></div>
           <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
             <button id="w-reset" disabled>Reset</button></div>
@@ -370,9 +399,9 @@
 
       <div class="section">
         <p class="lbl">Cooling relief sites <span class="cnt" id="ct-n">—</span></p>
-        <p class="hint">A place a resident with no air conditioning can <b>walk to and sit in the
-          cool, for free</b>. These are the four OpenStreetMap categories the pipeline counts as
-          relief — switch one off to see how thin the network gets without it.</p>
+        <p class="hint">Somewhere a resident without air conditioning can walk to and stay cool
+          at no cost. The pipeline counts four OpenStreetMap categories as relief. Switch a
+          category off to see how much of the network depends on it.</p>
         <div id="kinds"></div>
       </div>
 
@@ -395,7 +424,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot">Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is modeled from income, not measured. Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is modeled from income, not measured. Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -425,10 +454,14 @@
         <div class="roi-out">
           <div class="stat hero"><div class="v" id="roi-temp">–</div><div class="k">est. afternoon cooling</div></div>
           <div class="stat"><div class="v" id="roi-people">–</div><div class="k">residents cooled</div></div>
-          <div class="stat"><div class="v" id="roi-seniors">–</div><div class="k">incl. aged 65+</div></div>
+          <div class="stat"><div class="v" id="roi-seniors">–</div><div class="k">of them aged 65+</div></div>
           <div class="stat"><div class="v" id="roi-cost">–</div><div class="k">est. cost · <span id="roi-per">–</span>/resident</div></div>
         </div>
         <div class="roi-note" id="roi-note"></div>
+        <!-- Where the three constants come from. A dollar figure with no stated
+             source is the fastest way to lose a room, and $500 is an assumption,
+             not a quote — say so on the screen, not only in the README. -->
+        <div class="roi-src" id="roi-src"></div>
       </div>
     </div>
   </aside>
@@ -458,18 +491,24 @@ const BOUNDARY_URL = '../data/boundary.geojson';   // only drawn on the flat fal
  *   heat, priority, age65, population, walk-time -> pale = low  ... deep = high
  *   canopy, A/C access (protective)              -> deep = LOW  ... pale = high
  * so a deep hex always means "this is the problem", whichever layer is up. */
-/* Priority's low third is deliberately near-paper. Two thirds of the basin
-   scores mid-range, and if the mid-range is loud the deep core stops being the
-   thing you look at first — which is the entire job of this layer. */
-const PRIORITY=['#fffdf2','#fff4d3','#ffe3a6','#fbc478','#f09a58','#de6f4f','#c04455','#932050','#5c0f42'];
-const HEAT    =['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'];
+/* Priority's low third stays quiet — two thirds of the basin scores mid-range,
+   and if the mid-range is loud the deep core stops being the thing you look at
+   first, which is the entire job of this layer. Quiet, though, is not the same
+   as invisible: the first stops used to be lighter than the #eceff3 basemap, so
+   the low end read as a hole in the map rather than as a hexagon. Every ramp's
+   pale end now starts darker than the paper it sits on, so a hex is always
+   legible AS a hex and only its depth carries the meaning. */
+const PRIORITY=['#f4ead3','#f7dfb4','#f9cd93','#f2b675','#e79a5e','#d5734e','#bc4453','#932050','#5c0f42'];
+const HEAT    =['#fbe8d3','#f9d7b4','#f7c396','#f4a97b','#ef8a5c','#e5654a','#d7301f','#b30000','#7f0000'];
 /* Canopy reads brown->green rather than pale->deep: bare ground genuinely looks
    like bare ground, and the dark end still lands on "needs trees". */
 const CANOPY  =['#5c3a17','#87582b','#ab8047','#c6ab6b','#b9c67c','#8dc276','#63c489','#7edeb1','#b4f0d2'];
-const ACCESS_AC=['#08306b','#0a4a92','#1f6cb5','#4292c6','#6baed6','#9ecae1','#c6dbef','#e2eefa','#f5faff'];
-const POPU    =['#f7fcfd','#e4eef6','#c5d8ea','#a7bfdd','#9aa6ce','#9382bd','#8a55a8','#7b2a8e','#4d004b'];
-const AGE     =['#fffde5','#fff3bc','#fee391','#fec44f','#fe9929','#ec7014','#cc4c02','#973404','#662506'];
-const WALK    =['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a'];
+/* The two protective ramps run deep -> pale, so their PALE end is the "fine" end
+   and stopping short of white is what keeps a well-served hex visible. */
+const ACCESS_AC=['#08306b','#0a4a92','#1f6cb5','#4292c6','#6baed6','#9ecae1','#bcd4ea','#cfe0f0','#dfe9f5'];
+const POPU    =['#dbe4ee','#c2d2e4','#aabdd8','#96a8cc','#8b90bd','#8574ac','#7f5099','#6f2680','#4d004b'];
+const AGE     =['#fbf1c6','#fbe4a2','#fbd382','#f9bd5c','#f2a03d','#e17a1e','#c85c07','#973404','#662506'];
+const WALK    =['#fbdfd9','#f9c8c6','#f6adb4','#f28ea6','#e96f9a','#d94f92','#ae017e','#7a0177','#49006a'];
 
 function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 function ramp(cols,t){t=Math.max(0,Math.min(1,t));const x=t*(cols.length-1),i=Math.floor(x),f=x-i;
@@ -485,13 +524,13 @@ const HOLC={A:'#6ea966',B:'#6a9fb5',C:'#c9b458',D:'#c0603f'};
  * the file rather than hardcoded, so this stays true if you repoint the city. */
 const KIND={
   library:           {c:'#1d4ed8',label:'Public library',
-    what:'Air-conditioned, free, no purchase and no ID. The workhorse of an American heat plan.'},
+    what:'Air-conditioned and open to the public at no cost. Usually the largest category in a US city.'},
   community_centre:  {c:'#7c3aed',label:'Community center',
-    what:'Rec centers and civic halls — the buildings a city can open as an official cooling center on a heat day.'},
+    what:'Recreation centers and civic halls. These are the buildings a city typically opens as a designated cooling center during a heat emergency.'},
   pool:              {c:'#0891b2',label:'Public pool',
-    what:'Municipal swimming pools. Strong relief, but usually seasonal and limited hours.'},
+    what:'Municipal swimming pools. Effective relief, but seasonal and limited to opening hours.'},
   'shelter/senior':  {c:'#db2777',label:'Senior center / shelter',
-    what:'Senior centers and shelters. Small, but they sit where the most heat-vulnerable people already are.'},
+    what:'Senior centers and shelters. A small category, located where many high-risk residents already are.'},
 };
 const KIND_KEYS=Object.keys(KIND);
 let kindOn=new Set(KIND_KEYS);
@@ -575,7 +614,17 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * stay on the features untouched, and everything on screen reads through
  * sc()/rk() instead. So "reset" is exact, not approximate.
  */
-const DEFAULT_W={heat:0.35,green:0.25,ac:0.25,age65:0.15};
+/* `access` is a fifth input the shipped pipeline does NOT use: config.py weights
+ * four things, and this app's whole parity claim against data/la.geojson depends
+ * on reproducing exactly those four. So it ships at weight 0 — present, movable,
+ * and off by default, which keeps "Pipeline default" an honest name.
+ *
+ * It belongs on the list because distance to relief is the one input here that
+ * describes what a resident can do about the heat today, before any tree is
+ * planted. In LA it cuts against the others (the redlined core is close to
+ * libraries, the leafy suburbs are far), which is exactly why giving it a small
+ * weight is interesting rather than redundant. */
+const DEFAULT_W={heat:0.35,green:0.25,ac:0.25,age65:0.15,access:0};
 const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
 const W_INPUTS=[
   {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
@@ -586,6 +635,8 @@ const W_INPUTS=[
    note:'modelled from income'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
+  {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
+   note:'not in the shipped model — starts at 0', show:v=>fMin(v)},
 ];
 /** Presets set all four weights at once, which is the only way a single click
  *  can visibly change the answer. Moving one slider alone barely moves the map:
@@ -597,19 +648,27 @@ const PRESETS=[
   {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
    why:'<b>The shipped model.</b> A balance of heat, missing shade, no air conditioning and age, '
       +'weighted by how many people are exposed. Every other preset is a departure from this one.'},
-  {id:'heat',name:'Heat first',w:{heat:.70,green:.15,ac:.10,age65:.05},pop:.45,
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.15,ac:.10,age65:.05,access:0},pop:.45,
    why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity check: '
       +'if a block ranks high here and low by default, the difference is everything except heat.'},
-  {id:'shade',name:'Shade gap',w:{heat:.25,green:.60,ac:.10,age65:.05},pop:.45,
+  {id:'shade',name:'Shade gap',w:{heat:.25,green:.60,ac:.10,age65:.05,access:0},pop:.45,
    why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
       +'the input a city can actually change.'},
-  {id:'seniors',name:'Protect seniors',w:{heat:.20,green:.05,ac:.15,age65:.60},pop:.45,
+  {id:'seniors',name:'Protect seniors',w:{heat:.20,green:.05,ac:.15,age65:.60,access:0},pop:.45,
    why:'<b>Who is most likely to die of it?</b> Heat kills the old first. Watch Holmby Hills — one '
       +'of the wealthiest zip codes in America — climb from roughly 2,100th to the high 20s. '
       +'The answer depends on the question you asked.'},
-  {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05},pop:.45,
+  {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05,access:0},pop:.45,
    why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
       +'<i>modelled</i> from income rather than measured — worth naming out loud.'},
+  {id:'stranded',name:'No relief nearby',w:{heat:.30,green:.20,ac:.20,age65:.10,access:.20},pop:.45,
+   why:'<b>Who has nowhere to go today?</b> The only preset that uses the fifth input, walking '
+      +'time to a cooling site, and it is deliberately a minority share. Distance is the one '
+      +'thing a city can fix this week by opening a building, rather than in twenty years by '
+      +'planting a tree. In Los Angeles the top ten barely moves — the dense inner-city blocks '
+      +'that lead are already close to libraries and pools — but 722 of the 3,008 hexes shift '
+      +'by more than a hundred places, all of it in the middle of the list. Walking time is '
+      +'estimated, not routed, and the shipped pipeline does not use it.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
    why:'<b>Reach over severity.</b> Same four weights, but density dominates: a moderately hot '
       +'block with 15,000 residents outranks a scorching one with 800.'},
@@ -620,9 +679,10 @@ const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
 /** Weights are shares, so they are renormalised to sum to 1 before use. That is
  *  why the readout can always total 100% no matter where the sliders sit. */
 function normW(){
-  const s=W_RAW.heat+W_RAW.green+W_RAW.ac+W_RAW.age65;
+  const s=W_INPUTS.reduce((a,{k})=>a+(W_RAW[k]||0),0);
   if(!(s>0))return {...DEFAULT_W};            // all-zero: nothing to weigh, hold defaults
-  return {heat:W_RAW.heat/s,green:W_RAW.green/s,ac:W_RAW.ac/s,age65:W_RAW.age65/s};
+  const out={};W_INPUTS.forEach(({k})=>{out[k]=(W_RAW[k]||0)/s;});
+  return out;
 }
 function isDefaultW(){
   const W=normW();
@@ -639,7 +699,8 @@ function rescore(){
   for(let i=0;i<n;i++){
     const p=F[i].properties;
     const base=W.heat*nv(p,'lst') + W.green*(1-nv(p,'green'))
-             + W.ac*(1-nv(p,'ac')) + W.age65*nv(p,'pct65');
+             + W.ac*(1-nv(p,'ac')) + W.age65*nv(p,'pct65')
+             + W.access*nv(p,'access_min');
     pri[i]=base*((1-POPW)+POPW*nv(p,'pop'));
   }
   let lo=Infinity,hi=-Infinity;
@@ -672,7 +733,8 @@ function liveScoreExpr(){
     ['*',W.heat, nx('lst')],
     ['*',W.green,['-',1,nx('green')]],
     ['*',W.ac,   ['-',1,nx('ac')]],
-    ['*',W.age65,nx('pct65')]];
+    ['*',W.age65,nx('pct65')],
+    ['*',W.access,nx('access_min')]];
   const pri=['*',base,['+',1-POPW,['*',POPW,nx('pop')]]];
   return ['*',100,['/',['-',pri,LIVE.lo],Math.max(1e-12,LIVE.hi-LIVE.lo)]];
 }
@@ -1018,10 +1080,14 @@ const BUILD_NOTE=c=>
 function buildIntro(){
   const pop=HEX.features.reduce((a,f)=>a+f.properties.pop,0);
   const hot=Math.max(...HEX.features.map(f=>f.properties.lst));
+  // Population-weighted, not a plain hex mean: the question is how much shade the
+  // average resident lives under, and hexes hold very different numbers of people.
+  const canopy=HEX.features.reduce((a,f)=>a+f.properties.green*f.properties.pop,0)/pop;
   document.getElementById('istats').innerHTML=[
     [HEX.features.length.toLocaleString(),'neighborhoods scored'],
     [(pop/1e6).toFixed(1)+'M','residents covered'],
     [fTemp(hot),'hottest block'],
+    [canopy.toFixed(0)+'%','canopy over the average resident'],
     [CENTERS.features.length.toLocaleString(),'cooling sites mapped'],
   ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
 
@@ -1243,7 +1309,7 @@ function applyPreset(id){
 function matchPreset(){
   const W=normW();
   return PRESETS.find(p=>{
-    const s=p.w.heat+p.w.green+p.w.ac+p.w.age65;
+    const s=W_INPUTS.reduce((a,{k})=>a+(p.w[k]||0),0);
     return Math.abs(POPW-p.pop)<5e-3 &&
       W_INPUTS.every(({k})=>Math.abs(W[k]-p.w[k]/s)<5e-3);
   })||null;
@@ -1277,10 +1343,18 @@ function applyWeights(){
   // The caption for the priority layer is generated from the weights in force,
   // so it can't sit there quoting 35% while the slider says 60%.
   LAYERS.score.cap=`Composite of surface heat (${Math.round(W.heat*100)}%), missing canopy `
-    +`(${Math.round(W.green*100)}%), no A/C access (${Math.round(W.ac*100)}%) and share aged 65+ `
-    +`(${Math.round(W.age65*100)}%), then weighted by the population exposed. `
+    +`(${Math.round(W.green*100)}%), no A/C access (${Math.round(W.ac*100)}%), share aged 65+ `
+    +`(${Math.round(W.age65*100)}%)`
+    +(W.access>0.005?` and walk to relief (${Math.round(W.access*100)}%)`:'')
+    +`, then weighted by the population exposed. `
     +(def?'These are the weights pipeline/config.py shipped with. ':'Re-scored live in your browser. ')
-    +'Deeper = greater need for cooling investment.';
+    // The "if the whole city were freezing, everything should be low priority"
+    // objection. It is correct, and the answer is that this layer never claims
+    // otherwise: 100 means "first in line here", not "hot in absolute terms".
+    // Surface temperature is the layer that answers the absolute question.
+    +'This is a ranking within this city, not an absolute hazard level — 100 means first '
+    +'in line here, not hot by world standards. For absolute values use the Surface '
+    +'temperature layer. Deeper = greater need for cooling investment.';
   if(current==='score')setLayer('score');     // repaints AND refreshes the caption
   buildRank();
   if(selId!=null)selectHex(selId,false);
@@ -1291,16 +1365,35 @@ function applyWeights(){
  *  and every stored value stay metric, because that is how the WRI cooling
  *  coefficient, the 40 m² per tree and the 4.8 km/h walk pace are all defined.
  *  Convert on the way out or you end up with a $500 tree priced per square foot. */
+/** How big one hexagon actually is, in whichever units are showing. Read off the
+ *  per-hex area_m2 rather than assumed from the H3 resolution — the whole point
+ *  of carrying area_m2 is that hex area varies with latitude (fixed bug 11). */
+function updateScaleNote(){
+  const el=document.getElementById('foot-scale');
+  if(!el||!HEX)return;
+  const a=HEX.features.map(f=>areaOf(f.properties)).sort((x,y)=>x-y);
+  const med=a[a.length>>1];
+  el.textContent=`Each hexagon covers about ${fArea(med)}. `;
+}
+
 function setUnits(u){
   UNITS=u;
   try{localStorage.setItem('ce-units',u);}catch(_){}    // private mode: not worth failing over
   document.querySelectorAll('#units button').forEach(b=>b.classList.toggle('on',b.dataset.u===u));
+  updateScaleNote();
   setLayer(current);                                    // legend endpoints are formatted
   buildRank();
   if(selId!=null)selectHex(selId,false);
 }
 
 function wireUI(){
+  document.getElementById('go-home').onclick=()=>{
+    // Keep ?flat=1 (it is a rehearsal mode, not a destination) and drop ?go /
+    // ?data, both of which exist precisely to skip the screen we are going to.
+    const q=new URLSearchParams(location.search);
+    q.delete('go');q.delete('data');
+    location.href=location.pathname+(q.toString()?'?'+q:'');
+  };
   document.getElementById('units').addEventListener('click',e=>{
     const b=e.target.closest('button');if(b)setUnits(b.dataset.u);
   });
@@ -1385,7 +1478,7 @@ function renderBreakdown(p,score){
   const parts=W_INPUTS.map(w=>{
     const raw=nv(w.prop), t=w.invert?1-raw:raw;
     return {...w,t,pts:W[w.k]*t,
-      shown:w.prop==='lst'?fTemp(p.lst):p[w.prop].toFixed(0)+'%'};
+      shown:w.show?w.show(p[w.prop]):w.prop==='lst'?fTemp(p.lst):p[w.prop].toFixed(0)+'%'};
   });
   const base=parts.reduce((a,b)=>a+b.pts,0);
   const mult=(1-POPW)+POPW*nv('pop');
@@ -1430,8 +1523,18 @@ function updateROI(p){
   document.getElementById('roi-cost').textContent=money(cost);
   document.getElementById('roi-per').textContent=money(perPerson);
   document.getElementById('roi-note').textContent=acts
-    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents incl. ${fInt(seniors)} aged 65+. Cooling factor per WRI (+10% canopy ≈ −0.3°C); costs are rough planning estimates, not a quote.`
+    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents, ${fInt(seniors)} of whom are aged 65 or over.`
     : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
+  document.getElementById('roi-src').innerHTML=
+     '<b>Where these numbers come from</b>'
+    +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
+    +'about +10% canopy cover per −0.3 °C of afternoon air temperature.</div>'
+    +`<div><b>Tree count.</b> ${TREE_M2} m² of crown per mature street tree, applied to this `
+    +'hex&rsquo;s own measured area.</div>'
+    +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
+    +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
+    +'roughly three years of establishment care. Real unit costs vary widely with species, site '
+    +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>';
 }
 
 function wireHover(){
