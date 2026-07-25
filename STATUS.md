@@ -232,6 +232,54 @@ in other than being dropped on a map.
    README and DEMO.md all now state the true figures. Any claim of this shape
    must be re-checked against `LIVE.rank` before it ships — the model moved.
 
+## Phase 9 — legibility, provenance, and a fifth weight
+
+1. **Every ramp's pale end now starts darker than the basemap.** They were
+   lighter than `#eceff3`, so a low hex read as a hole rather than as a hexagon
+   — worst on Population, where most of the basin disappeared. Priority's low
+   third is still deliberately quiet (that is bug-12 era design, keep it); it is
+   just no longer invisible. The legend bar is generated from the same arrays via
+   `rampStops()`, so it cannot disagree — verified: legend stop 0 and
+   `colorFor('pop', min)` are both `rgb(219,228,238)`.
+2. **ROI provenance on screen** (`#roi-src`): WRI for the cooling coefficient,
+   40 m² per crown, and $500/tree explicitly labelled a *planning assumption*,
+   not a quote. Never let the dollar figure ship unsourced again.
+3. **Copy**: "incl. aged 65+" → "of them aged 65+"; cooling-site descriptions
+   rewritten flat (they were writing punchlines).
+4. **Home button** in the panel header. It *reloads* rather than re-inserting the
+   overlay — the intro is built once from HEX/CENTERS during `boot()`, and a
+   second construction path is a second thing to keep correct. Keeps `?flat=1`,
+   drops `?go`/`?data`.
+5. **Landing screen names tree canopy** as the lever, plus a
+   population-weighted "canopy over the average resident" stat (12% in LA).
+   Footer carries a unit-aware scale note read off `area_m2` (0.82 km²).
+6. **Fifth weight, `access`, shipped at 0.** `config.py` weights four things and
+   the parity claim against `la.geojson` depends on reproducing exactly those
+   four — a non-zero default would make "Pipeline default" a lie. `normW()` and
+   `matchPreset()` now fold over `W_INPUTS`, so a sixth input is one array entry.
+   `W_INPUTS` entries take an optional `show` formatter (minutes are not %).
+7. **Caught in review, again:** the new *No relief nearby* preset's copy claimed
+   it pulls the answer outward to the far blocks. False — top-50 mean walk time
+   moves only 8.8 → 9.1 min and the top ten is unchanged, because the population
+   multiplier keeps the dense core in front. True figure: 722 of 3,008 hexes move
+   >100 places, all mid-list. **That is two of two such claims wrong on first
+   write. Verify against `LIVE.rank` before any of them ships.**
+8. The legend now states that the score is a *ranking within this city*, not an
+   absolute hazard level, and points at the Surface temperature layer for
+   absolute values. That is the honest answer to "if the whole city were
+   freezing, everything should be low priority".
+
+Verified in-browser at each step: console clean (the two `layer 'fill' does not
+exist` errors seen during testing were from an injected test script — stack
+frames read `<anonymous>`, not `index.html`), Westlake S ROI unchanged at 15%
+($1.2M · $78/resident · −0.36 °C · 2,470 trees · 15,759 residents · 1,797 aged
+65+), ROI zeroes correctly at the hex's own canopy, breakdown renders
+"Far from relief | 8 min | 0.03 × 0.00 | 0.000".
+
+**Still open:** DEMO.md and README.md have NOT been updated for Phase 9 — the
+preset list is now seven, not six, and the ramp/colour description in README's
+"Reading the map" predates the darkening. Do that first next session.
+
 ### Phase 7 browser verification — all clear
 
 Everything in Phase 7 has now been checked in a real browser: console clean,
