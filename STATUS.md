@@ -1,6 +1,7 @@
 # CoolEquity — build status & handoff
 
-Resume point for a fresh session. Spec lives in `../CoolEquity_BUILD_PROMPT.md`.
+Resume point for a fresh session. Spec lives in `SPEC.md` (in-repo since Phase 6;
+Section 10 of it is superseded by `DEMO.md`).
 
 ## Run it
 

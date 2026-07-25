@@ -109,6 +109,7 @@ app/index.html        the whole front end; app/vendor/ is MapLibre 4.7.1 (BSD-3)
 pipeline/             01→05, run in order; config.py holds bbox, weights, constants
 data/                 committed outputs — the app needs la.geojson + centers.geojson
 DEMO.md               the 60–90s script, with real numbers and the likely questions
+SPEC.md               the original build spec; Section 10 superseded by DEMO.md
 STATUS.md             build state, fixed bugs, decisions taken
 ```
 

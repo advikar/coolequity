@@ -1,8 +1,8 @@
 # CoolEquity — demo script (60–90s)
 
 **Every number here is read off `data/la.geojson`, not off the spec.** Section 10 of
-`../CoolEquity_BUILD_PROMPT.md` was written before the data existed and got two
-claims wrong; see "What the spec got wrong" below so you don't say them on stage.
+`SPEC.md` was written before the data existed and got two claims wrong; see
+"What the spec got wrong" below so you don't say them on stage.
 
 ## Before you start
 
