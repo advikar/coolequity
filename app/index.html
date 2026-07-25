@@ -193,7 +193,10 @@
 
 <script>
 // Served from the repo root (python -m http.server 8000 → /app/), so data/ is one level up.
-const DATA_URL    = '../data/la.geojson';
+// ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
+// pointing the same app at another city's output.
+const _q = new URLSearchParams(location.search);
+const DATA_URL    = `../data/${_q.get('data') || 'la'}.geojson`;
 const CENTERS_URL = '../data/centers.geojson';
 
 const INFERNO=['#000004','#1b0c41','#4a0c6b','#781c6d','#a52c60','#cf4446','#ed6925','#fb9b06','#f7d13d','#fcffa4'];
@@ -256,6 +259,15 @@ function colorFor(k,v){return ramp(LAYERS[k].ramp,norm(k,v));}
 function areaOf(p){return p.area_m2||AREA_M2_FALLBACK;}
 function nameOf(p){return p.name||`Hex ${p.id}`;}
 
+// Frame whatever city the pipeline produced, rather than a hardcoded LA view —
+// the engine is meant to be repointable, so the camera must be too.
+function dataBounds(){
+  let w=180,s=90,e=-180,n=-90;
+  for(const f of HEX.features)for(const ring of f.geometry.coordinates)for(const [x,y] of ring){
+    if(x<w)w=x; if(x>e)e=x; if(y<s)s=y; if(y>n)n=y;}
+  return [[w,s],[e,n]];
+}
+
 function fillExpr(k){
   if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#333'];
   const pk=propKey(k),[lo,hi]=rng(k),mid=(lo+hi)/2;
@@ -280,37 +292,49 @@ async function boot(){
   // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
   // await; keep it pinned to the container for fullscreen/projector too.
   new ResizeObserver(()=>{if(map)map.resize();}).observe(document.getElementById('mapwrap'));
-  initMap(BASEMAP_URL);
+  initMap(await basemapStyle());
+}
+
+/** Resolve the basemap up front, so the map is built once with a style we know we have.
+ *  Deliberately NOT a timeout on the map's 'load' event: 'load' waits on the first
+ *  render, so a backgrounded tab (rAF suspended) looks identical to a dead CDN, and
+ *  a fallback keyed on it will tear down a perfectly good map. */
+async function basemapStyle(){
+  try{
+    const ctl=new AbortController();
+    const t=setTimeout(()=>ctl.abort(),BASEMAP_TIMEOUT_MS);
+    const r=await fetch(BASEMAP_URL,{signal:ctl.signal});
+    clearTimeout(t);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    return await r.json();          // CARTO's style uses absolute sprite/glyph/tile URLs
+  }catch(e){
+    console.warn(`Basemap unreachable (${e.message}) — flat background; hexes still render`);
+    return FLAT_STYLE;
+  }
 }
 
 function initMap(style){
-  map=new maplibregl.Map({container:'map',style,
+  const m=new maplibregl.Map({container:'map',style,
     center:[-118.35,34.02],zoom:9.7,attributionControl:true});
-  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
-
-  let ready=false;
-  map.on('load',()=>{ready=true;addDataLayers();});
-
-  // Fallback: if the basemap CDN doesn't answer, rebuild on a flat background so
-  // the hexes still render. The analysis, not the basemap, is the demo.
-  if(style!==FLAT_STYLE)setTimeout(()=>{
-    if(ready)return;
-    console.warn('Basemap unreachable — falling back to flat background');
-    map.remove();initMap(FLAT_STYLE);
-  },BASEMAP_TIMEOUT_MS);
+  map=m;
+  m.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+  m.on('load',()=>addDataLayers(m));
 }
 
-function addDataLayers(){
-  map.addSource('hex',{type:'geojson',data:HEX});
-  map.addLayer({id:'fill',type:'fill',source:'hex',paint:{'fill-color':fillExpr(current),'fill-opacity':0.75}});
-  map.addLayer({id:'line',type:'line',source:'hex',paint:{'line-color':'#0b0f14','line-width':0.4,'line-opacity':0.45}});
-  map.addLayer({id:'sel',type:'line',source:'hex',paint:{'line-color':'#fff','line-width':2.4},filter:['==','id',selId??-1]});
-  map.addSource('centers',{type:'geojson',data:CENTERS});
-  map.addLayer({id:'centers',type:'circle',source:'centers',paint:{
+function addDataLayers(m){
+  if(map!==m)return;                   // a newer map won the race
+  m.addSource('hex',{type:'geojson',data:HEX});
+  m.addLayer({id:'fill',type:'fill',source:'hex',paint:{'fill-color':fillExpr(current),'fill-opacity':0.75}});
+  m.addLayer({id:'line',type:'line',source:'hex',paint:{'line-color':'#0b0f14','line-width':0.4,'line-opacity':0.45}});
+  m.addLayer({id:'sel',type:'line',source:'hex',paint:{'line-color':'#fff','line-width':2.4},filter:['==','id',selId??-1]});
+  m.addSource('centers',{type:'geojson',data:CENTERS});
+  m.addLayer({id:'centers',type:'circle',source:'centers',paint:{
     'circle-radius':6,'circle-color':'#4cc9a4','circle-stroke-width':2,'circle-stroke-color':'#0b0f14',
     'circle-opacity':0.95}});
-  map.setLayoutProperty('centers','visibility',centersOn?'visible':'none');
-  wireHover();map.resize();
+  m.setLayoutProperty('centers','visibility',centersOn?'visible':'none');
+  wireHover();m.resize();
+  // Right dock is 340px; keep the fitted view clear of it.
+  m.fitBounds(dataBounds(),{padding:{top:40,bottom:40,left:40,right:360},duration:0});
 }
 
 boot().catch(err=>{
