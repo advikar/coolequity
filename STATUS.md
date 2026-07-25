@@ -276,9 +276,32 @@ frames read `<anonymous>`, not `index.html`), Westlake S ROI unchanged at 15%
 65+), ROI zeroes correctly at the hex's own canopy, breakdown renders
 "Far from relief | 8 min | 0.03 × 0.00 | 0.000".
 
-**Still open:** DEMO.md and README.md have NOT been updated for Phase 9 — the
-preset list is now seven, not six, and the ramp/colour description in README's
-"Reading the map" predates the darkening. Do that first next session.
+9. **Landing card no longer clips its own title.** `#intro` centred with
+   `align-items:center` + `overflow:hidden`, which clips a too-tall card at BOTH
+   ends — and the end that matters is the top, so the wordmark disappeared the
+   moment the card grew past the viewport (979px against a 720px window). Now
+   `margin:auto` on `.intro-card` with `overflow-y:auto` on `#intro`: centred
+   when it fits, scrollable from its own top when it does not. Plus a
+   short-window ladder at 860/740/640px that tightens type and spacing so it
+   fits without scrolling on a laptop. **If you add copy to the landing screen,
+   re-measure `.wordmark`'s `getBoundingClientRect().top` afterwards** — it must
+   be positive. This is the second time the title went missing this way.
+10. **Cooling relief sites is now a disclosure**, same pattern as the weights
+    panel: count in the header, `Show the four categories` beneath it, detail
+    collapsed. The summary line reports hidden categories (`all on` / `1 hidden`)
+    because collapsed it is the only thing saying what is filtered.
+11. Landing stat labels are deliberately short (`neighborhoods`, `residents`,
+    `hottest block`, `avg. canopy`, `cooling sites`) so all five fit one row at
+    760px. A fifth stat orphaned onto a second line reads as a bug.
+
+README.md and DEMO.md are updated for Phases 8 and 9: seven presets, the fifth
+weight at zero, the cost-provenance answer, the "your scale is relative"
+objection, the ramp darkening, and the home button.
+
+**Still open:** the 60s screen capture (steps at the bottom of DEMO.md) is still
+unrecorded — it is the fallback if the laptop dies and someone else presents.
+Ranks #1 and #2 both display `100` in the list because scores round to 0 dp
+(100.0 and 99.5); cosmetic, untouched.
 
 ### Phase 7 browser verification — all clear
 

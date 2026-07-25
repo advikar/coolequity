@@ -43,15 +43,21 @@
   #app{display:grid;grid-template-columns:366px 1fr;height:100vh;position:relative}
   #panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border-right:1px solid var(--edge);display:flex;flex-direction:column;min-height:0}
   /* ------------------------------------------------------------ intro */
-  #intro{position:fixed;inset:0;z-index:50;background:#080b10;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;
+  /* `align-items:center` + `overflow:hidden` clips a too-tall card at BOTH ends,
+     and the end that matters is the top — that is how the wordmark went missing
+     on a 720px-tall window. `margin:auto` centres the card when there is room and
+     lets it scroll from its own top when there is not, which no value of
+     align-items will do. Keep it this way rather than trimming copy each time
+     the card grows. */
+  #intro{position:fixed;inset:0;z-index:50;background:#080b10;overflow-y:auto;overflow-x:hidden;
+    display:flex;justify-content:center;padding:28px 0;
     transition:opacity .55s ease,transform .55s cubic-bezier(.4,0,.2,1)}
   #intro.gone{opacity:0;transform:scale(1.05);pointer-events:none}
   #intro-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5;
     filter:blur(.4px);transform:scale(1.02)}
   .intro-scrim{position:absolute;inset:0;
     background:radial-gradient(115% 85% at 22% 45%,rgba(8,11,16,.97) 20%,rgba(8,11,16,.72) 52%,rgba(8,11,16,.35) 100%)}
-  .intro-card{position:relative;width:min(760px,calc(100% - 64px));padding:0 8px}
+  .intro-card{position:relative;width:min(760px,calc(100% - 64px));padding:0 8px;margin:auto 0}
   /* The product has to say its own name on the screen the judges see first. */
   .wordmark{display:flex;align-items:baseline;gap:11px;margin-bottom:22px}
   .wordmark .wm{font-family:var(--display);font-weight:400;font-size:34px;line-height:1;
@@ -109,7 +115,23 @@
   .cta .ico{opacity:1;stroke-width:2}
   .fine{margin:20px 0 0;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:62ch}
   @media (prefers-reduced-motion:reduce){#intro{transition:opacity .01s}#intro.gone{transform:none}}
-  @media (max-height:640px){.istats{margin:20px 0 22px}.lede{display:none}}
+  /* Short-window ladder. The card is ~910px tall at its most generous, so on a
+     720–860px laptop it would scroll; these tighten it to fit before the scroll
+     is ever needed. Each step gives up the least important thing left, and the
+     wordmark is never one of them. */
+  @media (max-height:860px){
+    .intro-card h1{font-size:clamp(34px,4.6vw,52px)}
+    .wordmark{margin-bottom:16px}.eyebrow{margin-bottom:14px}
+    .lede{margin-top:15px;font-size:14px}
+    .istats{gap:26px;margin:20px 0 22px}.istats div b{font-size:21px}
+    .fine{margin-top:14px}
+  }
+  @media (max-height:740px){
+    .intro-card h1{font-size:clamp(30px,4vw,42px)}
+    .istats{gap:22px;margin:16px 0 18px}
+    .fine{display:none}
+  }
+  @media (max-height:640px){.lede{display:none}}
   .brand{padding:16px 20px 14px;border-bottom:1px solid var(--edge)}
   .brand h1{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:9px}
   .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
@@ -179,8 +201,8 @@
     transition:transform .18s}
   .disc[aria-expanded=true] .dchev{transform:rotate(90deg)}
   .disc .dnote{margin-left:auto;font-size:10px;color:var(--muted2)}
-  #wadv[hidden]{display:none}
-  #wadv{padding-top:11px}
+  #wadv[hidden],#kadv[hidden]{display:none}
+  #wadv,#kadv{padding-top:11px}
   .wexp{font-size:10.5px;color:var(--muted2);line-height:1.55;margin:0 0 11px}
   .wexp code{font-family:var(--mono);font-size:10px;color:var(--accent2)}
   .wrow{margin-bottom:11px}
@@ -300,14 +322,14 @@
     <h1>Which neighborhoods<br>should a city cool&nbsp;first?</h1>
     <p class="lede">Heat is the deadliest weather hazard on Earth, and it lands hardest on the
       poorest, least-shaded blocks. Cities have cooling budgets. What they don’t have is a
-      precise way to aim them.</p>
-    <!-- The product is, in practice, a tree-planting targeting tool. Saying so on
-         the landing screen: canopy is the only input in the model a city can
-         actually change, and it is the one the ROI panel prices. -->
-    <p class="lede">Tree canopy is the lever. It is the one input in the model a city can
-      change directly, and the cheapest durable cooling available to it — so every
-      neighborhood here is measured for the shade it is missing, and each one can be priced:
-      how many trees, at what cost, cooling how many people.</p>
+      precise way to aim them.
+      <!-- One sentence, not a paragraph. The landing card is 979px tall against a
+           720px viewport at 1280x720, so anything added here pushes the wordmark
+           above the fold — which is exactly how the product name went missing. If
+           you add copy to this screen, re-measure .wordmark's top afterwards. -->
+      Tree canopy is the lever this tool aims: it is the one input a city can
+      change directly, and every neighborhood here is measured for the shade it
+      is missing and priced for the trees it would take.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Choose a city</p>
     <div class="picker" id="picker">
@@ -399,10 +421,20 @@
 
       <div class="section">
         <p class="lbl">Cooling relief sites <span class="cnt" id="ct-n">—</span></p>
-        <p class="hint">Somewhere a resident without air conditioning can walk to and stay cool
-          at no cost. The pipeline counts four OpenStreetMap categories as relief. Switch a
-          category off to see how much of the network depends on it.</p>
-        <div id="kinds"></div>
+        <!-- Same disclosure pattern as the weights panel: the count is the
+             headline, the four categories and their definitions are one click
+             away. Collapsed by default so the panel reads as a summary. -->
+        <button class="disc" id="k-disc" type="button" aria-expanded="false" aria-controls="kadv">
+          <svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+          Show the four categories
+          <span class="dnote" id="k-dnote"></span>
+        </button>
+        <div id="kadv" hidden>
+          <p class="hint">Somewhere a resident without air conditioning can walk to and stay cool
+            at no cost. The pipeline counts four OpenStreetMap categories as relief. Switch a
+            category off to see how much of the network depends on it.</p>
+          <div id="kinds"></div>
+        </div>
       </div>
 
       <div class="section legend">
@@ -1084,11 +1116,13 @@ function buildIntro(){
   // average resident lives under, and hexes hold very different numbers of people.
   const canopy=HEX.features.reduce((a,f)=>a+f.properties.green*f.properties.pop,0)/pop;
   document.getElementById('istats').innerHTML=[
-    [HEX.features.length.toLocaleString(),'neighborhoods scored'],
-    [(pop/1e6).toFixed(1)+'M','residents covered'],
+    // Labels stay short so all five sit on one row at 760px. A fifth stat that
+    // wraps alone onto a second line reads as a mistake.
+    [HEX.features.length.toLocaleString(),'neighborhoods'],
+    [(pop/1e6).toFixed(1)+'M','residents'],
     [fTemp(hot),'hottest block'],
-    [canopy.toFixed(0)+'%','canopy over the average resident'],
-    [CENTERS.features.length.toLocaleString(),'cooling sites mapped'],
+    [canopy.toFixed(0)+'%','avg. canopy'],
+    [CENTERS.features.length.toLocaleString(),'cooling sites'],
   ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
 
   buildPicker();
@@ -1240,6 +1274,11 @@ function buildKinds(){
     kindOn.has(k)?kindOn.delete(k):kindOn.add(k);
     syncKinds();
   });
+  const disc=document.getElementById('k-disc'),adv=document.getElementById('kadv');
+  disc.onclick=()=>{
+    const open=adv.hidden;adv.hidden=!open;disc.setAttribute('aria-expanded',open);
+    disc.childNodes[2].textContent=open?' Hide the four categories ':' Show the four categories ';
+  };
   syncKinds();
 }
 function syncKinds(){
@@ -1247,6 +1286,11 @@ function syncKinds(){
   const shown=CENTERS.features.filter(f=>kindOn.has(f.properties.kind)).length;
   document.getElementById('ct-n').textContent=
     `${shown} of ${CENTERS.features.length} shown`;
+  // Collapsed, the summary line is the only thing saying which categories are
+  // on — so it has to name the ones that are off, not just count them.
+  const off=[...KIND_KEYS].filter(k=>!kindOn.has(k)&&document.querySelector(`.kind[data-k="${k}"]`));
+  document.getElementById('k-dnote').textContent=
+    off.length?`${off.length} hidden`:'all on';
   styleOp(()=>{
     map.setFilter('centers',centersFilter());
     map.setLayoutProperty('centers','visibility',kindOn.size?'visible':'none');

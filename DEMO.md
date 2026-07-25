@@ -20,7 +20,9 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
   **Pipeline default**, detail panel closed. That's the default state on a fresh
   load — just reload rather than clicking back to it. If you have been playing
   with the model, click the **Pipeline default** preset (the state chip beside
-  "What should count most" reads `pipeline defaults` when you're back).
+  "What should count most" reads `pipeline defaults` when you're back), or use
+  the **home button** beside the CoolEquity wordmark to get back to the landing
+  screen and start clean.
 - **No Wi-Fi?** Nothing to do. MapLibre is vendored and all data is local; the map
   loses only the CARTO street basemap and draws the county outline instead.
   Rehearse that look with `http://localhost:8000/app/?flat=1`.
@@ -149,6 +151,15 @@ hexes in the same neighborhood — and the same Westlake / Historic Filipinotown
 Koreatown blocks still lead. **Say "the leaders swap places", not "nothing
 changes"**; a judge watching the list will see the swap.
 
+**"Where does the $500 a tree come from?"** It is a planning assumption, and the
+panel says so in those words — the order of magnitude US municipal programmes
+budget for a planted street tree plus roughly three years of establishment care.
+Not a quote and not a bid. The other two constants are firmer: the cooling
+coefficient is WRI's published figure, and 40 m² of crown per mature tree is a
+standard planning number. **Do not defend the $500 as a measurement.** The
+defensible claim is the ratio — dollars per resident cooled — which is what makes
+two neighborhoods comparable regardless of the unit cost you plug in.
+
 **"Are those presets really running the model, or a rough approximation?"** The
 model. A preset just sets the four weights at once — open **Adjust the weights
 yourself** and you can see and move them. Same arithmetic as
@@ -161,9 +172,23 @@ overwritten. You can check it live in the console; the one-liner is in
 `STATUS.md`.
 
 **"Why presets instead of just sliders?"** Because the weights are normalised to
-100%, so moving one slider alone barely moves the answer — the other three
-absorb it. A preset changes all four, which is what makes the map visibly
+100%, so moving one slider alone barely moves the answer — the others absorb it.
+A preset changes all of them at once, which is what makes the map visibly
 repaint. The sliders are still there, one click away.
+
+**"Is the walking time in the score?"** Not in the shipped model. It is present
+as a fifth weight set to 0, because `pipeline/config.py` weights four things and
+"Pipeline default" has to mean exactly that. The **No relief nearby** preset
+turns it on at 20%. Useful thing to know before you click it: the top ten barely
+moves — the dense blocks that lead are already close to libraries and pools — but
+722 of the 3,008 hexes shift by more than a hundred places, all mid-list. **Say
+"it reshuffles the middle", not "it changes the answer."**
+
+**"Your whole scale is relative — what if the city just isn't hot?"** Correct, and
+the legend concedes it: the score is a ranking within one city, so 100 means
+first in line here, not hot in absolute terms. That is the deliberate trade for
+portability (44 °C is ordinary in Phoenix and an emergency in Seattle). Switch to
+the **Surface temperature** layer for absolute values.
 
 **"Can I look at my city?"** Not today, and the picker says so rather than
 loading LA's numbers under another name. Every input except the US redlining

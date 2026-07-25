@@ -73,11 +73,19 @@ priority  = base_risk · (0.55 + 0.45 · population)
 score     = 100 · minmax(priority)
 ```
 
-**The weights are not buried in a config file.** The app opens on six named
+**The weights are not buried in a config file.** The app opens on seven named
 presets — *Pipeline default*, *Heat first*, *Shade gap*, *Protect seniors*, *A/C
-poverty*, *Most people* — and each one re-scores and re-ranks all 3,008 hexes in
-the browser, with the map, ranked list, legend copy and ROI all following. The
-four sliders are one click away under **Adjust the weights yourself**.
+poverty*, *No relief nearby*, *Most people* — and each one re-scores and re-ranks
+all 3,008 hexes in the browser, with the map, ranked list, legend copy and ROI
+all following. The sliders are one click away under **Adjust the weights
+yourself**.
+
+The app exposes a **fifth input the pipeline does not use**: walking time to
+relief, shipped at weight 0. It is the one input describing what a resident can
+do about the heat today, before any tree is planted, and in LA it cuts against
+the other four — but a non-zero default would make "Pipeline default" a lie
+about `config.py`, and would break the parity check below. *No relief nearby* is
+the preset that turns it on, at 20%.
 
 Presets lead rather than sliders because the weights are normalised to 100%:
 moving a single slider is largely absorbed by the other three, so it reorders a
@@ -87,6 +95,11 @@ once is what makes the question legible. *Protect seniors* drops Westlake from
 from roughly 2,100th to 27th. (Holmby Hills only reaches #1 under a pure 100%
 age weighting, which no preset uses.)
 
+*No relief nearby* is the counter-example worth knowing: it barely moves the top
+ten, because the population multiplier keeps the dense inner-city blocks in
+front and those blocks are already close to libraries. What it does move is the
+middle — 722 of 3,008 hexes shift by more than a hundred places.
+
 It is the same model, not a demo approximation. Checked in-page against the
 committed `data/la.geojson` at the shipped weights: **max absolute difference
 0.156 points, mean 0.039, and pipeline ranks #1–#6 reproduced exactly** — the
@@ -94,7 +107,9 @@ residual is the geojson storing `lst`/`green`/`ac` rounded to 1 dp. The
 pipeline's own `score` and `rank` are never overwritten, so Reset is exact.
 
 Defaults live in `pipeline/config.py` and are mirrored in the app's `DEFAULT_W`
-and in the `default` entry of `PRESETS`; keep those in sync. The legend prose and
+and in the `default` entry of `PRESETS`; keep those in sync. `normW()` and
+`matchPreset()` fold over `W_INPUTS`, so adding a sixth input is one array entry
+rather than an edit in five places. The legend prose and
 the preset state chip are generated from the weights in force, so they cannot
 drift.
 
@@ -105,7 +120,10 @@ the four add up before population scales them.
 ### Reading the map
 
 One rule across every layer, restated in the legend under the colour bar:
-**deeper and more saturated = more need for cooling investment.** For the two
+**deeper and more saturated = more need for cooling investment.** Every ramp's
+pale end starts *darker than the `#eceff3` basemap*, so a low-scoring hex still
+reads as a hexagon rather than as a hole in the map — the low third is meant to
+be quiet, not invisible. For the two
 protective inputs — tree canopy and A/C access — the needy end is the *low* end,
 so those ramps run deep→pale and the legend's arrow flips rather than the
 meaning. The basemap is light so that the deep end is the heaviest ink on the
@@ -118,6 +136,13 @@ temp_drop_C = (target_canopy_pct − current_pct) / 10 × 0.3    # WRI coefficie
 trees       = Δcanopy/100 × hex_area_m2 / 40                  # ~40 m² per mature tree
 cost        = trees × $500                                    # planted + 3yr maintenance
 ```
+
+All three constants are named on screen under the calculator. The WRI
+coefficient is published science; the 40 m² crown is a standard planning figure;
+**the $500 is an assumption, not a quote or a bid** — the order of magnitude US
+municipal programmes use for a planted street tree plus about three years of
+establishment care. The UI says so in those words. Real unit costs vary widely
+with species, site preparation and sidewalk work.
 
 ## What's estimated, and what isn't
 
@@ -146,7 +171,12 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   shelters. It is not a list of sites a city has formally designated as cooling
   centers on a heat day; it is the set of places a resident could plausibly walk
   to and sit in the cool for free. The app names all four and lets you switch
-  each off.
+  each off, under **Show the four categories**.
+- **The priority score is a ranking within one city, not an absolute hazard
+  level.** Every input is min–max normalized locally, so a score of 100 means
+  "first in line here", not "hot by world standards" — a uniformly mild city
+  would still have a rank-1 hex. The legend says this outright, and the Surface
+  temperature layer is the one that answers the absolute question.
 
 Holding up: across the 3,008 populated hexes, heat and greenness correlate at
 **r = −0.61**, and it survives both a longitude-band split and removing a
