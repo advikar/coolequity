@@ -65,6 +65,34 @@
   .toggle.on .sw::after{transform:translateX(15px);background:var(--accent)}
   .toggle .tt{font-size:12.5px}
   .toggle .ts{font-size:11px;color:var(--muted2)}
+  /* ---- model weights ---- */
+  .hint{font-size:11px;color:var(--muted);line-height:1.5;margin:-4px 0 12px}
+  .wrow{margin-bottom:11px}
+  .wrow .wtop{display:flex;align-items:baseline;gap:7px;font-size:12px;margin-bottom:5px}
+  .wrow .wsw{width:8px;height:8px;border-radius:2px;flex:none;align-self:center}
+  .wrow .wnm{color:var(--txt)}
+  .wrow .wval{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:650;font-size:12.5px}
+  .wrow input[type=range]{margin:0}
+  .wfoot{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:10.5px;color:var(--muted2);line-height:1.4}
+  #w-reset{margin-left:auto;flex:none;background:#161f2a;border:1px solid var(--edge2);color:var(--muted);
+    font:inherit;font-size:10.5px;padding:4px 9px;border-radius:7px;cursor:pointer;transition:.15s}
+  #w-reset:hover{color:var(--txt);border-color:#3a4a5c}
+  #w-reset[disabled]{opacity:.4;cursor:default}
+  .wstate{font-size:9px;letter-spacing:.06em;font-weight:600;padding:2px 7px;border-radius:20px;
+    text-transform:none;border:1px solid #2a4a3d;background:#0f2019;color:#4fd1a0}
+  .wstate.custom{border-color:#4a3520;background:#211609;color:var(--accent2)}
+  /* ---- score breakdown ---- */
+  .bd{margin:2px 0 14px}
+  .bd .stack{display:flex;height:9px;border-radius:3px;overflow:hidden;background:#0a0e13;margin-bottom:9px}
+  .bd .stack i{display:block;transition:width .25s cubic-bezier(.2,.8,.2,1)}
+  .bd table{width:100%;border-collapse:collapse;font-size:11px}
+  .bd td{padding:3.5px 0;color:var(--muted);vertical-align:middle}
+  .bd td.k{color:var(--txt);white-space:nowrap;font-size:11.5px}
+  .bd td.k i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px}
+  .bd td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px;font-size:10.5px}
+  .bd td.p{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt);font-weight:650;padding-left:10px;width:44px}
+  .bd tr.sum td{border-top:1px solid var(--edge);padding-top:6px;color:var(--txt)}
+  .bd .eq{font-size:10px;color:var(--muted2);margin-top:8px;line-height:1.5;font-family:var(--mono)}
   .legend .bar{height:12px;border-radius:3px;margin:2px 0 6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
   .legend .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
   .legend .cap{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
@@ -112,8 +140,14 @@
   .roi .sub{font-size:11px;color:var(--muted);margin:0 0 12px;line-height:1.4}
   .slider-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px}
   .slider-row b{color:var(--good);font-variant-numeric:tabular-nums;font-size:13px}
-  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:4px;background:#1a2632;outline:none;margin:2px 0 14px}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--good);cursor:pointer;box-shadow:0 0 0 4px rgba(76,201,164,.16)}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;
+    background:#1a2632;outline:none;margin:2px 0 14px;--sl:var(--good)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--sl);cursor:pointer;border:2px solid #0d1219;box-shadow:0 0 0 3px color-mix(in srgb,var(--sl) 22%,transparent);transition:box-shadow .15s}
+  input[type=range]:hover::-webkit-slider-thumb,input[type=range]:focus-visible::-webkit-slider-thumb{
+    box-shadow:0 0 0 6px color-mix(in srgb,var(--sl) 26%,transparent)}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--sl);
+    cursor:pointer;border:2px solid #0d1219}
   .roi-out{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   .stat{background:#0a1017;border:1px solid var(--edge);border-radius:9px;padding:9px 11px}
   .stat .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
@@ -146,11 +180,20 @@
         <div class="layers" id="layers">
           <button class="layer active" data-k="score"><b>Priority</b><span>composite score</span></button>
           <button class="layer" data-k="lst"><b>Surface heat</b><span>land surface temp</span></button>
-          <button class="layer" data-k="green"><b>Greenness</b><span>% canopy / veg</span></button>
+          <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
           <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
         </div>
+      </div>
+
+      <div class="section" id="weights">
+        <p class="lbl">Model weights <span class="wstate" id="w-state">pipeline defaults</span></p>
+        <p class="hint">These four numbers <b>are</b> the model. Drag one and every hex is
+          re-scored and re-ranked in the browser — map, list and ROI all follow.</p>
+        <div id="w-rows"></div>
+        <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
+          <button id="w-reset" disabled>Reset</button></div>
       </div>
 
       <div class="section">
@@ -208,6 +251,8 @@
     </div>
     <div class="dbody">
       <div id="d-metrics"></div>
+      <p class="lbl" style="margin:16px 0 8px">How this score was built</p>
+      <div class="bd" id="d-breakdown"></div>
       <div class="roi">
         <h3><svg class="ico" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.9-7-6.4C5 5.2 8.1 3 12 3s7 2.2 7 5.6c0 3.5-3.1 6.4-7 6.4z"/></svg> Intervention ROI</h3>
         <p class="sub">Raise tree canopy in this hex and price the result. Cooling factor from WRI; every number below is an estimate, not a measurement.</p>
@@ -249,7 +294,10 @@ const BOUNDARY_URL = '../data/boundary.geojson';   // only drawn on the flat fal
  *   heat, priority, age65, population, walk-time -> pale = low  ... deep = high
  *   canopy, A/C access (protective)              -> deep = LOW  ... pale = high
  * so a deep hex always means "this is the problem", whichever layer is up. */
-const PRIORITY=['#fff7d6','#ffe5a0','#fdc161','#f89c4c','#ea6f45','#d1414c','#a51f52','#6f0f4c','#3f0a3c'];
+/* Priority's low third is deliberately near-paper. Two thirds of the basin
+   scores mid-range, and if the mid-range is loud the deep core stops being the
+   thing you look at first — which is the entire job of this layer. */
+const PRIORITY=['#fffdf2','#fff4d3','#ffe3a6','#fbc478','#f09a58','#de6f4f','#c04455','#932050','#5c0f42'];
 const HEAT    =['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'];
 /* Canopy reads brown->green rather than pale->deep: bare ground genuinely looks
    like bare ground, and the dark end still lands on "needs trees". */
@@ -338,12 +386,116 @@ const vals={};
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
 let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
 
+/* ================================================================ live model
+ *
+ * The score is recomputed in the browser, from the same four weights and the
+ * same arithmetic as pipeline/05_score.py:
+ *
+ *   base_risk = w_heat*heat_n + w_green*(1-green_n) + w_ac*(1-ac_n) + w_age*age65_n
+ *   priority  = base_risk * (pop_floor + pop_weight*pop_n)
+ *   score     = 100 * minmax(priority)
+ *
+ * with every input min-max normalised WITHIN the city, which is the portability
+ * argument: 44 °C is an ordinary afternoon in Phoenix and an emergency in
+ * Seattle. Weights here MUST stay in sync with pipeline/config.py WEIGHTS —
+ * that is a standing contract in STATUS.md, and now the legend copy is
+ * generated from these constants rather than restating them by hand, so the two
+ * cannot drift the way hardcoded legend text did.
+ *
+ * Checked against the committed data/la.geojson at these defaults: max
+ * absolute difference 0.16 points, mean 0.04, top-10 order identical bar one
+ * adjacent swap. The residual is the geojson storing lst/green/ac rounded to
+ * 1 dp — it is rounding, not a second model. Say that out loud if asked.
+ *
+ * The pipeline's own `score` and `rank` properties are never overwritten; they
+ * stay on the features untouched, and everything on screen reads through
+ * sc()/rk() instead. So "reset" is exact, not approximate.
+ */
+const DEFAULT_W={heat:0.35,green:0.25,ac:0.25,age65:0.15};
+const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
+const W_INPUTS=[
+  {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
+   note:'hotter hex → higher risk'},
+  {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
+   note:'less shade → higher risk'},
+  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
+   note:'modelled from income'},
+  {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
+   note:'older residents die first'},
+];
+let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
+const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
+
+/** Weights are shares, so they are renormalised to sum to 1 before use. That is
+ *  why the readout can always total 100% no matter where the sliders sit. */
+function normW(){
+  const s=W_RAW.heat+W_RAW.green+W_RAW.ac+W_RAW.age65;
+  if(!(s>0))return {...DEFAULT_W};            // all-zero: nothing to weigh, hold defaults
+  return {heat:W_RAW.heat/s,green:W_RAW.green/s,ac:W_RAW.ac/s,age65:W_RAW.age65/s};
+}
+function isDefaultW(){
+  const W=normW();
+  return Math.abs(POPW-DEFAULT_POPW)<1e-9 &&
+    W_INPUTS.every(({k})=>Math.abs(W[k]-DEFAULT_W[k])<5e-4);
+}
+
+/** Re-score and re-rank all hexes. ~3,000 features and a sort: sub-millisecond,
+ *  so it runs on every `input` event rather than being debounced. */
+function rescore(){
+  const W=normW(), F=HEX.features, n=F.length;
+  const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  const pri=new Float64Array(n);
+  for(let i=0;i<n;i++){
+    const p=F[i].properties;
+    const base=W.heat*nv(p,'lst') + W.green*(1-nv(p,'green'))
+             + W.ac*(1-nv(p,'ac')) + W.age65*nv(p,'pct65');
+    pri[i]=base*((1-POPW)+POPW*nv(p,'pop'));
+  }
+  let lo=Infinity,hi=-Infinity;
+  for(let i=0;i<n;i++){if(pri[i]<lo)lo=pri[i];if(pri[i]>hi)hi=pri[i];}
+  LIVE.lo=lo;LIVE.hi=hi;
+  const span=Math.max(1e-12,hi-lo);
+  const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>pri[b]-pri[a]);
+  LIVE.score.clear();LIVE.rank.clear();
+  for(let i=0;i<n;i++)LIVE.score.set(F[i].properties.id,100*(pri[i]-lo)/span);
+  order.forEach((i,r)=>LIVE.rank.set(F[i].properties.id,r+1));
+  LIVE.order=order.map(i=>F[i]);
+}
+const sc=p=>LIVE.score.get(p.id);
+const rk=p=>LIVE.rank.get(p.id);
+
+/** The same arithmetic again, as a MapLibre expression over the raw properties.
+ *
+ *  Written out rather than pushing recomputed values through
+ *  source.setData(HEX): setData re-serialises and re-parses 1.4 MB of geometry
+ *  on every frame of a slider drag. As an expression the geometry never moves —
+ *  only a paint property changes — so the map keeps up with the pointer.
+ *
+ *  It is the one place the model is duplicated, so it is generated from the same
+ *  `vals` ranges and the same normW() as rescore() above; there is no third set
+ *  of numbers to keep in sync. */
+function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+function liveScoreExpr(){
+  const W=normW();
+  const base=['+',
+    ['*',W.heat, nx('lst')],
+    ['*',W.green,['-',1,nx('green')]],
+    ['*',W.ac,   ['-',1,nx('ac')]],
+    ['*',W.age65,nx('pct65')]];
+  const pri=['*',base,['+',1-POPW,['*',POPW,nx('pop')]]];
+  return ['*',100,['/',['-',pri,LIVE.lo],Math.max(1e-12,LIVE.hi-LIVE.lo)]];
+}
+
 function computeRanges(){
   ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{
     const a=HEX.features.map(f=>f.properties[k]).filter(v=>typeof v==='number'&&isFinite(v));
     vals[k]=a.length?[Math.min(...a),Math.max(...a)]:[0,1];
     if(vals[k][0]===vals[k][1])vals[k][1]=vals[k][0]+1;  // avoid divide-by-zero on flat fields
   });
+  // Priority is a min-maxed index by construction, so its scale is 0–100 whatever
+  // the weights are. Pinning it stops the legend's endpoints twitching every time
+  // a slider moves, which would read as the scale rather than the map changing.
+  vals.score=[0,100];
 }
 function rng(k){return k==='access'?vals['access_min']:vals[k];}
 function propKey(k){return k==='access'?'access_min':k;}
@@ -358,7 +510,16 @@ function colorFor(k,v){return ramp(LAYERS[k].ramp,norm(k,v));}
  *   lift()     keeps the hue, raises luminance until it reads on the dark panel
  *   inkOn()    picks black or white text for a swatch filled with the true colour
  * Luminance coefficients are Rec. 709. */
-function rgbOf(css){const m=css.match(/-?\d+/g);return m?m.slice(0,3).map(Number):[0,0,0];}
+/* Must take BOTH forms that reach it: ramp() hands back "rgb(r,g,b)", but the
+   ramp arrays themselves are "#rrggbb" and get used raw for swatches. Digit-
+   scraping a hex string is silently wrong rather than loud — "#b30000" scrapes
+   to [30000] and lands on rgb(NaN), "#5c3a17" scrapes to [5,3,17] and lands on
+   a grey that looks deliberate. Branch on the leading '#'. */
+function rgbOf(css){
+  if(css[0]==='#')return hex(css);
+  const m=css.match(/-?[\d.]+/g);
+  return m?m.slice(0,3).map(Number):[0,0,0];
+}
 function lum(rgb){return 0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2];}
 function lift(css,target=152){
   const c=rgbOf(css),L=lum(c);
@@ -379,12 +540,24 @@ function dataBounds(){
   return [[w,s],[e,n]];
 }
 
+/** Every stop of the ramp, not the three-point sample this used to take. The
+ *  legend bar is drawn from the same array, so a nine-stop fill and a nine-stop
+ *  legend now agree everywhere along their length, not just at the ends. */
+function rampStops(k,lo,hi){
+  const cols=LAYERS[k].ramp,out=[];
+  for(let i=0;i<cols.length;i++)out.push(lo+(hi-lo)*i/(cols.length-1),cols[i]);
+  return out;
+}
 function fillExpr(k){
-  if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#333'];
-  const pk=propKey(k),[lo,hi]=rng(k),mid=(lo+hi)/2;
+  // Ungraded hexes are 1,962 of 3,008 and legitimately outside the 1939 map —
+  // a neutral light grey on the light basemap, not a dark blob that reads as
+  // a fifth grade.
+  if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#d6dbe1'];
+  // Priority is recomputed from the live weights, in-expression. See liveScoreExpr().
+  if(k==='score') return ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)];
+  const pk=propKey(k),[lo,hi]=rng(k);
   // coalesce: real pipelines leave no-data hexes null; without this they'd break the ramp
-  return ['interpolate',['linear'],['coalesce',['get',pk],lo],
-    lo,colorFor(k,lo),mid,colorFor(k,mid),hi,colorFor(k,hi)];
+  return ['interpolate',['linear'],['coalesce',['get',pk],lo],...rampStops(k,lo,hi)];
 }
 
 const EMPTY={type:'FeatureCollection',features:[]};
@@ -403,7 +576,9 @@ async function boot(){
 
   // Panel UI is data-only. Render it BEFORE the map so a slow or blocked basemap
   // CDN can never leave the demo staring at an empty screen.
-  buildRank();wireUI();setLayer('score');
+  // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
+  // so the panel is fully populated from the live model before the map exists.
+  buildWeights();wireUI();
 
   // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
   // await; keep it pinned to the container for fullscreen/projector too.
@@ -590,6 +765,70 @@ function setLayer(k){
   dir.textContent=(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
 }
 
+// ---------------------------------------------------------------- weights UI
+function buildWeights(){
+  document.getElementById('w-rows').innerHTML=W_INPUTS.map(w=>`
+    <div class="wrow">
+      <div class="wtop"><span class="wsw" style="background:${w.swatch}"></span>
+        <span class="wnm">${w.label}${w.est?'<span class="est">est</span>':''}</span>
+        <span class="wval" id="wv-${w.k}" style="color:${lift(w.swatch)}">–</span></div>
+      <input type="range" id="ws-${w.k}" min="0" max="60" step="1"
+        style="--sl:${lift(w.swatch)}" aria-label="${w.label} weight"/>
+    </div>`).join('')+`
+    <div class="wrow">
+      <div class="wtop"><span class="wsw" style="background:${POPU[7]}"></span>
+        <span class="wnm">Population weighting</span>
+        <span class="wval" id="wv-pop" style="color:${lift(POPU[7])}">–</span></div>
+      <input type="range" id="ws-pop" min="0" max="100" step="1"
+        style="--sl:${lift(POPU[7])}" aria-label="Population weighting"/>
+    </div>`;
+  W_INPUTS.forEach(w=>{
+    const el=document.getElementById('ws-'+w.k);
+    el.value=Math.round(W_RAW[w.k]*100);
+    el.addEventListener('input',()=>{W_RAW[w.k]=+el.value/100;applyWeights();});
+  });
+  const pe=document.getElementById('ws-pop');
+  pe.value=Math.round(POPW*100);
+  pe.addEventListener('input',()=>{POPW=+pe.value/100;applyWeights();});
+  document.getElementById('w-reset').onclick=()=>{
+    W_RAW={...DEFAULT_W};POPW=DEFAULT_POPW;
+    W_INPUTS.forEach(w=>document.getElementById('ws-'+w.k).value=Math.round(DEFAULT_W[w.k]*100));
+    pe.value=Math.round(DEFAULT_POPW*100);
+    applyWeights();
+  };
+  applyWeights();
+}
+
+/** One entry point for "the weights changed", so the map, the ranked list, the
+ *  legend copy and any open detail panel can never show three different models.
+ *  Fixed bug 12 was exactly this class of failure at a smaller scale. */
+function applyWeights(){
+  rescore();
+  const W=normW(),def=isDefaultW();
+  W_INPUTS.forEach(w=>document.getElementById('wv-'+w.k).textContent=Math.round(W[w.k]*100)+'%');
+  document.getElementById('wv-pop').textContent=Math.round(POPW*100)+'%';
+  // The multiplier spans (1-POPW) .. 1, so the busiest hex outweighs the emptiest
+  // by 1/(1-POPW). Stated as that ratio because "0.45" means nothing to a reader.
+  document.getElementById('w-pop').textContent=
+    POPW<0.02 ? 'population ignored — every hex counts equally'
+  : POPW>0.98 ? 'the emptiest hex scores zero whatever its heat'
+  : `the most-populated hex counts ${(1/(1-POPW)).toFixed(1)}× the least`;
+  const st=document.getElementById('w-state');
+  st.textContent=def?'pipeline defaults':'your weights';
+  st.classList.toggle('custom',!def);
+  document.getElementById('w-reset').disabled=def;
+  // The caption for the priority layer is generated from the weights in force,
+  // so it can't sit there quoting 35% while the slider says 60%.
+  LAYERS.score.cap=`Composite of surface heat (${Math.round(W.heat*100)}%), missing canopy `
+    +`(${Math.round(W.green*100)}%), no A/C access (${Math.round(W.ac*100)}%) and share aged 65+ `
+    +`(${Math.round(W.age65*100)}%), then weighted by the population exposed. `
+    +(def?'These are the weights pipeline/config.py shipped with. ':'Re-scored live in your browser. ')
+    +'Deeper = greater need for cooling investment.';
+  if(current==='score')setLayer('score');     // repaints AND refreshes the caption
+  buildRank();
+  if(selId!=null)selectHex(selId,false);
+}
+
 function wireUI(){
   document.getElementById('layers').addEventListener('click',e=>{
     const b=e.target.closest('.layer');if(!b)return;
@@ -615,14 +854,18 @@ function syncToggles(){
 }
 
 function buildRank(){
-  const top=[...HEX.features].sort((a,b)=>a.properties.rank-b.properties.rank).slice(0,25);
+  // LIVE.order is already sorted by the weights in force — never by the
+  // pipeline's frozen `rank`, or the list would contradict the map the moment
+  // a weight moved.
+  const top=LIVE.order.slice(0,25);
   const el=document.getElementById('rank');el.innerHTML='';
-  top.forEach(f=>{const p=f.properties;
+  top.forEach(f=>{const p=f.properties,s=sc(p);
     const row=document.createElement('div');row.className='row';row.dataset.id=p.id;
-    const c=colorFor('score',p.score);
-    row.innerHTML=`<div class="badge" style="background:${c};color:${inkOn(c)}">${p.rank}</div>
+    if(p.id===selId)row.classList.add('sel');
+    const c=colorFor('score',s);
+    row.innerHTML=`<div class="badge" style="background:${c};color:${inkOn(c)}">${rk(p)}</div>
       <div><div class="nm">${nameOf(p)}</div><div class="sub">${fTemp(p.lst)} · ${p.green.toFixed(0)}% canopy · ${fMin(p.access_min)} to relief</div></div>
-      <div class="sc" style="color:${lift(c)}">${p.score.toFixed(0)}</div>`;
+      <div class="sc" style="color:${lift(c)}">${s.toFixed(0)}</div>`;
     row.onclick=()=>selectHex(p.id,true);el.appendChild(row);});
 }
 
@@ -630,13 +873,16 @@ function selectHex(id,fly){
   selId=id;const f=HEX.features.find(x=>x.properties.id===id);if(!f)return;const p=f.properties;
   if(map&&map.getLayer('sel'))map.setFilter('sel',['==','id',id]);
   document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',+r.dataset.id===id));
-  const badge=document.getElementById('d-badge'),bc=colorFor('score',p.score);
-  badge.textContent=p.rank;badge.style.background=bc;badge.style.color=inkOn(bc);
+  const s=sc(p),r=rk(p);
+  const badge=document.getElementById('d-badge'),bc=colorFor('score',s);
+  badge.textContent=r;badge.style.background=bc;badge.style.color=inkOn(bc);
   document.getElementById('d-name').textContent=nameOf(p);
-  document.getElementById('d-rank').textContent=`Priority #${p.rank} of ${HEX.features.length} · score ${p.score.toFixed(0)}`;
+  document.getElementById('d-rank').textContent=
+    `Priority #${r} of ${HEX.features.length} · score ${s.toFixed(0)}`+(isDefaultW()?'':' · your weights');
+  renderBreakdown(p,s);
   const m=[
     ['Surface heat','lst',p.lst,LAYERS.lst.fmt(p.lst),false],
-    ['Greenness','green',p.green,LAYERS.green.fmt(p.green),false],
+    ['Tree canopy','green',p.green,LAYERS.green.fmt(p.green),false],
     ['Population','pop',p.pop,Math.round(p.pop).toLocaleString(),false],
     ['Age 65+','pct65',p.pct65,LAYERS.pct65.fmt(p.pct65),false],
     ['A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
@@ -656,6 +902,40 @@ function selectHex(id,fly){
   document.getElementById('detail').classList.add('show');
   if(fly&&map){const c=f.geometry.coordinates[0];let lon=0,lat=0;c.forEach(pt=>{lon+=pt[0];lat+=pt[1];});
     lon/=c.length;lat/=c.length;map.flyTo({center:[lon,lat],zoom:12.4,duration:850,essential:true});}
+}
+
+/** Show the arithmetic, not just the answer.
+ *
+ *  For the selected hex: what each input measured, where that lands on the
+ *  city's 0–1 scale, what the weight turns it into, and how the four add up to
+ *  the risk that the population multiplier then scales. A judge asking "why is
+ *  this one first?" gets the sum, term by term, instead of an assurance. */
+function renderBreakdown(p,score){
+  const W=normW();
+  const nv=k=>{const[lo,hi]=vals[k];return Math.max(0,Math.min(1,(p[k]-lo)/(hi-lo)));};
+  const parts=W_INPUTS.map(w=>{
+    const raw=nv(w.prop), t=w.invert?1-raw:raw;
+    return {...w,t,pts:W[w.k]*t,
+      shown:w.prop==='lst'?fTemp(p.lst):p[w.prop].toFixed(0)+'%'};
+  });
+  const base=parts.reduce((a,b)=>a+b.pts,0);
+  const mult=(1-POPW)+POPW*nv('pop');
+  const tot=Math.max(1e-9,base);
+  document.getElementById('d-breakdown').innerHTML=`
+    <div class="stack">${parts.map(x=>
+      `<i style="width:${(x.pts/tot*100).toFixed(2)}%;background:${x.swatch}" title="${x.label}"></i>`).join('')}</div>
+    <table><tbody>
+      ${parts.map(x=>`<tr>
+        <td class="k"><i style="background:${x.swatch}"></i>${x.label}</td>
+        <td class="n">${x.shown}</td>
+        <td class="n">${x.t.toFixed(2)} × ${W[x.k].toFixed(2)}</td>
+        <td class="p">${x.pts.toFixed(3)}</td></tr>`).join('')}
+      <tr class="sum"><td class="k">Risk before population</td><td class="n"></td><td class="n"></td>
+        <td class="p">${base.toFixed(3)}</td></tr>
+      <tr><td class="k">× population</td><td class="n">${fInt(p.pop)}</td>
+        <td class="n">${nv('pop').toFixed(2)} of max</td><td class="p">${mult.toFixed(3)}</td></tr>
+    </tbody></table>
+    <div class="eq">priority ${(base*mult).toFixed(3)} → rescaled across all ${HEX.features.length} hexes → <b>score ${score.toFixed(1)}</b></div>`;
 }
 
 function updateROI(p){
@@ -681,12 +961,15 @@ function updateROI(p){
 function wireHover(){
   const pop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:8});
   map.on('mousemove','fill',e=>{map.getCanvas().style.cursor='pointer';const p=e.features[0].properties;
+    // Live score/rank, not the frozen properties MapLibre hands back — otherwise
+    // the tooltip would quietly disagree with the hex it is pointing at.
+    const s=sc(p),r=rk(p);
     pop.setLngLat(e.lngLat).setHTML(
       `<b>${nameOf(p)}</b>
-       <div class="tt-row"><span>Priority</span><span>${(+p.score).toFixed(0)} · #${p.rank}</span></div>
-       <div class="tt-row"><span>Heat</span><span>${(+p.lst).toFixed(1)}°C</span></div>
-       <div class="tt-row"><span>Greenness</span><span>${(+p.green).toFixed(0)}%</span></div>
-       <div class="tt-row"><span>To cooling</span><span>${(+p.access_min).toFixed(0)} min</span></div>`).addTo(map);});
+       <div class="tt-row"><span>Priority</span><span>${s==null?'–':s.toFixed(0)+' · #'+r}</span></div>
+       <div class="tt-row"><span>Surface heat</span><span>${fTemp(+p.lst)}</span></div>
+       <div class="tt-row"><span>Canopy</span><span>${(+p.green).toFixed(0)}%</span></div>
+       <div class="tt-row"><span>Walk to cooling</span><span>${fMin(+p.access_min)}</span></div>`).addTo(map);});
   map.on('mouseleave','fill',()=>{map.getCanvas().style.cursor='';pop.remove();});
   map.on('click','fill',e=>selectHex(e.features[0].properties.id,false));
 }
