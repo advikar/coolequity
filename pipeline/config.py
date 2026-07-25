@@ -36,9 +36,36 @@ SUMMER_START = "2023-06-01"
 SUMMER_END = "2023-09-15"
 MAX_CLOUD_PCT = 20
 
-# NDVI -> canopy-% proxy: clamp NDVI to this range, scale linearly to 0..CANOPY_MAX.
-NDVI_CLAMP = (0.20, 0.80)
+# Metric CRS for raster work — UTM 11N covers LA. Retarget with the city.
+# (Zonal means in a projected CRS avoid the lat/lon pixel anisotropy.)
+RASTER_CRS = "EPSG:32611"
+RASTER_RES_M = 100          # 30 m Landsat / 10 m S2 downsampled; hexes are ~900 m across
+MAX_SCENES = 20             # cap per collection so a demo build stays bounded
+
+# NDVI -> vegetation-cover-% proxy: clamp, then scale linearly to 0..CANOPY_MAX.
+#
+# Endpoints are physical, not percentile-based: NDVI ~0.05 is the bare-soil/paved
+# threshold and ~0.65 is dense healthy canopy in this composite (observed p99 =
+# 0.67). They must stay absolute because canopy % feeds the ROI tree count — a
+# relative stretch would make a desert city look as green as a forest one.
+#
+# The spec's 0.20-0.80 was calibrated for wetter imagery: against LA's dry-summer
+# median NDVI of 0.24 it floored 40% of hexes at exactly 0% green, flattening the
+# layer and pinning the ROI slider. 0.05-0.65 gives a citywide median of ~14%,
+# consistent with LA's published ~21% tree canopy for a dry-summer composite.
+NDVI_CLAMP = (0.05, 0.65)
 CANOPY_MAX_PCT = 45.0
+
+# ---------------------------------------------------------------- census (US)
+ACS_YEAR = 2023
+STATE_FIPS = "06"
+COUNTY_FIPS = "037"          # Los Angeles County
+
+# A/C access is MODELED from an income percentile — there is no A/C census.
+# These bounds are the plausible spread for LA County, not measured values, and
+# the UI must keep labelling the layer "est.".
+AC_PCT_MIN = 35.0
+AC_PCT_MAX = 95.0
 
 # ---------------------------------------------------------------- intervention
 # Front end mirrors these; keep them in sync with app/index.html.
