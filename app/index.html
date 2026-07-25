@@ -157,6 +157,27 @@
   .tt-what{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:4px}
   /* ---- model weights ---- */
   .hint{font-size:11px;color:var(--muted);line-height:1.5;margin:-4px 0 12px}
+  /* Presets are the front door; the four sliders live behind a disclosure so the
+     panel reads as a choice, not a control surface. */
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+  .pst{background:#0e141c;border:1px solid var(--edge);color:var(--muted);border-radius:8px;
+    padding:6px 10px;font:inherit;font-size:11.5px;cursor:pointer;transition:.14s}
+  .pst:hover{border-color:#3a4a5c;color:var(--txt)}
+  .pst.on{border-color:var(--accent);background:#1a1310;color:var(--txt);font-weight:600}
+  .pwhy{font-size:11px;color:var(--muted);line-height:1.5;background:#0c1219;
+    border:1px solid var(--edge);border-radius:9px;padding:9px 11px;margin-bottom:10px}
+  .pwhy b{color:var(--txt);font-weight:600}
+  .disc{display:flex;align-items:center;gap:7px;width:100%;background:none;border:0;
+    color:var(--muted);font:inherit;font-size:11.5px;cursor:pointer;padding:3px 0;transition:.14s}
+  .disc:hover{color:var(--txt)}
+  .disc .dchev{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;
+    transition:transform .18s}
+  .disc[aria-expanded=true] .dchev{transform:rotate(90deg)}
+  .disc .dnote{margin-left:auto;font-size:10px;color:var(--muted2)}
+  #wadv[hidden]{display:none}
+  #wadv{padding-top:11px}
+  .wexp{font-size:10.5px;color:var(--muted2);line-height:1.55;margin:0 0 11px}
+  .wexp code{font-family:var(--mono);font-size:10px;color:var(--accent2)}
   .wrow{margin-bottom:11px}
   .wrow .wtop{display:flex;align-items:baseline;gap:7px;font-size:12px;margin-bottom:5px}
   .wrow .wsw{width:8px;height:8px;border-radius:2px;flex:none;align-self:center}
@@ -316,12 +337,23 @@
       </div>
 
       <div class="section" id="weights">
-        <p class="lbl">Model weights <span class="wstate" id="w-state">pipeline defaults</span></p>
-        <p class="hint">These four numbers <b>are</b> the model. Drag one and every hex is
-          re-scored and re-ranked in the browser — map, list and ROI all follow.</p>
-        <div id="w-rows"></div>
-        <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
-          <button id="w-reset" disabled>Reset</button></div>
+        <p class="lbl">What should count most <span class="wstate" id="w-state">pipeline defaults</span></p>
+        <div class="presets" id="presets"></div>
+        <div class="pwhy" id="w-why"></div>
+        <button class="disc" id="w-disc" type="button" aria-expanded="false" aria-controls="wadv">
+          <svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+          Adjust the weights yourself
+          <span class="dnote" id="w-dnote">4 inputs</span>
+        </button>
+        <div id="wadv" hidden>
+          <p class="wexp">Each input is scaled 0–1 <b>within this city</b>, multiplied by its
+            weight, and the four are added. That sum is then scaled by how many people live in
+            the hex. Weights are relative — they are normalised to 100%, so raising one lowers
+            the rest. Defaults come from <code>pipeline/config.py</code>.</p>
+          <div id="w-rows"></div>
+          <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
+            <button id="w-reset" disabled>Reset</button></div>
+        </div>
       </div>
 
       <div class="section">
@@ -554,6 +586,33 @@ const W_INPUTS=[
    note:'modelled from income'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
+];
+/** Presets set all four weights at once, which is the only way a single click
+ *  can visibly change the answer. Moving one slider alone barely moves the map:
+ *  the weights are renormalised to 100%, so pushing one input to its maximum
+ *  while the other three hold still lands it around 40% — enough to reorder a
+ *  pair of hexes and not enough to look like anything happened. Each preset is
+ *  a policy question someone might actually be asked to defend. */
+const PRESETS=[
+  {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
+   why:'<b>The shipped model.</b> A balance of heat, missing shade, no air conditioning and age, '
+      +'weighted by how many people are exposed. Every other preset is a departure from this one.'},
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.15,ac:.10,age65:.05},pop:.45,
+   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity check: '
+      +'if a block ranks high here and low by default, the difference is everything except heat.'},
+  {id:'shade',name:'Shade gap',w:{heat:.25,green:.60,ac:.10,age65:.05},pop:.45,
+   why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
+      +'the input a city can actually change.'},
+  {id:'seniors',name:'Protect seniors',w:{heat:.20,green:.05,ac:.15,age65:.60},pop:.45,
+   why:'<b>Who is most likely to die of it?</b> Heat kills the old first. Watch Holmby Hills — one '
+      +'of the wealthiest zip codes in America — climb from roughly 2,100th to the high 20s. '
+      +'The answer depends on the question you asked.'},
+  {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05},pop:.45,
+   why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
+      +'<i>modelled</i> from income rather than measured — worth naming out loud.'},
+  {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
+   why:'<b>Reach over severity.</b> Same four weights, but density dominates: a moderately hot '
+      +'block with 15,000 residents outranks a scorching one with 800.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -1135,7 +1194,7 @@ function buildWeights(){
       <div class="wtop"><span class="wsw" style="background:${w.swatch}"></span>
         <span class="wnm">${w.label}${w.est?'<span class="est">est</span>':''}</span>
         <span class="wval" id="wv-${w.k}" style="color:${lift(w.swatch)}">–</span></div>
-      <input type="range" id="ws-${w.k}" min="0" max="60" step="1"
+      <input type="range" id="ws-${w.k}" min="0" max="100" step="1"
         style="--sl:${lift(w.swatch)}" aria-label="${w.label} weight"/>
     </div>`).join('')+`
     <div class="wrow">
@@ -1153,13 +1212,41 @@ function buildWeights(){
   const pe=document.getElementById('ws-pop');
   pe.value=Math.round(POPW*100);
   pe.addEventListener('input',()=>{POPW=+pe.value/100;applyWeights();});
-  document.getElementById('w-reset').onclick=()=>{
-    W_RAW={...DEFAULT_W};POPW=DEFAULT_POPW;
-    W_INPUTS.forEach(w=>document.getElementById('ws-'+w.k).value=Math.round(DEFAULT_W[w.k]*100));
-    pe.value=Math.round(DEFAULT_POPW*100);
-    applyWeights();
+  document.getElementById('w-reset').onclick=()=>applyPreset('default');
+
+  document.getElementById('presets').innerHTML=PRESETS.map(p=>
+    `<button class="pst" data-id="${p.id}" type="button">${p.name}</button>`).join('');
+  document.getElementById('presets').addEventListener('click',e=>{
+    const b=e.target.closest('.pst');if(b)applyPreset(b.dataset.id);
+  });
+
+  const disc=document.getElementById('w-disc'),adv=document.getElementById('wadv');
+  disc.onclick=()=>{
+    const open=adv.hidden;adv.hidden=!open;disc.setAttribute('aria-expanded',open);
   };
   applyWeights();
+}
+
+/** Set every weight at once and push the values back into the sliders, so the
+ *  advanced panel is never showing numbers the model isn't using. */
+function applyPreset(id){
+  const p=PRESETS.find(x=>x.id===id);if(!p)return;
+  W_RAW={...p.w};POPW=p.pop;
+  W_INPUTS.forEach(w=>{document.getElementById('ws-'+w.k).value=Math.round(W_RAW[w.k]*100);});
+  document.getElementById('ws-pop').value=Math.round(POPW*100);
+  applyWeights();
+}
+
+/** Which preset, if any, describes the weights in force. Compares the
+ *  normalised weights so "35/25/25/15" and "70/50/50/30" count as the same
+ *  model — they are. */
+function matchPreset(){
+  const W=normW();
+  return PRESETS.find(p=>{
+    const s=p.w.heat+p.w.green+p.w.ac+p.w.age65;
+    return Math.abs(POPW-p.pop)<5e-3 &&
+      W_INPUTS.every(({k})=>Math.abs(W[k]-p.w[k]/s)<5e-3);
+  })||null;
 }
 
 /** One entry point for "the weights changed", so the map, the ranked list, the
@@ -1177,9 +1264,16 @@ function applyWeights(){
   : POPW>0.98 ? 'the emptiest hex scores zero whatever its heat'
   : `the most-populated hex counts ${(1/(1-POPW)).toFixed(1)}× the least`;
   const st=document.getElementById('w-state');
-  st.textContent=def?'pipeline defaults':'your weights';
+  const pre=matchPreset();
+  st.textContent=def?'pipeline defaults':pre?pre.name.toLowerCase():'your weights';
   st.classList.toggle('custom',!def);
   document.getElementById('w-reset').disabled=def;
+  document.querySelectorAll('.pst').forEach(b=>b.classList.toggle('on',!!pre&&b.dataset.id===pre.id));
+  document.getElementById('w-why').innerHTML=pre?pre.why
+    :'<b>Your own weighting.</b> Not one of the presets — the map, the ranked list and every '
+    +'ROI figure below are running on the numbers you set.';
+  document.getElementById('w-dnote').textContent=
+    W_INPUTS.map(w=>Math.round(W[w.k]*100)+'%').join(' · ');
   // The caption for the priority layer is generated from the weights in force,
   // so it can't sit there quoting 35% while the slider says 60%.
   LAYERS.score.cap=`Composite of surface heat (${Math.round(W.heat*100)}%), missing canopy `
@@ -1317,19 +1411,27 @@ function updateROI(p){
   const slider=document.getElementById('roi-slider');
   const target=+slider.value, delta=Math.max(0,target-p.green);
   const tempDrop=delta/10*0.3;                     // WRI: +10% canopy ≈ −0.3°C
-  const seniors=Math.round(p.pop*p.pct65/100);
   const area=areaOf(p);
   const trees=Math.round(delta/100*area/TREE_M2);
   const cost=trees*COST_TREE;
-  const perPerson=p.pop?cost/p.pop:0;
+  // Nobody is cooled by an intervention you haven't made. Reading a flat
+  // "15,759 residents cooled" while the slider sits at the hex's current canopy
+  // and the cost reads $0 is the one number on this panel that looked broken —
+  // it was the only figure that never responded to the slider.
+  const acts=delta>0;
+  const people=acts?Math.round(p.pop):0;
+  const seniors=acts?Math.round(p.pop*p.pct65/100):0;
+  const perPerson=acts&&p.pop?cost/p.pop:0;
+  const money=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1000?'$'+Math.round(v/1000)+'k':'$'+Math.round(v);
   document.getElementById('roi-target').textContent=target;
-  document.getElementById('roi-temp').textContent='−'+fTempD(tempDrop);
-  document.getElementById('roi-people').textContent=fInt(p.pop);
+  document.getElementById('roi-temp').textContent=acts?'−'+fTempD(tempDrop):fTempD(0);
+  document.getElementById('roi-people').textContent=fInt(people);
   document.getElementById('roi-seniors').textContent=fInt(seniors);
-  document.getElementById('roi-cost').textContent=cost>=1e6?'$'+(cost/1e6).toFixed(1)+'M':'$'+Math.round(cost/1000)+'k';
-  document.getElementById('roi-per').textContent='$'+Math.round(perPerson);
-  document.getElementById('roi-note').textContent=
-    `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(p.pop)} residents incl. ${fInt(seniors)} aged 65+. Cooling factor per WRI (+10% canopy ≈ −0.3°C); costs are rough planning estimates, not a quote.`;
+  document.getElementById('roi-cost').textContent=money(cost);
+  document.getElementById('roi-per').textContent=money(perPerson);
+  document.getElementById('roi-note').textContent=acts
+    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents incl. ${fInt(seniors)} aged 65+. Cooling factor per WRI (+10% canopy ≈ −0.3°C); costs are rough planning estimates, not a quote.`
+    : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
 }
 
 function wireHover(){
