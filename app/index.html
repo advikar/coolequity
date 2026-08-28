@@ -384,6 +384,7 @@
           <button class="layer active" data-k="score"><b>Priority</b><span>composite score</span></button>
           <button class="layer" data-k="lst"><b>Surface heat</b><span>land surface temp</span></button>
           <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
+          <button class="layer" data-k="veg"><b>Lawn, no shade</b><span>non-tree vegetation</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
           <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
@@ -512,6 +513,7 @@
              subdivisions, so "plant here" is only actionable where the city
              owns the ground. Street frontage is that, measured from OSM. -->
         <div class="roi-feas" id="roi-feas"></div>
+        <div class="roi-feas" id="roi-turf"></div>
         <div class="roi-src" id="roi-src"></div>
       </div>
     </div>
@@ -559,6 +561,10 @@ const CANOPY  =['#5c3a17','#87582b','#ab8047','#c6ab6b','#b9c67c','#8dc276','#63
    and stopping short of white is what keeps a well-served hex visible. */
 const ACCESS_AC=['#08306b','#0a4a92','#1f6cb5','#4292c6','#6baed6','#9ecae1','#bcd4ea','#cfe0f0','#dfe9f5'];
 const POPU    =['#dbe4ee','#c2d2e4','#aabdd8','#96a8cc','#8b90bd','#8574ac','#7f5099','#6f2680','#4d004b'];
+/* Non-tree vegetation: lawn, turf, shrub. Deliberately NOT a green ramp — it
+   would read as "canopy" at a glance, which is the exact confusion this layer
+   exists to dispel. Teal reads as "watered ground", which is what it is. */
+const TURF    =['#0b3b3c','#12595a','#1a7878','#2b9698','#57b3b2','#8ccfcd','#bfe6e4','#dcf2f0','#f0fbfa'];
 const AGE     =['#fbf1c6','#fbe4a2','#fbd382','#f9bd5c','#f2a03d','#e17a1e','#c85c07','#973404','#662506'];
 const WALK    =['#fbdfd9','#f9c8c6','#f6adb4','#f28ea6','#e96f9a','#d94f92','#ae017e','#7a0177','#49006a'];
 
@@ -617,6 +623,13 @@ const LAYERS={
     cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
   green:{title:'Tree canopy / vegetation',ramp:CANOPY,worse:'lo',fmt:v=>v.toFixed(0)+'%',
     cap:'Share of ground under canopy or vegetation, from an NDVI proxy. Shade is the cheapest durable cooling there is — so here the brown end is the end that needs help.'},
+  veg:{title:'Non-tree vegetation',ramp:TURF,worse:'lo',fmt:v=>v.toFixed(0)+'%',
+    // DERIVED, not stored: total vegetation minus measured canopy. `get` reads it
+    // in JS, `expr` is the same arithmetic as a MapLibre expression so the map and
+    // the panel cannot disagree about what this layer shows.
+    get:p=>Math.max(0,(p.veg||0)-(p.green||0)),
+    expr:['max',0,['-',['coalesce',['get','veg'],0],['coalesce',['get','green'],0]]],
+    cap:'Ground that photosynthesises but is NOT a tree — lawn, turf, shrub — from NDVI minus measured canopy. It cools too: holding canopy constant it correlates with surface heat at −0.65, against −0.81 for canopy. Deep teal = a lot of watered ground with no shade over it, which is the cheapest place to establish a tree and the likeliest to survive.'},
   pop:{title:'Population exposed',ramp:POPU,worse:'hi',fmt:v=>v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0),
     cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
@@ -698,7 +711,7 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * score. The layer is still built from real ACS income and can still be viewed.
  * Mirrors pipeline/config.py WEIGHTS; LA's 35/25/25/15 renormalises to 45/33/22
  * once A/C leaves the sum. */
-const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0};
+const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0,turf:0};
 const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
 const W_INPUTS=[
   {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
@@ -711,6 +724,12 @@ const W_INPUTS=[
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
    note:'not in the shipped model — starts at 0', show:v=>fMin(v)},
+  /* Not a risk factor — a COST factor. Watered ground with no shade is where a
+     tree is cheapest to establish and likeliest to live, because the irrigation
+     is already there. Ships at 0: it belongs in a "where do we get the most
+     trees for the money" question, not in "who is most at risk". */
+  {k:'turf',prop:'veg',   label:'Watered, unshaded',swatch:TURF[2],
+   note:'cheapest ground to plant — starts at 0', derived:'veg', show:v=>v.toFixed(0)+'%'},
 ];
 /** Presets set all four weights at once, which is the only way a single click
  *  can visibly change the answer. Moving one slider alone barely moves the map:
@@ -723,23 +742,30 @@ const PRESETS=[
    why:'<b>The shipped model.</b> Surface heat, missing canopy and age, weighted by how many '
       +'people are exposed. Every other preset is a departure from this one. Air conditioning '
       +'is deliberately weighted zero here — open the sliders below for why.'},
-  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0},pop:.45,
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0,turf:0},pop:.45,
    why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity '
       +'check: if a block ranks high here and low by default, the difference is everything '
       +'except heat.'},
-  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0},pop:.45,
+  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0,turf:0},pop:.45,
    why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
       +'the input a city can actually change. San Ramon averages 21% canopy over its typical '
       +'resident, so this preset is really asking which blocks got left out of that.'},
-  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0},pop:.45,
+  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0,turf:0},pop:.45,
    why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
       +'runs from under 4% to 48% depending on the block. Amador Lakes N — 48% aged 65+ — goes '
       +'from #3 by default to #1.'},
-  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25},pop:.45,
+  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25,turf:0},pop:.45,
    why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
       +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
       +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
       +'pipeline does not use it.'},
+  {id:'turf',name:'Watered but unshaded',w:{heat:.20,green:.40,ac:0,age65:.10,access:0,turf:.30},pop:.45,
+   turf:true,
+   why:'<b>Where is a tree cheapest to plant?</b> Leans on missing canopy, then ranks up the '
+      +'blocks that are already irrigated — green ground with nothing shading it. In San Ramon '
+      +'59 blocks are in the top quarter for lawn and the bottom third for canopy, holding '
+      +'12,914 residents and <b>83 hectares</b> of unshaded public right-of-way. Watered ground '
+      +'means irrigation is already there, which is what decides whether a young tree lives.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
    why:'<b>Reach over severity.</b> Same weights, but density dominates: a townhome block with '
       +'900 residents outranks a hotter cul-de-sac with 90.'},
@@ -766,12 +792,15 @@ function isDefaultW(){
 function rescore(){
   const W=normW(), F=HEX.features, n=F.length;
   const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  // Derived layers (non-tree vegetation) are computed, not stored.
+  const nvd=(p,k)=>{const[lo,hi]=vals[k];return (valOf(k,p)-lo)/(hi-lo);};
   const pri=new Float64Array(n);
   for(let i=0;i<n;i++){
     const p=F[i].properties;
     const base=W.heat*nv(p,'lst') + W.green*(1-nv(p,'green'))
              + W.ac*(1-nv(p,'ac')) + W.age65*nv(p,'pct65')
-             + W.access*nv(p,'access_min');
+             + W.access*nv(p,'access_min')
+             + W.turf*nvd(p,'veg');
     pri[i]=base*((1-POPW)+POPW*nv(p,'pop'));
   }
   let lo=Infinity,hi=-Infinity;
@@ -798,6 +827,9 @@ const rk=p=>LIVE.rank.get(p.id);
  *  `vals` ranges and the same normW() as rescore() above; there is no third set
  *  of numbers to keep in sync. */
 function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+/* Same normalisation for a DERIVED layer, built from the layer's own expression
+   so the map, the ranked list and the panel share one definition. */
+function nxd(k){const[lo,hi]=vals[k];return ['/',['-',LAYERS[k].expr,lo],hi-lo];}
 function liveScoreExpr(){
   const W=normW();
   const base=['+',
@@ -805,7 +837,8 @@ function liveScoreExpr(){
     ['*',W.green,['-',1,nx('green')]],
     ['*',W.ac,   ['-',1,nx('ac')]],
     ['*',W.age65,nx('pct65')],
-    ['*',W.access,nx('access_min')]];
+    ['*',W.access,nx('access_min')],
+    ['*',W.turf,  nxd('veg')]];
   const pri=['*',base,['+',1-POPW,['*',POPW,nx('pop')]]];
   return ['*',100,['/',['-',pri,LIVE.lo],Math.max(1e-12,LIVE.hi-LIVE.lo)]];
 }
@@ -824,8 +857,11 @@ function syncHolcAvailable(){
 }
 
 function computeRanges(){
-  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{
-    const a=HEX.features.map(f=>f.properties[k]).filter(v=>typeof v==='number'&&isFinite(v));
+  ['score','lst','green','pop','pct65','ac','access_min','veg'].forEach(k=>{
+    // Derived layers range over their computed value, not a stored property.
+    const rd=LAYERS[k]&&LAYERS[k].get;
+    const a=HEX.features.map(f=>rd?rd(f.properties):f.properties[k])
+      .filter(v=>typeof v==='number'&&isFinite(v));
     vals[k]=a.length?[Math.min(...a),Math.max(...a)]:[0,1];
     if(vals[k][0]===vals[k][1])vals[k][1]=vals[k][0]+1;  // avoid divide-by-zero on flat fields
   });
@@ -837,6 +873,8 @@ function computeRanges(){
 function rng(k){return k==='access'?vals['access_min']:vals[k];}
 function propKey(k){return k==='access'?'access_min':k;}
 function norm(k,v){const[lo,hi]=rng(k);return (v-lo)/(hi-lo);}
+/* One reader for "what does layer k show for this hex", derived or stored. */
+function valOf(k,p){const L=LAYERS[k];return L&&L.get?L.get(p):p[propKey(k)];}
 function colorFor(k,v){return ramp(LAYERS[k].ramp,norm(k,v));}
 
 /* The ramps are built for a LIGHT basemap, so their business end is very dark —
@@ -895,7 +933,8 @@ function fillExpr(k){
   if(k==='score') return ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)];
   const pk=propKey(k),[lo,hi]=rng(k);
   // coalesce: real pipelines leave no-data hexes null; without this they'd break the ramp
-  return ['interpolate',['linear'],['coalesce',['get',pk],lo],...rampStops(k,lo,hi)];
+  const src=LAYERS[k].expr||['coalesce',['get',pk],lo];
+  return ['interpolate',['linear'],src,...rampStops(k,lo,hi)];
 }
 
 const EMPTY={type:'FeatureCollection',features:[]};
@@ -1560,6 +1599,7 @@ function selectHex(id,fly){
   const m=[
     ['Surface heat','lst',p.lst,LAYERS.lst.fmt(p.lst),false],
     ['Tree canopy','green',p.green,LAYERS.green.fmt(p.green),false],
+    ['Lawn, no shade','veg',valOf('veg',p),LAYERS.veg.fmt(valOf('veg',p)),false],
     ['Population','pop',p.pop,Math.round(p.pop).toLocaleString(),false],
     ['Age 65+','pct65',p.pct65,LAYERS.pct65.fmt(p.pct65),false],
     ['A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
@@ -1651,6 +1691,19 @@ function updateROI(p){
         ? `Planting ${pct}% of this block's unshaded public right-of-way — about ${fInt(trees)} trees at ${CROWN_M2} m² of mature crown each — would raise canopy here from ${p.green.toFixed(1)}% to about ${(p.green+gain).toFixed(1)}%, an estimated ${fTempD(tempDrop)} cooler afternoon for ${fInt(people)} residents, ${fInt(seniors)} of them aged 65 or over.`
         : `Nothing planted yet. This block has ${fSmallArea(rowFree)} of unshaded public right-of-way — drag the slider to plant some of it.`;
 
+  // Irrigated-but-unshaded is the cheapest ground to establish a tree on, and
+  // the likeliest to keep it alive — Bakersfield's own staff name absent
+  // irrigation as their cost and survival problem. Say it where the money is.
+  const turf=Math.max(0,(p.veg||0)-(p.green||0));
+  const turfNote=document.getElementById('roi-turf');
+  if(turfNote){
+    turfNote.innerHTML = turf>=8
+      ? `<b>${turf.toFixed(0)}% of this block is already watered ground with no shade over it</b> `
+        +`(${(p.veg||0).toFixed(0)}% vegetated, ${(p.green||0).toFixed(1)}% tree canopy). Irrigation `
+        +`is usually in place here, so a tree costs less to establish and is likelier to survive.`
+      : `Only ${turf.toFixed(0)}% of this block is watered but unshaded, so new planting here is `
+        +`more likely to need irrigation put in first.`;
+  }
   const feas=document.getElementById('roi-feas');
   if(rowFree<=0){
     feas.innerHTML='<b>No plantable public land mapped here.</b> Canopy in this block would '

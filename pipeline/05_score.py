@@ -24,7 +24,7 @@ import config as C
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
-            "canopy_m2", "row_m2", "row_canopy"]
+            "canopy_m2", "row_m2", "row_canopy", "veg"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -81,6 +81,14 @@ def load():
         have = df["canopy_pct"].notna()
         log(f"  canopy: MEASURED for {int(have.sum())}/{len(df)} hexes from a "
             f"canopy-height model; NDVI proxy retained where absent")
+        # Keep the NDVI figure as `veg`. It is not a worse canopy measure — it
+        # is a measure of something else: TOTAL photosynthesising ground, trees
+        # plus lawn plus shrub. Both cool, and independently: holding the other
+        # constant, canopy correlates with surface heat at -0.807 and non-tree
+        # vegetation at -0.649. The difference between the two is the useful
+        # part, because "already irrigated, no shade" is where a tree is
+        # cheapest to plant and likeliest to survive.
+        df["veg_pct"] = df["green_pct"]
         df["green_pct"] = df["canopy_pct"].where(have, df["green_pct"])
     else:
         log("  canopy: no canopy CSV — using the NDVI proxy, which overstates "
@@ -134,6 +142,9 @@ def main():
         "name":       df["name"].fillna("Unnamed"),
         "lst":        df["lst_c"].round(1),
         "green":      df["green_pct"].round(1),
+        # Total vegetation from NDVI. `veg` minus `green` is non-tree ground.
+        "veg":        (df["veg_pct"] if "veg_pct" in df.columns
+                       else df["green_pct"]).round(1),
         "canopy_m2":  (df["canopy_m2"] if "canopy_m2" in df.columns
                        else df["green_pct"] / 100 * df["area_m2"]).round(0),
         # Plantable public ground: street right-of-way not already shaded. The
