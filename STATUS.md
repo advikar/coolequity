@@ -86,6 +86,48 @@ and Holmby Hills). The pattern is always the same: a plausible story written fro
 names or intuition, never tested. **Any claim about what the ranking "tracks"
 must be a measured correlation before it goes in copy.**
 
+### Phase 11 — audit, robustness, and the two documents for the City
+
+Ran the outstanding audit steps rather than assuming they would pass.
+
+**Top-12 hex audit — passes, with one flag.** Every top-12 hex has full raster coverage
+(120–125 valid pixels), surface-temperature σ of 0.6–1.4 °C and a 90th-minus-median spread
+under 2.8 °C, so **no ranking rests on a single hot pixel**. All have 43–188 real buildings
+and 493–1,985 m of street frontage; parking and commercial coverage is ≤1.6%. Every one has a
+*negative* vegetation anomaly against its neighbours (−1.0 to −11.8 pp), which is the expected
+signature of a real canopy gap.
+
+**⚠ Capella (#10) is flagged, not trusted.** +3.82 °C against its neighbour ring (citywide
+95th percentile of |anomaly| is 1.87 °C), −11.8 pp vegetation, and 6.0 residents per mapped
+building against a city median of 3.7. Needs ground-truth at 37.78122, −121.92628 before it is
+presented to anyone.
+
+**Resolution robustness — passes, and improves.** Rebuilt at res 8 (81 populated cells):
+`corr(LST, canopy) = −0.837` against res 9's −0.800. The aggregate finding is not a
+resolution artifact. But individual rankings are resolution-sensitive — of the 17 res-8 parents
+holding the res-9 top 25, 11 are in the res-8 top quartile. **Present the list as a screen,
+not as a precise ranking.**
+
+**Irrigation confound — partly ruled out, and this is the weakest link.** Removing all mapped
+parks, turf, golf and woodland moves `corr(LST, canopy)` from −0.800 to −0.799. But those
+features are only ~6% of the city; most greenness here is private yard, unmapped in OSM, so
+the test could not reach it. In a summer-dry climate NDVI separates *irrigated* from
+*unirrigated* at least as sharply as *shaded* from *unshaded*. **A real canopy layer is the
+one thing that would settle it** — see `REDTEAM.md` objection 1.
+
+**Health validation data — does not exist at this geography.** California publishes
+heat-illness ED rates at **county** level (Tracking California). ZIP-level records sit inside
+HCAI behind a Limited Data Request. CalHeatScore scores every ZIP 0–4 but publishes only the
+forecast, not the underlying historical rates. **No San Ramon-specific figure was found, and
+county numbers must not be quoted as San Ramon's.**
+
+**Two new documents.** `BRIEF.md` is the one-page analysis for the City's Sustainability
+Division — headline, ten thinnest blocks, sources, three limitations, and a single ask (cross-
+check against the City's own tree inventory). `REDTEAM.md` is the strongest case against our
+own finding, ranked by severity. Both carry the Capella flag. Every figure in BRIEF.md was
+generated from `data/sanramon.geojson` rather than typed; the claim that "five of the top 25"
+exceed their frontage was written from intuition, checked, and corrected to nine.
+
 ### Four things that did NOT transfer from LA, and would fail quietly
 >
 > 1. **One summer is one Landsat scene here**, not twenty. `SUMMER_YEARS` is now

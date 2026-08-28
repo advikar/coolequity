@@ -311,6 +311,8 @@ pipeline/             01→05, run in order; config.py holds bbox, weights, cons
 data/                 committed outputs, all suffixed _sanramon so the LA files
                       on master are never overwritten; the app needs
                       sanramon.geojson + centers_sanramon.geojson
+BRIEF.md              one-page analysis written for the City's Sustainability Division
+REDTEAM.md            the strongest case against our own finding, ranked by severity
 DEMO.md               the 60–90s script, with real numbers and the likely questions
 SPEC.md               the original build spec; Section 10 superseded by DEMO.md
 STATUS.md             build state, fixed bugs, decisions taken
