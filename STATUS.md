@@ -1,5 +1,68 @@
 # CoolEquity — build status & handoff
 
+> ## Branch: `san-ramon`
+>
+> This branch retargets the whole engine at **San Ramon, California** — 540 hexes
+> at H3 res 9, 85,150 residents, all data freshly built. `master` (Los Angeles)
+> is untouched: every data artefact here is suffixed `_sanramon`, so the two
+> cities' files coexist instead of overwriting each other.
+>
+> **Everything below this box was written for the LA build.** The fixed-bug list
+> still applies — it is about the front end, which is shared — but the numbers,
+> the demo beats and the HOLC/redlining material are LA's. See README.md and
+> DEMO.md on this branch for San Ramon's.
+>
+> ### What was actually built (all verified in the browser)
+>
+> | | |
+> |---|---|
+> | Hexes | 540 populated (1 dropped), res 9, ~0.11 km² each |
+> | Coverage | the incorporated city, clipped to TIGERweb place GEOID 0668378 |
+> | Population | 85,150 (published ~84–86k — the area weighting checks out) |
+> | Surface temp | 39.2–51.1 °C, median 46.1 |
+> | Canopy proxy | 5.3–43.4%, median 19.9, **21.2% over the average resident** |
+> | Aged 65+ | 4.3–39.8%, median 12.2 |
+> | Cooling sites | 25 — 12 community centres, 5 pools, 5 senior/shelter, 3 libraries |
+> | Walk to relief | 0.2–45.8 min, median 14.2 |
+> | corr(LST, canopy) | **−0.797** (LA was −0.61, and this city has no coast) |
+> | #1 hex | Fairway Village Apartments SE — 47.2 °C, 15.6% canopy, 451 people, 23.6% aged 65+ |
+>
+> ### Four things that did NOT transfer from LA, and would fail quietly
+>
+> 1. **One summer is one Landsat scene here**, not twenty. `SUMMER_YEARS` is now
+>    `(2022, 2023, 2024)` and `02_satellite.py` searches each summer separately
+>    and concatenates — 9 Landsat, 11 Sentinel-2, same 20% cloud filter. **Never
+>    replace this with a single continuous date range**: it would silently pull
+>    January scenes into a "summer" thermal median.
+> 2. **A/C access is weighted 0**, and this is the most important decision on the
+>    branch. It is modelled from income percentile *within the city*; San Ramon's
+>    block-group medians are $101,645–$250,001, so that transform would invent a
+>    35–95% spread across a uniformly wealthy town and hand it 25% of the score.
+>    Built and viewable, scored at zero. Weights are 45/33/22 (LA's 35/25/15
+>    renormalised). Do not "fix" this by restoring 25%.
+> 3. **No HOLC layer, by history not by bug.** San Ramon was farmland in 1935 and
+>    incorporated in 1983. `HOLC_URL = None`, and the app hides the toggle when
+>    no hex carries a grade (`syncHolcAvailable()`) and explains why.
+> 4. **Hex names needed a new source.** Five OSM place nodes for 540 hexes gave
+>    "Windemere NE 19". Now names come from the 90 named residential subdivision
+>    polygons a hex falls *inside* (`NAME_FROM_LANDUSE`), nearest non-park anchor
+>    otherwise. Parks are excluded from the proximity pass — 49 of them in 52 km²
+>    otherwise win everywhere and produce "Piccadilly Square Park E 5".
+>
+> ### Two front-end bugs found and fixed while doing this
+>
+> - **`[hidden]` loses to any class rule that sets `display`.** `.toggle` sets
+>   `display:flex`, so marking the HOLC toggle hidden did nothing and it stayed
+>   on screen. Restated at class specificity: `.toggle[hidden],.hint[hidden]`.
+> - **The population stat assumed millions.** `(pop/1e6).toFixed(1)+'M'` rendered
+>   85,150 as "0.1M". Now switches units at a million.
+>
+> ### Resume here
+>
+> Pipeline is fully run and committed; `python3 -m http.server 8000` then
+> `/app/` opens San Ramon. Not yet done: this branch is **not deployed** (Pages
+> serves `master`), and the 60s screen capture is still unrecorded.
+
 Resume point for a fresh session. Spec lives in `SPEC.md` (in-repo since Phase 6;
 Section 10 of it is superseded by `DEMO.md`).
 

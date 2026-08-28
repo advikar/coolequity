@@ -1,14 +1,21 @@
 # CoolEquity
 
 **Which neighborhoods should a city cool first?** A heat-equity engine that scores
-every ~0.8 km² hex in a city on satellite heat, tree canopy, population, age and
-walking distance to relief — then prices the intervention. Shown here on Los
-Angeles: 3,008 hexes, 6.5M residents.
+every hex in a city on satellite heat, tree canopy, population, age and walking
+distance to relief — then prices the intervention.
+
+> **This is the `san-ramon` branch.** It runs on **San Ramon, California**: 540
+> hexes at H3 resolution 9 (~0.11 km² each) covering all 52 km² inside the city
+> limits, 85,150 residents. The Los Angeles build lives on `master` and is
+> untouched by this branch — every artefact here is suffixed `_sanramon`, so the
+> two sets of data files coexist rather than overwrite each other.
 
 Every input except the US redlining overlay is global (Landsat, Sentinel-2,
-OpenStreetMap, a population grid), so the same pipeline runs on any city.
+OpenStreetMap, a population grid), so the same pipeline runs on any city. San
+Ramon is the proof: retargeting was a config change plus four genuinely
+city-specific fixes, all documented below.
 
-**Live: <https://advikar.github.io/coolequity/>** — served by GitHub Pages from
+**Live (Los Angeles, from `master`): <https://advikar.github.io/coolequity/>** — served by GitHub Pages from
 `master`. Pages serves the repo root, which is the same thing `python3 -m
 http.server` does locally, so `app/` finds `../data/` unchanged. The root
 `index.html` is only a redirect into `app/`; `.nojekyll` stops Pages' Jekyll
@@ -63,9 +70,38 @@ Two flags, deliberately opposite:
   default, because Overpass rate-limits and re-pulling 645 amenities on every
   tweak is how you get 504'd an hour before a demo.
 
-Point at another city by editing `BBOX`, `CITY` and the census settings in
-`pipeline/config.py`. Outside the US, `03_census.py` needs a WorldPop path and
-`04_overlays.py` will find no HOLC map — the overlay is US-only by construction.
+Point at another city by editing `CITY`, `SLUG`, `BBOX`, `H3_RES`, `RASTER_CRS`,
+the county FIPS and `CLIP_URL` in `pipeline/config.py`. Outside the US,
+`03_census.py` needs a WorldPop path and `04_overlays.py` will find no HOLC map —
+the overlay is US-only by construction.
+
+### What retargeting to San Ramon actually took
+
+Worth reading before you point this at a third city, because none of these were
+predictable from the LA build and all four are the kind of thing that fails
+quietly:
+
+1. **One summer was not enough imagery.** Summer 2023 over San Ramon's small
+   footprint yields exactly **one** Landsat scene under the 20% cloud filter — a
+   single afternoon, not a median. The window is now the summer months of
+   **2022, 2023 and 2024** at the same strict cloud threshold, giving 9 Landsat
+   and 11 Sentinel-2 scenes. `02_satellite.py` searches each year separately and
+   concatenates; a continuous `2022-06-01/2024-09-15` range would have pulled in
+   January scenes and turned a summer thermal median into an annual mean.
+2. **Resolution had to go up, and that has a cost.** At res 8 a 52 km² city is
+   71 hexes. Res 9 gives 540 and a real map — but San Ramon holds only ~55
+   census block groups, so a hex is about a *ninth* of a block group. Heat and
+   canopy are genuinely measured per hex (30 m rasters); **population, age and
+   income are interpolated downward** and vary smoothly across neighbours. Real
+   data, coarser than the grid drawn over it. The app says so.
+3. **A/C access had to leave the score.** See below.
+4. **The hex names were unusable.** LA had plenty of OSM place nodes; San Ramon
+   has five, which produced "Windemere NE 19". It does have **90 named
+   residential subdivisions** mapped as landuse polygons, so `04_overlays.py`
+   now names a hex after the subdivision it falls *inside* (`NAME_FROM_LANDUSE`),
+   falling back to the nearest non-park anchor. Parks are excluded from the
+   proximity pass — there are 49 in 52 km² and they otherwise won every contest,
+   giving every third hex a name like "Piccadilly Square Park E 5".
 
 ## How the score works
 
@@ -74,19 +110,34 @@ Phoenix and alarming in Seattle, and normalizing locally is what makes the score
 portable.
 
 ```
-base_risk = 0.35·heat + 0.25·(1 − canopy) + 0.25·(1 − ac_access) + 0.15·age65
+base_risk = 0.45·heat + 0.33·(1 − canopy) + 0.22·age65
 priority  = base_risk · (0.55 + 0.45 · population)
 score     = 100 · minmax(priority)
 ```
 
-**The weights are not buried in a config file.** The app opens on seven named
-presets — *Pipeline default*, *Heat first*, *Shade gap*, *Protect seniors*, *A/C
-poverty*, *No relief nearby*, *Most people* — and each one re-scores and re-ranks
-all 3,008 hexes in the browser, with the map, ranked list, legend copy and ROI
-all following. The sliders are one click away under **Adjust the weights
-yourself**.
+**A/C access carries 0% here, and that is the most important difference from the
+LA build.** It is not measured anywhere — it is modelled by ranking each hex's
+median household income *within the city* and mapping that percentile onto a
+35–95% range. In LA that percentile carries real signal, because block-group
+medians span roughly $20k to $250k. San Ramon's span **$101,645 to $250,001** —
+narrow and uniformly high. Running the same transform over that band would paint
+a 35%-to-95% spread of "A/C access" across a city where essentially everyone can
+afford it, and then hand that invented variation a quarter of the score. So the
+layer is still built from real ACS income and can still be viewed on the map, and
+it is weighted zero. LA's 35/25/15 renormalises to 45/33/22 once it leaves.
 
-The app exposes a **fifth input the pipeline does not use**: walking time to
+The practical upshot: **every input the San Ramon score actually uses is
+measured, not modelled.**
+
+**The weights are not buried in a config file.** The app opens on six named
+presets — *Pipeline default*, *Heat first*, *Shade gap*, *Protect seniors*, *No
+relief nearby*, *Most people* — and each one re-scores and re-ranks all 540 hexes
+in the browser, with the map, ranked list, legend copy and ROI all following. The
+sliders are one click away under **Adjust the weights yourself**. (LA's *A/C
+poverty* preset is gone here; leaning a preset on the one input weighted zero for
+good reason would be theatre.)
+
+The app exposes an **input the pipeline does not use**: walking time to
 relief, shipped at weight 0. It is the one input describing what a resident can
 do about the heat today, before any tree is planted, and in LA it cuts against
 the other four — but a non-zero default would make "Pipeline default" a lie
@@ -94,23 +145,24 @@ about `config.py`, and would break the parity check below. *No relief nearby* is
 the preset that turns it on, at 20%.
 
 Presets lead rather than sliders because the weights are normalised to 100%:
-moving a single slider is largely absorbed by the other three, so it reorders a
-pair of neighbours instead of visibly changing the answer. Setting all four at
-once is what makes the question legible. *Protect seniors* drops Westlake from
-#1 to #5 and lifts Holmby Hills — one of the wealthiest zip codes in America —
-from roughly 2,100th to 27th. (Holmby Hills only reaches #1 under a pure 100%
-age weighting, which no preset uses.)
+moving a single slider is largely absorbed by the others, so it reorders a pair
+of neighbours instead of visibly changing the answer. Setting all of them at once
+is what makes the question legible. Checked live against `LIVE.rank`, the top hex
+moves with the question asked:
 
-*No relief nearby* is the counter-example worth knowing: it barely moves the top
-ten, because the population multiplier keeps the dense inner-city blocks in
-front and those blocks are already close to libraries. What it does move is the
-middle — 722 of 3,008 hexes shift by more than a hundred places.
+| Preset | #1 hex |
+|---|---|
+| Pipeline default | Fairway Village Apartments SE |
+| Heat first | Fairway Village Apartments SE |
+| Shade gap | Fairway Village Apartments SE |
+| Protect seniors | **Amador Lakes Apartments N** (39.8% aged 65+) |
+| No relief nearby | **Canyon Oaks** |
+| Most people | **Canyon Oaks** (707 residents) |
 
-It is the same model, not a demo approximation. Checked in-page against the
-committed `data/la.geojson` at the shipped weights: **max absolute difference
-0.156 points, mean 0.039, and pipeline ranks #1–#6 reproduced exactly** — the
-residual is the geojson storing `lst`/`green`/`ac` rounded to 1 dp. The
-pipeline's own `score` and `rank` are never overwritten, so Reset is exact.
+It is the same model, not a demo approximation — the browser runs the same
+arithmetic as `pipeline/05_score.py` against the committed `data/sanramon.geojson`,
+and any residual is that geojson storing `lst`/`green`/`ac` at one decimal place.
+The pipeline's own `score` and `rank` are never overwritten, so Reset is exact.
 
 Defaults live in `pipeline/config.py` and are mirrored in the app's `DEFAULT_W`
 and in the `default` entry of `PRESETS`; keep those in sync. `normW()` and
@@ -155,23 +207,40 @@ with species, site preparation and sidewalk work.
 Stated plainly because a judge will ask, and because the UI labels it anyway:
 
 - **A/C access is modeled**, not measured — derived from median income and shown
-  as `est.` It carries 25% of the score. It is the weakest input here.
+  as `est.` **It carries 0% of the score in San Ramon**, deliberately; see the
+  scoring section above. It is still on the map as a viewable layer.
+- **Population, age and income are interpolated below block-group resolution.**
+  A res-9 hex is roughly a ninth of a census block group, so those three fields
+  are real ACS figures spread by area, not measured per hex. They vary smoothly
+  across neighbouring hexes and you can see it on the map. Heat and canopy do
+  not have this problem — they are 30 m satellite rasters averaged per hex.
 - **Walk time is not routed.** Straight-line distance × 1.273 (= 4/π, the exact
   expected Manhattan-to-Euclidean ratio over uniform bearings) at 4.8 km/h. The
   right correction for a gridded city; still an estimate. Say "estimated walking
   minutes."
 - **Canopy % is an NDVI proxy**, NDVI 0.05–0.65 scaled to 0–45%. Vegetation, not
   strictly tree crown.
-- **478 uninhabited hexes are dropped**, so the map has real holes over the bay,
+- **1 uninhabited hex is dropped**, so the map has real holes over the bay,
   Griffith Park and the Sepulveda Basin. They'd otherwise invert the headline
   heat/greenness correlation and stretch the ramp over a range nobody lives in.
-- **Coverage is the LA basin, not LA County** — 6.5M of the county's 9.85M. The
-  hard straight edge near El Monte is the bbox, not missing data.
-- **Only Los Angeles has been through the pipeline.** The landing screen's city
-  search says so: every other city is marked *pipeline-ready* and shows what
-  building it takes, rather than loading LA's numbers under another name. The
-  `have` field on a `CITIES` entry is the single thing that decides whether the
-  button opens a dataset, so adding a city to the search list cannot fake data.
+- **Coverage is the incorporated city of San Ramon**, clipped to the TIGERweb
+  place polygon for GEOID 0668378 — not the Tri-Valley, and not Contra Costa
+  County. The ragged edges are the real city limits, which are ragged: San Ramon
+  annexed in pieces and Dougherty Valley hangs off the east side. Bishop Ranch,
+  Danville and Dublin are outside by construction.
+- **There is no redlining layer, and that is history rather than a missing
+  file.** HOLC surveyed built-up cities in 1935–40. San Ramon was farmland then
+  and did not incorporate until 1983, so Mapping Inequality has no map for it —
+  they have Oakland, Berkeley, Richmond, San Francisco, San Jose and Stockton.
+  The app hides the toggle when no hex carries a grade and says why, rather than
+  borrowing a neighbouring city's grades.
+- **Only San Ramon has been through the pipeline on this branch.** The landing
+  screen's city search says so: every other city is marked *pipeline-ready* and
+  shows what building it takes. Los Angeles is listed **without** a `have` flag,
+  because although it is built on `master`, its data files are not on this
+  branch — claiming it here would be exactly the lie the list exists to prevent.
+  The `have` field is the single thing that decides whether the button opens a
+  dataset.
 - **"Cooling site" means the four OpenStreetMap categories `04_overlays.py`
   queries** — libraries, community centres, public pools, senior centres and
   shelters. It is not a list of sites a city has formally designated as cooling
@@ -184,9 +253,9 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   would still have a rank-1 hex. The legend says this outright, and the Surface
   temperature layer is the one that answers the absolute question.
 
-Holding up: across the 3,008 populated hexes, heat and greenness correlate at
-**r = −0.61**, and it survives both a longitude-band split and removing a
-quadratic spatial trend (−0.58).
+Holding up: across the 540 populated hexes, heat and greenness correlate at
+**r = −0.797** — stronger than LA's −0.61, and in a city with no coastline to
+confound it.
 
 ## Repo
 
@@ -195,7 +264,9 @@ app/index.html        the whole front end
 app/vendor/           MapLibre 4.7.1 (BSD-3) + Inter & Instrument Serif (OFL 1.1),
                       all vendored so the page makes no off-host requests
 pipeline/             01→05, run in order; config.py holds bbox, weights, constants
-data/                 committed outputs — the app needs la.geojson + centers.geojson
+data/                 committed outputs, all suffixed _sanramon so the LA files
+                      on master are never overwritten; the app needs
+                      sanramon.geojson + centers_sanramon.geojson
 DEMO.md               the 60–90s script, with real numbers and the likely questions
 SPEC.md               the original build spec; Section 10 superseded by DEMO.md
 STATUS.md             build state, fixed bugs, decisions taken
@@ -204,8 +275,9 @@ STATUS.md             build state, fixed bugs, decisions taken
 ## Provenance
 
 USGS/NASA **Landsat 8/9** thermal (ST_B10 → °C) and ESA **Copernicus Sentinel-2**
-NDVI, summer 2023 medians via Microsoft **Planetary Computer** · **US Census ACS**
-2023 5-year, block groups area-weighted into hexes · **OpenStreetMap** contributors
-(cooling sites, place names) via Overpass · HOLC grades from the University of
-Richmond **Mapping Inequality** project · tree-cooling coefficient from **WRI**,
-*Cooling Potential of Urban Trees* · **H3** hex grid (Uber) · basemap © CARTO.
+NDVI, medians over the summers of 2022–2024 via Microsoft **Planetary Computer** ·
+**US Census ACS** 2023 5-year for Contra Costa County, block groups area-weighted
+into hexes · city limits from **US Census TIGERweb** (place GEOID 0668378) ·
+**OpenStreetMap** contributors (cooling sites, subdivision and park names) via
+Overpass · tree-cooling coefficient from **WRI**, *Cooling Potential of Urban
+Trees* · **H3** hex grid (Uber) · basemap © CARTO. No HOLC layer — see above.

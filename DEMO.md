@@ -1,8 +1,8 @@
-# CoolEquity — demo script (60–90s)
+# CoolEquity — San Ramon demo script (60–90s)
 
-**Every number here is read off `data/la.geojson`, not off the spec.** Section 10 of
-`SPEC.md` was written before the data existed and got two claims wrong; see
-"What the spec got wrong" below so you don't say them on stage.
+**Every number here is read off `data/sanramon.geojson` and was checked in the
+running app, not off a spec.** This is the `san-ramon` branch; the Los Angeles
+script is on `master` and its numbers do not transfer.
 
 ## Before you start
 
@@ -13,211 +13,158 @@ python3 -m http.server 8000       # then open http://localhost:8000/app/
 
 - Window at ~1440×860 or full screen. Below ~700px the 366px panel eats the map.
 - You land on the **intro screen**; the map is already booted behind it, so the
-  button is a fade, not a load. `?go=1` skips it if you'd rather open on the map.
-  The city field is a real search — typing "delhi" finds it, and selecting it
-  tells you what building Delhi takes rather than pretending to load it.
-- Priority layer selected, all four cooling-site categories on, weights at
-  **Pipeline default**, detail panel closed. That's the default state on a fresh
-  load — just reload rather than clicking back to it. If you have been playing
-  with the model, click the **Pipeline default** preset (the state chip beside
-  "What should count most" reads `pipeline defaults` when you're back), or use
-  the **home button** beside the CoolEquity wordmark to get back to the landing
-  screen and start clean.
-- **No Wi-Fi?** Nothing to do. MapLibre is vendored and all data is local; the map
-  loses only the CARTO street basemap and draws the county outline instead.
-  Rehearse that look with `http://localhost:8000/app/?flat=1`.
+  button is a fade, not a load. `?go=1` skips it.
+- Priority layer, all four cooling-site categories on, weights at **Pipeline
+  default**, detail panel closed. That is a fresh load — just reload rather than
+  clicking back. The **home button** beside the wordmark returns you here.
+- **No Wi-Fi?** Nothing to do. MapLibre and both typefaces are vendored and all
+  data is local; you lose only the CARTO basemap. Rehearse with `?flat=1`.
+- **There is no redlining layer and the panel says why.** Do not go looking for
+  it — see beat 3.
 
 ---
 
 ## The script
 
-**1 · Hook (10s)** — intro screen, don't touch anything yet.
+**1 · Hook (10s)** — intro screen.
 
-> "Heat is the deadliest weather hazard on Earth — about 489,000 deaths a year —
-> and it lands hardest on the poorest, least-shaded blocks. Cities have cooling
-> budgets. What they don't have is a precise way to aim them."
+> "Heat is the deadliest weather hazard on Earth, and it lands hardest on the
+> least-shaded blocks. Cities have cooling budgets. What they don't have is a
+> precise way to aim them."
 
-Then click **Explore Los Angeles**.
+Then click **Explore San Ramon**.
 
-**2 · Map (15s)** — Priority layer.
+**2 · Map (15s)**
 
-> "This is all of Los Angeles — 3,008 hexes, 6.5 million residents, 0.8 km²
-> each. Every one scored on real satellite heat, real tree
-> canopy, population, age, and walking distance to the nearest cooling centre.
-> Nothing here is drawn by hand. The darker it is, the more help it needs."
+> "This is all of San Ramon — every block inside the city limits, 540 hexes,
+> 85,150 residents, about a tenth of a square kilometre each. Every one scored
+> on real satellite heat, real tree canopy, population and age. Nothing here is
+> drawn by hand. The darker it is, the more help it needs."
 
-**2b · The model is not a black box (20s)** — click the **Protect seniors**
-preset, let the map and the list re-order, then click **Pipeline default**.
+**3 · The suburb result (20s)** — this is the beat that makes San Ramon
+interesting rather than a smaller Los Angeles.
 
-> "The weights aren't buried in a config file — they're right here. Ask a
-> different question and the whole model recomputes across all three thousand
-> hexes, live. Ask 'who is most likely to *die* of this?' and Westlake drops
-> from first to fifth, while **Holmby Hills** — one of the wealthiest zip codes
-> in America — climbs from about two thousandth to the high twenties. That's the
-> argument for making this visible: the answer depends on what you decided to
-> care about, so you should be able to see the decision."
+> "San Ramon is a wealthy, leafy suburb — 21% canopy over the average resident.
+> So you might expect this map to be flat. It isn't. Surface temperature runs
+> from 39 to 51 degrees across four miles, and the top of the list is not a
+> neighbourhood — it's **apartment complexes**. Fairway Village, Amador Lakes.
+> Less shade, more people per hex, and in Amador Lakes' case **40% of residents
+> over 65**. Heat inequity in a rich town looks like housing type, not income."
 
-Two things to say correctly here, both checked against the live model:
+If asked about redlining: **San Ramon has no HOLC map, and the app says so
+rather than showing an empty layer.** HOLC surveyed built-up cities in 1935–40;
+San Ramon was farmland and didn't incorporate until 1983.
 
-- Westlake S goes **#1 → #5**. Holmby Hills goes **~2,100th → 27th**. Holmby
-  Hills does **not** become #1 under this preset — it only reaches #1 at a pure
-  100% age weighting, which no preset uses.
-- If a judge asks for the real sliders, open **Adjust the weights yourself**. The
-  presets are just four numbers being set at once; the disclosure shows them and
-  they stay live.
+**4 · The model is not a black box (20s)** — click **Protect seniors**, then
+**Pipeline default**.
 
-Reset, then click any hex to show the breakdown:
+> "The weights aren't buried in a config file. Ask a different question and the
+> whole model recomputes across all 540 hexes, live. Ask 'who is most likely to
+> *die* of this?' and the top spot moves from Fairway Village to **Amador
+> Lakes**, where two in five residents are over 65."
 
-> "And for any block, here's the arithmetic — what we measured, where that sits
-> on the city's scale, times the weight, equals points."
+Verified preset → #1 hex, if a judge wants to check:
 
-**3 · Story (20s)** — toggle **Redlining (HOLC)**, then **Cooling-access gap**.
+| Preset | #1 |
+|---|---|
+| Pipeline default | Fairway Village Apartments SE |
+| Heat first | Fairway Village Apartments SE |
+| Shade gap | Fairway Village Apartments SE |
+| Protect seniors | Amador Lakes Apartments N |
+| No relief nearby | Canyon Oaks |
+| Most people | Canyon Oaks |
 
-> "These are the 1930s redlining grades. The D-graded blocks — the ones the
-> federal government marked 'hazardous' and starved of loans — run **6.7 °C
-> hotter** than the A-graded ones today, with **a third of the tree canopy**:
-> 9% versus 26%. Ninety years later you can still read that policy off a
-> thermal satellite."
+Then click any hex:
 
-Then the access layer:
+> "And for any block, here's the arithmetic — what we measured, where it sits on
+> the city's scale, times the weight, equals points."
 
-> "And this is walking time to relief. Which cuts the other way — the redlined
-> core is *close* to libraries and pools; it's the leafy suburbs that are far.
-> So in LA, redlining shows up as heat and missing shade, not as distance."
+**5 · Decision (25s)** — click the **#1 hex** (Fairway Village Apartments SE),
+drag the canopy slider to **25%**.
 
-**4 · Decision (25s)** — click the **#1 hex** in the ranked list (Westlake S),
-then drag the canopy slider.
+> "Number one: Fairway Village. 47.2 °C surface temperature, **16% canopy**, 451
+> residents, 106 of them over 65. Raise canopy here to 25% and you cool
+> afternoons an estimated **0.28 °C** for all of them. Cost: about **$129,000**,
+> or **$286 a resident**. That's a number a city council can actually vote on —
+> and for a town this size it's a line item, not a bond measure."
 
-> "Number one in the city: Westlake. 47.4 °C surface temperature, **3% tree
-> canopy**, 15,759 residents. Raise canopy here from 3% to 15% — about **2,470
-> trees** — and you cool afternoons an estimated **0.36 °C** for all 15,759 of
-> them, 1,797 of whom are over 65. Cost: roughly **$1.2 million**, or **$78 a
-> resident**. That's the number a city council can actually vote on."
+**6 · Close (10s)**
 
-**5 · Close (10s)**
-
-> "Every input except the redlining overlay is global — Landsat, Sentinel-2,
-> population grids, OpenStreetMap. Point this at Lagos or Delhi tomorrow and it
-> answers the same question: where does the first tree go?"
-
----
-
-## What the spec got wrong
-
-Section 10 of the build prompt makes two claims this dataset does not support.
-Both were plausible; only one survived contact with the data.
-
-| HOLC grade | hexes | mean LST | mean canopy | mean walk to relief | mean score |
-|---|---|---|---|---|---|
-| A | 136 | 38.7 °C | 26.0% | 20.3 min | 24.4 |
-| B | 200 | 42.7 °C | 18.5% | 14.3 min | 38.4 |
-| C | 450 | 45.1 °C | 12.2% | 13.2 min | 52.0 |
-| D | 260 | 45.4 °C |  9.4% | 12.2 min | 54.1 |
-
-1. **"D-graded areas run ~10 °C hotter" — overstated.** The real A→D gap is
-   **+6.7 °C**. Still monotonic across all four grades, still a strong result.
-   Quote 6.7.
-2. **"…and are twice as far from relief" — backwards.** D areas are *closer* to
-   cooling centres (12.2 min vs 20.3). They're dense inner-city blocks with
-   libraries; A areas are low-density suburbs. Either drop the claim or reframe
-   it as in beat 3 above. **Do not say it as written** — a judge with the access
-   layer on screen can see it's false.
-
-The 1,962 hexes outside the 1939 map are excluded from the table; they aren't a
-fifth grade.
+> "Every input here is global — Landsat, Sentinel-2, OpenStreetMap, a census.
+> This started as Los Angeles, three thousand hexes and six and a half million
+> people. Re-pointing it at a town of eighty-five thousand was a config change.
+> Point it at Lagos or Delhi tomorrow and it answers the same question: where
+> does the first tree go?"
 
 ---
 
 ## Questions you should expect
 
-**"Is the walk time routed?"** No — straight-line distance × 1.273, which is 4/π,
-the exact expected Manhattan-to-Euclidean ratio over uniform bearings. It's the
-right correction for a gridded city like LA. Say "estimated walking minutes";
-never imply a street route.
+**"Is this real data?"** Yes, all of it, and the honest caveats are labelled in
+the UI. Landsat 8/9 thermal and Sentinel-2 NDVI composited over the summers of
+2022–2024 from Microsoft's Planetary Computer. ACS 2023 five-year for Contra
+Costa County. City limits from Census TIGERweb. Cooling sites and neighbourhood
+names from OpenStreetMap. Nothing is synthetic and nothing is copied from the LA
+build.
 
-**"Does shade actually cool, or is that just the coast?"** Across the 3,008
-populated hexes, heat and greenness correlate at **r = −0.61**. It holds inside
-every longitude band (−0.35 to −0.69), and partialling out a quadratic lon/lat
-trend still leaves **−0.58**. It is not the coastal gradient.
+**"Why three summers, when the LA build used one?"** Because San Ramon is small.
+Summer 2023 alone yields **one** Landsat scene under the 20% cloud filter, and
+one scene is an afternoon, not a median. Three summers gives 9 Landsat and 11
+Sentinel-2 scenes at the *same* strict cloud threshold — more data, not looser
+data. The alternative was raising the cloud limit, which buys quantity with
+quality, and that's the wrong trade for a thermal median.
 
-**"Why the straight edge on the east side / why 6.5M not 10M?"** The bbox covers
-the LA basin, not Antelope Valley. Known, deliberate, not a data failure.
+**"Is A/C access in the score?"** **No, and that's deliberate — this is the good
+question to get.** A/C isn't measured by any census; it's modelled from income
+percentile. In LA that works because block-group medians span $20k to $250k. San
+Ramon's span **$102k to $250k** — so the same transform would manufacture a
+35%-to-95% spread of "A/C access" across a town where essentially everyone can
+afford it, and then hand that invented variation a quarter of the score. So it's
+built, viewable on the map, and **weighted zero**. Every input the score actually
+uses is measured.
 
-**"Is A/C access measured?"** No — modeled from income and labelled `est` in the
-UI. It's the one input that isn't observed, and it carries 25% of the score. The
-honest follow-up is to drag its weight to zero on stage. The top of the list
-barely moves: Westlake S and Alvarado Terrace swap #1 and #2 — they are adjacent
-hexes in the same neighborhood — and the same Westlake / Historic Filipinotown /
-Koreatown blocks still lead. **Say "the leaders swap places", not "nothing
-changes"**; a judge watching the list will see the swap.
+**"Isn't a hex smaller than a census block group?"** Yes — about a ninth, at this
+resolution. Heat and canopy are genuinely per-hex (30 m satellite rasters).
+Population, age and income are real ACS numbers spread by area, so they vary
+smoothly across neighbours rather than block by block. That's stated in the app's
+footer. The alternative was res 8, which is 71 hexes for the whole city and
+doesn't look like a map.
 
-**"Where does the $500 a tree come from?"** It is a planning assumption, and the
-panel says so in those words — the order of magnitude US municipal programmes
-budget for a planted street tree plus roughly three years of establishment care.
-Not a quote and not a bid. The other two constants are firmer: the cooling
-coefficient is WRI's published figure, and 40 m² of crown per mature tree is a
-standard planning number. **Do not defend the $500 as a measurement.** The
-defensible claim is the ratio — dollars per resident cooled — which is what makes
-two neighborhoods comparable regardless of the unit cost you plug in.
+**"Does shade actually cool, or is that just terrain?"** Across the 540 populated
+hexes, heat and greenness correlate at **r = −0.797**. That's stronger than the
+LA build's −0.61, and unlike LA there's no coastline here to confound it.
 
-**"Are those presets really running the model, or a rough approximation?"** The
-model. A preset just sets the four weights at once — open **Adjust the weights
-yourself** and you can see and move them. Same arithmetic as
-`pipeline/05_score.py`, min-max normalised within the city. At the shipped
-weights it reproduces the committed `la.geojson` to a max of **0.156 points**,
-mean 0.039, with ranks #1–#6 identical — the residual is the geojson storing
-temperatures at one decimal place. **Pipeline default** restores the exact
-shipped weights, and the pipeline's own `score`/`rank` fields are never
-overwritten. You can check it live in the console; the one-liner is in
-`STATUS.md`.
+**"Is the walk time routed?"** No — straight-line × 1.273 (= 4/π, the exact
+expected Manhattan-to-Euclidean ratio over uniform bearings) at 4.8 km/h. Say
+"estimated walking minutes"; never imply a street route.
 
-**"Why presets instead of just sliders?"** Because the weights are normalised to
-100%, so moving one slider alone barely moves the answer — the others absorb it.
-A preset changes all of them at once, which is what makes the map visibly
-repaint. The sliders are still there, one click away.
+**"What counts as a cooling site?"** 25 of them from OpenStreetMap: 12 community
+centres, 5 public pools, 5 senior centres/shelters, 3 libraries. Places a
+resident with no A/C could walk to and sit in the cool for free — **not** a list
+San Ramon has formally designated for a heat emergency.
 
-**"Is the walking time in the score?"** Not in the shipped model. It is present
-as a fifth weight set to 0, because `pipeline/config.py` weights four things and
-"Pipeline default" has to mean exactly that. The **No relief nearby** preset
-turns it on at 20%. Useful thing to know before you click it: the top ten barely
-moves — the dense blocks that lead are already close to libraries and pools — but
-722 of the 3,008 hexes shift by more than a hundred places, all mid-list. **Say
-"it reshuffles the middle", not "it changes the answer."**
+**"Where does the $500 a tree come from?"** A planning assumption, and the panel
+says so in those words — the order of magnitude US municipal programmes budget
+for a planted street tree plus about three years of establishment care. Not a
+quote. The cooling coefficient is WRI's published figure and 40 m² of crown per
+mature tree is a standard planning number. **Don't defend the $500 as a
+measurement**; the defensible claim is dollars per resident cooled, which makes
+two neighbourhoods comparable whatever unit cost you plug in.
 
-**"Your whole scale is relative — what if the city just isn't hot?"** Correct, and
-the legend concedes it: the score is a ranking within one city, so 100 means
-first in line here, not hot in absolute terms. That is the deliberate trade for
-portability (44 °C is ordinary in Phoenix and an emergency in Seattle). Switch to
-the **Surface temperature** layer for absolute values.
+**"Your scale is relative — what if the city just isn't hot?"** Correct, and the
+legend concedes it: every input is min–max normalised *within the city*, so 100
+means first in line here, not hot in absolute terms. That's the deliberate trade
+for portability. Switch to the **Surface temperature** layer for absolute values —
+and note San Ramon's max is 51.1 °C surface, which is not nothing.
 
 **"Can I look at my city?"** Not today, and the picker says so rather than
-loading LA's numbers under another name. Every input except the US redlining
-overlay is global, so it's a bbox change in `pipeline/config.py` and one run of
-01→05. Outside the US you lose HOLC and swap ACS for a WorldPop raster.
-
-**"What counts as a cooling center?"** Four OpenStreetMap categories: 212
-libraries, 200 community centres, 133 public pools, 100 senior centres and
-shelters. Places a resident with no A/C could walk to and sit in the cool for
-free — **not** a list of sites the city has formally designated for a heat
-emergency. Switching libraries off in the panel is the fastest way to show how
-much of the network is one building type.
-
-**"What about the holes over the bay and Griffith Park?"** 478 hexes with
-essentially no residents, dropped. They'd otherwise invert the headline
-correlation (open ocean reads 18 °C with zero vegetation) and stretch the heat
-ramp over a range no inhabited hex occupies.
-
-**"How is this different from WRI's Cool Cities work?"** Same validated science —
-we use their tree-cooling coefficient. The difference is what we do with it: a
-per-hex ROI in dollars and residents, and a cooling-access framing, on a pipeline
-that runs anywhere from satellite data alone.
+loading San Ramon's numbers under another name. Los Angeles is in the list
+without a data flag because it's built on `master`, not on this branch.
 
 ---
 
 ## The 60s screen capture (do this, it's the last fallback)
 
-Not yet recorded — this is a manual step. On macOS: **⌘⇧5 → Record Selected
-Portion**, frame the browser window only, run the script above, save as
-`demo.mp4` next to this file, and check it plays with Wi-Fi off. It's the
-mitigation for the venue-network risk that vendoring MapLibre doesn't cover,
-i.e. the laptop itself dying and someone else's machine having to present.
+Not yet recorded. On macOS: **⌘⇧5 → Record Selected Portion**, frame the browser
+window only, run the script above, save as `demo.mp4` next to this file, and
+check it plays with Wi-Fi off.
