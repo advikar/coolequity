@@ -1,31 +1,36 @@
 # CoolEquity
 
-**Which neighborhoods should a city cool first?** A heat-equity engine that scores
-every hex in a city on satellite heat, tree canopy, population, age and walking
-distance to relief — then prices the intervention.
+**Where is tree canopy thinnest, and who lives there?** An engine that scores every hex in a
+study area on satellite-measured canopy and heat, population, age and walking distance to
+relief — then prices the intervention.
 
-> **This is the `san-ramon` branch.** It runs on **San Ramon, California**: 419
-> populated hexes at H3 resolution 9 (~0.11 km² each) inside the city limits,
-> 85,569 residents — within 0.2% of the ACS place total of 85,734. The Los Angeles build lives on `master` and is
-> untouched by this branch — every artefact here is suffixed `_sanramon`, so the
-> two sets of data files coexist rather than overwrite each other.
-
-Every input except the US redlining overlay is global (Landsat, Sentinel-2,
-OpenStreetMap, a population grid), so the same pipeline runs on any city. San
-Ramon is the proof: retargeting was a config change plus four genuinely
-city-specific fixes, all documented below.
+> **This is the `contra-costa` branch.** It runs on **Contra Costa County, California**:
+> **2,695 populated hexes** at H3 resolution 8 (~0.77 km² each), **1,161,570 residents** —
+> within **0.01%** of the ACS county total of 1,161,458. `san-ramon` (one city inside this
+> county, at 7× the resolution) and `master` (Los Angeles) are untouched; every artefact here
+> is suffixed `_contracosta`, so the three sets of data files coexist.
+>
+> **The headline is an equity result.** The lowest-income quarter of the county averages
+> **14.8%** tree canopy against **28.3%** in the highest — a 13.5-point gap, *t* = −25.3,
+> computed on raw measured canopy with no score involved. **370,819 residents (32% of the
+> county) live on blocks under 15% canopy.**
+>
+> **Surface heat is measured but weighted zero here**, which is the opposite of every other
+> build and the most important decision on the branch. See `FINDINGS_CONTRACOSTA.md` §2:
+> the county spans marine to Delta, 38.8% of all variance in surface temperature is explained
+> by position alone, and county-wide `corr(LST, canopy)` is −0.12 against San Ramon's −0.80.
 
 **Live: <https://advikar.github.io/coolequity/>**
 
 | | |
 |---|---|
 | Chooser | <https://advikar.github.io/coolequity/> |
-| Los Angeles | <https://advikar.github.io/coolequity/app/> |
+| **Contra Costa County** | <https://advikar.github.io/coolequity/contracosta/app/> |
 | San Ramon | <https://advikar.github.io/coolequity/sanramon/app/> |
+| Los Angeles | <https://advikar.github.io/coolequity/app/> |
 
-Pages serves exactly one branch, and this repo has two cities on two branches, so
-the site is a **build**: `gh-pages` is assembled from `master` and `san-ramon` by
-`./deploy.sh`.
+Pages serves exactly one branch and this repo has three study areas on three
+branches, so the site is a **build**: `gh-pages` is assembled by `./deploy.sh`.
 
 ```bash
 ./deploy.sh          # rebuild from both branches and publish
@@ -85,8 +90,12 @@ Two flags, deliberately opposite:
 - `02_satellite.py --cached` — skips the network and uses the committed rasters.
   It goes live by default.
 - `02b_buildings.py --refresh` — re-pulls building footprints. **Run 02b before
-  03**: without it `03_census.py` falls back to area weighting, which at res 9
-  places residents on open space. It says which mode it used.
+  03**. `03_census.py` then decides for itself whether the mask is good enough
+  to place people with — it checks coverage against ACS housing units and whether
+  that coverage is income-biased, and falls back to area weighting if either
+  fails. **It refuses on this county** (0.33 coverage; wealthy block groups mapped
+  4.7× better than poor ones) and accepts on San Ramon (0.66, unbiased). It says
+  loudly which mode it used.
 - `04_overlays.py --refresh` — forces a live Overpass pull. It uses the cache by
   default, because Overpass rate-limits and re-pulling 645 amenities on every
   tweak is how you get 504'd an hour before a demo.
@@ -96,41 +105,17 @@ the county FIPS and `CLIP_URL` in `pipeline/config.py`. Outside the US,
 `03_census.py` needs a WorldPop path and `04_overlays.py` will find no HOLC map —
 the overlay is US-only by construction.
 
-### What San Ramon actually showed, including what it didn't
+### What each build showed
 
-The interesting result here is a negative one, and it is worth stating before
-anything else because it is what a San Ramon planner will test first.
-
-**Canopy and heat are tightly coupled.** Across the 419 populated hexes,
-`corr(LST, canopy) = −0.80`, and **−0.81** after removing a quadratic lon/lat
-trend, so it is a shade effect and not a spatial gradient. Canopy runs 5.3–40.8%
-of the ground; surface temperature 39.2–51.1 °C. The top 25 blocks average 14.5%
-canopy against a city median of 20.9%.
-
-**Heat exposure has no income gradient.** `corr(income, priority) = −0.02`;
-`corr(income, canopy) = −0.04`. By income quartile, mean canopy is 21.5 / 22.6 /
-21.7 / 20.4% — flat, with the *richest* quartile marginally the least shaded. San
-Ramon's poorest quartile has a median household income of $163,938. **There is no
-heat-equity story in this city and the app does not claim one.** That is why the
-San Ramon build is framed as canopy targeting rather than equity: the LA framing
-would be the easiest thing in the project for a planner to disprove.
-
-**Two hypotheses were tested and rejected.** Both had been written into the demo
-script before they were checked:
-
-| Claim | Test | Result |
+| Build | Headline | Where |
 |---|---|---|
-| Priority tracks housing type (apartment complexes) | share of multi-family floor area per hex, from 26,346 OSM footprints | `r = +0.08`; median top-10 hex is **0%** multi-family |
-| Priority tracks housing age (newer subdivisions) | ACS B25035 median year built by block group | `r = +0.02`; canopy by era 22.7 / 22.6 / 20.2 / 20.9% |
+| **Contra Costa County** | Lowest-income quartile has **14.8%** canopy vs **28.3%** in the highest (*t* = −25.3). Heat weighted **zero** — climate-confounded at this scale. | `FINDINGS_CONTRACOSTA.md` |
+| **San Ramon** (`san-ramon`) | `corr(LST, canopy) = −0.80`. **No** income gradient (−0.04) and none by housing type or age. | that branch's README |
+| **Los Angeles** (`master`) | D-graded HOLC blocks run 6.7 °C hotter with a third the canopy. | that branch's README |
 
-The apartment claim came from hex *names*: "Fairway Village Apartments SE" is
-named for the nearest landmark and contains 4% apartment floor area. A name is
-not a measurement.
-
-**What is left is geographic.** 8 of the top 10 hexes sit east of Dougherty Road
-in Dougherty Valley, which holds 37% of populated hexes. East vs west: 19.8% vs
-22.6% canopy (t = −4.8), +0.9 °C (t = +5.4), +6.2 priority points (t = +4.3). All
-significant, but a 2.8-point canopy difference is a tilt, not a divide.
+Two claims tested and **rejected** on the San Ramon branch, recorded so nobody repeats them:
+priority tracking housing type (`r = +0.08` against multi-family floor area from 26,346
+building footprints) and priority tracking housing age (`r = +0.02`, ACS B25035).
 
 ## What retargeting to San Ramon actually took
 
@@ -314,9 +299,12 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   would still have a rank-1 hex. The legend says this outright, and the Surface
   temperature layer is the one that answers the absolute question.
 
-Holding up: across the 419 populated hexes, heat and greenness correlate at
-**r = −0.800**, and **−0.808** after removing a quadratic lon/lat trend —
-stronger than LA's −0.61, and in a city with no coastline to confound it.
+Not holding up here, and that is the point: across these 2,695 populated hexes
+heat and greenness correlate at only **r = −0.120**, and **−0.149** after
+removing a quadratic lon/lat trend. On the `san-ramon` branch the same
+measurement is **−0.800**. A county spanning marine to Delta is not one climate,
+and 38.8% of all variance in its surface temperature is explained by position
+alone. That is why heat carries no weight in this build.
 
 ## Repo
 

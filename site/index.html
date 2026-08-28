@@ -55,7 +55,7 @@
   <h1>Where should a city<br>cool down first?</h1>
   <p class="lede">Satellite surface heat and tree canopy, measured for every block of a city,
     scored against who lives there, and priced per intervention — how many trees, at what cost,
-    cooling how many people. Two cities are built. Pick one.</p>
+    cooling how many people. Three areas are built. Pick one.</p>
 
   <div class="cards">
     <a class="card" href="app/">
@@ -71,11 +71,25 @@
       <div class="go">Open Los Angeles →</div>
     </a>
 
+    <a class="card" href="contracosta/app/">
+      <div class="city">Contra Costa County</div>
+      <div class="sub">California · H3 res 8</div>
+      <p>1.16 million residents, and the clearest result in the project: the lowest-income
+        quarter of the county has <b>14.8%</b> tree canopy against <b>28.3%</b> in the
+        highest.</p>
+      <div class="figs">
+        <div><b>2,695</b><span>blocks</span></div>
+        <div><b>1.16M</b><span>residents</span></div>
+        <div><b>+0.42</b><span>income ↔ canopy</span></div>
+      </div>
+      <div class="go">Open Contra Costa →</div>
+    </a>
+
     <a class="card" href="sanramon/app/">
       <div class="city">San Ramon</div>
       <div class="sub">California · H3 res 9</div>
-      <p>The same engine on a wealthy suburb, at nine times the resolution. Canopy and heat
-        couple even more tightly here — and priority tracks neither income nor housing type.</p>
+      <p>One city inside that county at seven times the resolution. Canopy and heat couple
+        tightly here (<b>r = −0.80</b>) — and canopy tracks neither income nor housing type.</p>
       <div class="figs">
         <div><b>419</b><span>blocks</span></div>
         <div><b>85,569</b><span>residents</span></div>
@@ -88,9 +102,11 @@
   <div class="note">
     <b>What is estimated, and what is measured.</b> Surface temperature (Landsat 8/9 thermal)
     and vegetation cover (Sentinel-2 NDVI) are measured per block. Population comes from the
-    US Census ACS. <b>Air-conditioning access is modelled from income, not measured</b>, and in
-    San Ramon it is weighted zero because the city's income range is too narrow for that model
-    to say anything real. Walking time to a cooling site is a circuity-adjusted straight line,
+    US Census ACS. <b>Air-conditioning access is modelled from income, not measured.</b> In
+    San Ramon it is weighted zero, because that city's income range is too narrow for the model
+    to say anything real. In Contra Costa County it is scored — but <b>surface heat</b> is
+    weighted zero there instead, because the county spans marine to Delta and 38% of all
+    variance in its surface temperature is explained by position alone. Walking time to a cooling site is a circuity-adjusted straight line,
     not a routed street path. Vegetation cover is an NDVI proxy — it cannot tell a mature tree
     from an irrigated lawn. Tree costs are planning assumptions, not quotes.
     <br><br>
