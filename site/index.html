@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CoolEquity — Heat &amp; Canopy Mapping</title>
+<meta name="description" content="Which neighborhoods should a city cool first? Satellite heat and tree canopy scored per block, priced per intervention. Built for Los Angeles and San Ramon, California.">
+<style>
+  @font-face{font-family:Inter;src:url(app/vendor/inter-latin.woff2) format('woff2');
+    font-weight:100 900;font-display:swap}
+  @font-face{font-family:'Instrument Serif';src:url(app/vendor/instrumentserif-latin.woff2) format('woff2');
+    font-weight:400;font-display:swap}
+  :root{--bg:#080b10;--panel:#0d1219;--edge:#1c2530;--txt:#e8edf4;--muted:#8a93a0;
+    --muted2:#5f6a78;--accent:#ffb703;--accent2:#ff7a45;
+    --display:'Instrument Serif',Georgia,serif;
+    --sans:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:400 15px/1.6 var(--sans);
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+    background-image:radial-gradient(120% 80% at 15% 0%,rgba(255,122,69,.09) 0%,transparent 55%),
+      radial-gradient(90% 70% at 90% 10%,rgba(255,183,3,.06) 0%,transparent 50%)}
+  .wrap{max-width:940px;margin:0 auto;padding:56px 26px 72px}
+  .wordmark{display:flex;align-items:center;gap:11px;margin-bottom:30px}
+  .wdot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px rgba(255,183,3,.16)}
+  .wm{font-family:var(--display);font-size:32px;line-height:1;letter-spacing:-.01em;color:#fff}
+  .wm i{font-style:normal;color:var(--accent)}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(32px,5.2vw,52px);
+    line-height:1.06;letter-spacing:-.015em;margin:0 0 18px;color:#fff}
+  .lede{color:var(--muted);max-width:60ch;margin:0 0 40px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--panel);
+    border:1px solid var(--edge);border-radius:15px;padding:24px;transition:.16s}
+  a.card:hover{border-color:var(--accent);transform:translateY(-2px);
+    box-shadow:0 16px 40px rgba(0,0,0,.45)}
+  .city{font-family:var(--display);font-size:27px;line-height:1.1;color:#fff;margin-bottom:3px}
+  .sub{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);
+    margin-bottom:15px}
+  .card p{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 16px}
+  .figs{display:flex;flex-wrap:wrap;gap:18px;border-top:1px solid var(--edge);padding-top:14px}
+  .figs div b{display:block;font-size:18px;font-weight:600;color:var(--txt);
+    font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .figs div span{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2)}
+  .go{margin-top:16px;font-size:13px;font-weight:600;color:var(--accent)}
+  .note{margin-top:42px;padding-top:22px;border-top:1px solid var(--edge);
+    font-size:12.5px;color:var(--muted);line-height:1.7;max-width:70ch}
+  .note b{color:var(--txt)}
+  .note a{color:var(--accent)}
+  .foot{margin-top:26px;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
+  <h1>Where should a city<br>cool down first?</h1>
+  <p class="lede">Satellite surface heat and tree canopy, measured for every block of a city,
+    scored against who lives there, and priced per intervention — how many trees, at what cost,
+    cooling how many people. Two cities are built. Pick one.</p>
+
+  <div class="cards">
+    <a class="card" href="app/">
+      <div class="city">Los Angeles</div>
+      <div class="sub">California · H3 res 8</div>
+      <p>The full model, including the 1930s redlining overlay. D-graded blocks run 6.7 °C
+        hotter than A-graded ones today, with a third of the tree canopy.</p>
+      <div class="figs">
+        <div><b>3,008</b><span>blocks</span></div>
+        <div><b>6.5M</b><span>residents</span></div>
+        <div><b>−0.61</b><span>heat ↔ canopy</span></div>
+      </div>
+      <div class="go">Open Los Angeles →</div>
+    </a>
+
+    <a class="card" href="sanramon/app/">
+      <div class="city">San Ramon</div>
+      <div class="sub">California · H3 res 9</div>
+      <p>The same engine on a wealthy suburb, at nine times the resolution. Canopy and heat
+        couple even more tightly here — and priority tracks neither income nor housing type.</p>
+      <div class="figs">
+        <div><b>419</b><span>blocks</span></div>
+        <div><b>85,569</b><span>residents</span></div>
+        <div><b>−0.80</b><span>heat ↔ canopy</span></div>
+      </div>
+      <div class="go">Open San Ramon →</div>
+    </a>
+  </div>
+
+  <div class="note">
+    <b>What is estimated, and what is measured.</b> Surface temperature (Landsat 8/9 thermal)
+    and vegetation cover (Sentinel-2 NDVI) are measured per block. Population comes from the
+    US Census ACS. <b>Air-conditioning access is modelled from income, not measured</b>, and in
+    San Ramon it is weighted zero because the city's income range is too narrow for that model
+    to say anything real. Walking time to a cooling site is a circuity-adjusted straight line,
+    not a routed street path. Vegetation cover is an NDVI proxy — it cannot tell a mature tree
+    from an irrigated lawn. Tree costs are planning assumptions, not quotes.
+    <br><br>
+    Source, pipeline and the full write-up:
+    <a href="https://github.com/advikar/coolequity">github.com/advikar/coolequity</a>.
+  </div>
+
+  <div class="foot">
+    Landsat 8/9 and Sentinel-2 via Microsoft Planetary Computer · US Census ACS 2023 5-year ·
+    OpenStreetMap contributors · HOLC grades from the University of Richmond <i>Mapping
+    Inequality</i> · tree-cooling coefficient from WRI, <i>Cooling Potential of Urban Trees</i> ·
+    H3 grid (Uber) · basemap © CARTO. An independent student project; not affiliated with,
+    nor reviewed by, any city.
+  </div>
+</div>
+</body>
+</html>

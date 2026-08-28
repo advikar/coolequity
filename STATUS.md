@@ -86,6 +86,30 @@ and Holmby Hills). The pattern is always the same: a plausible story written fro
 names or intuition, never tested. **Any claim about what the ranking "tracks"
 must be a measured correlation before it goes in copy.**
 
+### Deployed — two cities, one site
+
+Live at **<https://advikar.github.io/coolequity/>**: a chooser at the root, Los
+Angeles at `/app/`, San Ramon at `/sanramon/app/`.
+
+GitHub Pages serves exactly one branch, so it now serves **`gh-pages`, which is a
+build, not a source branch** — assembled from `master` and `san-ramon` by
+`./deploy.sh`. Consequences worth knowing:
+
+  - **Pushing to `master` or `san-ramon` no longer updates the site.** Run
+    `./deploy.sh` after any change you want published.
+  - **Never edit `gh-pages` by hand**; the next deploy force-pushes over it.
+  - **LA keeps the exact paths it had** when Pages pointed at `master`, so any
+    link already shared still resolves. Do not move `/app/`.
+  - Only the three data files each app fetches are copied. The pipeline's
+    rasters, the 16 MB building footprints and every CSV stay out of the site.
+  - The root chooser lives at `site/index.html` in the source tree, not in
+    `gh-pages`, so it is version-controlled like everything else.
+
+Verified over the wire after deploy: all nine URLs 200, the right city at each
+path, the deployed San Ramon `index.html` byte-identical to the branch, and
+`sanramon.geojson` arriving intact — 419 hexes, 85,569 residents, `street_m`
+present.
+
 ### Phase 11 — audit, robustness, and the two documents for the City
 
 Ran the outstanding audit steps rather than assuming they would pass.
