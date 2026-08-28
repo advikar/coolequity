@@ -15,11 +15,28 @@ OpenStreetMap, a population grid), so the same pipeline runs on any city. San
 Ramon is the proof: retargeting was a config change plus four genuinely
 city-specific fixes, all documented below.
 
-**Live (Los Angeles, from `master`): <https://advikar.github.io/coolequity/>** — served by GitHub Pages from
-`master`. Pages serves the repo root, which is the same thing `python3 -m
-http.server` does locally, so `app/` finds `../data/` unchanged. The root
-`index.html` is only a redirect into `app/`; `.nojekyll` stops Pages' Jekyll
-step from dropping underscore-prefixed paths like `data/_cache/`.
+**Live: <https://advikar.github.io/coolequity/>**
+
+| | |
+|---|---|
+| Chooser | <https://advikar.github.io/coolequity/> |
+| Los Angeles | <https://advikar.github.io/coolequity/app/> |
+| San Ramon | <https://advikar.github.io/coolequity/sanramon/app/> |
+
+Pages serves exactly one branch, and this repo has two cities on two branches, so
+the site is a **build**: `gh-pages` is assembled from `master` and `san-ramon` by
+`./deploy.sh`.
+
+```bash
+./deploy.sh          # rebuild from both branches and publish
+```
+
+**Pushing to `master` or `san-ramon` does not update the site** — run `deploy.sh`.
+Never hand-edit `gh-pages`; the next deploy force-pushes over it. LA deliberately
+keeps `/app/`, the path it had when Pages served `master`, so links already shared
+still resolve. The root chooser is version-controlled at `site/index.html`, and
+only the three data files each app fetches are copied — the rasters, building
+footprints and CSVs stay out of the site.
 
 ---
 
