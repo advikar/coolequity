@@ -1,7 +1,8 @@
-# Contra Costa County build — what it found, and why it is not shippable yet
+# Contra Costa County build — findings
 
-**Status: the equity finding is strong and real. The heat finding does not reproduce,
-and the score is 35% heat. Do not present this as a heat map.**
+**Status: shipped as a CANOPY EQUITY map.** Heat is measured and viewable but carries zero
+weight, for the reasons in §2. The scored model is missing canopy (55%), no A/C access (25%)
+and age 65+ (20%), scaled by population.
 
 Built 28 Aug 2026 from the same pipeline as San Ramon: H3 res 8, 2,695 populated hexes,
 1,161,570 residents reconciling to the ACS county total of 1,161,458 (**0.01%**).
@@ -90,7 +91,42 @@ valid with 1,723 of 2,859 hexes empty**. Fixed by budgeting scenes per tile: now
 across 4 tiles, **100% valid**. This bug was invisible at city scale and would have silently
 corrupted any large-area build.
 
-## 5. What to do next
+## 5. What was done
+
+**Option 1 was taken: reframed as a canopy-equity map, heat weighted zero.** Heat keeps its
+layer, legend and per-hex numbers — all measured — and the "Heat first" preset shows what it
+says on its own, which is mostly a map of distance from the Bay. The scored model is now
+missing canopy (55%) / no A/C access (25%) / age 65+ (20%), scaled by population.
+
+The resulting top ten is Richmond's Atchison Village, Nystrom Village, Easter Hill Village,
+Triangle Court and Barrett Terrace, plus Concord's Monument corridor — 8.2% to 13.3% canopy
+against a county median of 19.7%.
+
+**On the apparent contradiction** between weighting heat zero and still predicting cooling in
+the ROI panel: these are different claims, and the app now says so. Planting shade on a block
+cools that block — a measured local effect, and what the WRI coefficient describes. Comparing
+absolute temperature between blocks 60 km apart mostly measures distance from the Bay. Adding
+trees still cools; ranking Richmond against Antioch by raw thermal reading does not work.
+
+**A/C is scored here, and that creates a circularity trap.** ac_est is derived from income, so
+the priority score is not independent of income and **must never be used to argue that
+priority "tracks income"**. Every equity figure in this document is computed on raw measured
+canopy with no score involved. The **Canopy only** preset exists so anyone can check the
+answer with the income model removed entirely — the Richmond blocks stay at the top.
+
+### Headline numbers, for copy
+
+| | |
+|---|---|
+| Populated hexes | 2,695 at H3 res 8 (~0.77 km²) |
+| Residents | 1,161,570 (ACS county total 1,161,458 — **0.01%**) |
+| Canopy | median **19.7%**, range 0.0–45.0% |
+| Under 15% canopy | 955 hexes, **370,819 residents (32% of the county)** |
+| Top 25 | mean canopy **12.0%**, 96,922 residents, 268.3 km of street frontage |
+| To bring top 25 to the county median | **36,928 trees**, ~$18.5M at $500/tree |
+| Public right-of-way capacity there | 53,650 trees — 5 of the 25 blocks still fall short |
+
+## 6. What to do next
 
 Three honest options, in the order I would try them:
 
@@ -102,6 +138,6 @@ Three honest options, in the order I would try them:
 3. **Keep the county as a scale demonstration only** and lead publicly with San Ramon, where
    the mechanism holds.
 
-**Not recommended:** shipping this as-is with a 35% heat weight and a heat legend. The map
-would look convincing and the top of the list would be defensible for the wrong reason —
-Richmond ranks first on low canopy and low income, not on being hot.
+**Still worth doing:** a genuine climate-zone segmentation would let heat back into the score
+honestly, by normalising it within zone rather than across the whole county. That is the
+principled version of what weighting it zero does bluntly.

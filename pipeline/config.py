@@ -35,28 +35,45 @@ H3_RES = 8
 # Section 7 of the build spec. Exposed here so they're tunable and defensible
 # when a judge asks "why 35%?".
 #
-# A/C access is BACK IN THE SCORE here, and that is the single most important
-# difference between this build and the San Ramon one. It is modelled by ranking
-# each hex's median household income within the study area and stretching that
-# percentile across AC_PCT_MIN..AC_PCT_MAX, so it is only meaningful where income
-# genuinely varies. San Ramon's block-group medians ran $100,906-$250,001 — the
-# transform would have invented a 35-95% spread across a uniformly wealthy town,
-# so it was weighted zero there.
+# HEAT IS BUILT BUT NOT SCORED HERE. That is the opposite of every other build
+# and it is the most important decision on this branch, so the reasoning is
+# written out rather than assumed.
 #
-# Contra Costa is a different animal. Measured across its 674 block groups with
-# income: $18,071 to $250,001, p10 $69,526, median $128,142, p90 $240,586. Thirty
-# percent of them fall below San Ramon's POOREST block group. Richmond, San Pablo
-# and Bay Point against Blackhawk, Alamo and Diablo is a real gradient, so the
-# percentile carries real signal and LA's original weights apply unchanged.
+# The score normalises each input min-max WITHIN the study area. That works when
+# the study area is one climate, which a city is and a county this shape is not.
+# Contra Costa runs from the Richmond shoreline to the Delta: mean summer LST is
+# 36.8 C in the west and 43.1 C in the east, and 38.8% of ALL variance in surface
+# temperature is explained by longitude and latitude alone. Normalising across
+# that ranks Richmond's 41 C against Antioch's 52 C as though a resident of each
+# experiences them the same way.
 #
-# It is still MODELLED, not measured — no census counts air conditioners — and
-# the UI must keep labelling it `est`. Restoring its weight restores its
-# obligation to be labelled.
+# The consequence is measurable. In San Ramon corr(LST, canopy) = -0.800, and
+# -0.808 after detrending: shade demonstrably cools. Here it is -0.120, -0.149
+# detrended, and by longitude band it swings from +0.381 to -0.092. There is no
+# consistent shade effect to score at this scale. Weighting it 35% would have
+# put the heaviest weight in the model on the input carrying the least signal.
+#
+# So heat keeps its layer, its legend and its per-hex numbers -- all measured,
+# all real -- and carries zero weight, exactly as A/C access does on the San
+# Ramon branch. What remains is a canopy-deficit model: where is tree cover
+# thinnest, weighted by how many people live under it and how vulnerable they
+# are.
+#
+# A/C access IS scored here. It is modelled from income percentile, so it is only
+# meaningful where income genuinely varies -- San Ramon's block groups ran
+# $100,906-$250,001 and it was zeroed there. Contra Costa's 674 block groups with
+# income run $18,071 to $250,001, p10 $69,526, median $128,142, p90 $240,586.
+# Thirty percent fall below San Ramon's poorest. That is a real gradient.
+#
+# NOTE ON CIRCULARITY: because ac_est is derived from income, the priority score
+# is not independent of income and must never be used to argue that priority
+# "tracks income". The canopy-equity finding on this branch is computed on RAW
+# MEASURED CANOPY against income, with no score involved. Keep it that way.
 WEIGHTS = {
-    "heat":     0.35,   # heat_n
-    "green":    0.25,   # (1 - greenness_n)
-    "ac":       0.25,   # (1 - ac_access_n)  -- MODELED from income; see above
-    "age65":    0.15,   # age65_n
+    "heat":     0.00,   # built, viewable, NOT scored — see above
+    "green":    0.55,   # (1 - greenness_n)   the model's centre of gravity
+    "ac":       0.25,   # (1 - ac_access_n)   MODELED from income; label it est
+    "age65":    0.20,   # age65_n
 }
 # priority = base_risk * (POP_FLOOR + POP_WEIGHT * population_n)
 POP_FLOOR = 0.55

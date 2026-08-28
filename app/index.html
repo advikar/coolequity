@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CoolEquity — Heat & Cooling Equity Mapper</title>
+<title>CoolEquity — Tree Canopy Equity Mapper</title>
 <!-- MapLibre is vendored, not CDN'd. The whole risk register hangs on "the app is
      static and local"; a <script src=unpkg> makes that false — no venue Wi-Fi means
      no `maplibregl` at all, and the map never gets as far as the basemap fallback.
@@ -326,31 +326,31 @@
   <div class="intro-scrim"></div>
   <div class="intro-card">
     <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
-    <div class="eyebrow">Tree canopy &amp; urban heat</div>
-    <h1>Where should San&nbsp;Ramon<br>plant its next trees?</h1>
-    <p class="lede">Across San Ramon, tree canopy runs from under 6% to over 40% of the ground,
-      and surface heat tracks it almost one-for-one — <b>r&nbsp;=&nbsp;&minus;0.80</b>. What it
-      does <i>not</i> track is income.
+    <div class="eyebrow">Tree canopy equity</div>
+    <h1>The poorest quarter of this county<br>has half the tree cover.</h1>
+    <p class="lede">Across Contra Costa's 2,695 populated blocks, tree canopy averages
+      <b>14.8%</b> in the lowest-income quarter and <b>28.3%</b> in the highest — a 13.5-point
+      gap, and not a subtle one (<i>t</i>&nbsp;=&nbsp;&minus;25.3).
       <!-- One sentence, not a paragraph. The landing card is 979px tall against a
            720px viewport at 1280x720, so anything added here pushes the wordmark
            above the fold — which is exactly how the product name went missing. If
            you add copy to this screen, re-measure .wordmark's top afterwards. -->
-      So this is not a map of who is rich and who is poor. It is a map of where the
-      shade is missing, what that costs in degrees, and what it would take to fix.</p>
+      370,000 residents live on blocks under 15% canopy. This map is where they are,
+      and what planting would cost.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Choose a city</p>
     <div class="picker" id="picker">
       <div class="cinput">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="citysearch" type="text" autocomplete="off" spellcheck="false"
-          placeholder="Search a city — San Ramon, Phoenix, Delhi…"
+          placeholder="Search a place — Contra Costa County, Phoenix, Delhi…"
           role="combobox" aria-expanded="false" aria-controls="cities" aria-autocomplete="list"/>
         <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
       </div>
       <div class="cities" id="cities" role="listbox" aria-label="Cities"></div>
     </div>
     <div class="cityinfo" id="cityinfo" hidden></div>
-    <button class="cta" id="intro-go">Explore San Ramon
+    <button class="cta" id="intro-go">Explore Contra Costa County
       <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     <p class="fine" id="ifine"></p>
   </div>
@@ -374,7 +374,7 @@
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
       </div>
-      <p>Where should a city plant its next trees? Canopy and surface heat measured per block from satellite, priced per intervention — shown here on San Ramon, California.</p>
+      <p>Where is tree canopy thinnest, and who lives there? Canopy measured per block from satellite and priced per intervention — shown here on Contra Costa County, California.</p>
     </div>
 
     <div class="scroll">
@@ -416,14 +416,14 @@
 
       <div class="section">
         <p class="lbl">Story overlays</p>
-        <p class="hint" id="story-note" hidden>No 1930s redlining map exists for
-          this city — HOLC surveyed built-up cities in 1935&ndash;40, and San Ramon
-          was farmland until it incorporated in 1983. The layer is switched off
-          rather than filled in with a neighbouring city's grades.</p>
+        <p class="hint" id="story-note" hidden>No usable 1930s redlining map covers this
+          county. Checked directly against Mapping Inequality rather than assumed: the
+          East&nbsp;Bay 1937 survey is an Oakland/Berkeley map, and only 8 of its 120
+          polygons touch Contra Costa — all graded A, B or C, with no D grades at all.
+          Drawing it would imply a redlining story this data cannot support.</p>
         <!-- Hidden at boot when no hex carries a grade — see syncHolcAvailable().
-             San Ramon has no HOLC map because it was farmland in 1935 and did not
-             incorporate until 1983. An empty toggle would imply the data failed
-             to load; removing it says the layer does not apply here. -->
+             An empty toggle would imply the data failed to load; removing it says
+             the layer does not apply here. -->
         <div class="toggle" id="tg-holc" data-layer="holc" hidden>
           <div class="sw"></div>
           <div><div class="tt">Redlining (HOLC) <span class="tag us">US only</span></div><div class="ts">1930s grades vs. today's heat</div></div>
@@ -471,7 +471,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites and neighborhood names. A/C access is modeled from income and is <b>weighted zero</b> in this city's score. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites, streets and place names. <b>Surface heat is measured but weighted zero</b> in this county's score — see the legend. A/C access is <b>modeled from income</b>, not measured, and is labelled <i>est</i> everywhere it appears. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly 3.6× a hex's size. Population is placed by area, not by building footprint: OpenStreetMap covers only a third of this county's housing and covers wealthy block groups 4.7× better than poor ones, so weighting by it would have demoted poor neighborhoods. H3 res-8 hexes, so the same engine runs anywhere.</div>
     </div>
   </aside>
 
@@ -480,7 +480,7 @@
     <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
          count here would keep reading as true on the one screen where it isn't —
          when the data failed to load. -->
-    <div id="chip" class="float">San Ramon · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
+    <div id="chip" class="float">Contra Costa County · <b id="chip-n">loading…</b> · <b id="chip-layer">Canopy priority</b></div>
   </div>
 
   <aside id="detail">
@@ -523,7 +523,7 @@
 // ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
 // pointing the same app at another city's output.
 const _q = new URLSearchParams(location.search);
-const CITY_SLUG    = 'sanramon';
+const CITY_SLUG    = 'contracosta';
 const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson`;
 const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson`;
 const BOUNDARY_URL = `../data/boundary_${CITY_SLUG}.geojson`;  // flat fallback only
@@ -607,7 +607,7 @@ const fInt   = v => Math.round(v).toLocaleString();
 /* `worse` names the end of the ramp that means "more need", so the legend can
    annotate it instead of leaving the reader to infer the direction. */
 const LAYERS={
-  score:{title:'Priority score',ramp:PRIORITY,worse:'hi',fmt:v=>v.toFixed(0),
+  score:{title:'Canopy priority',ramp:PRIORITY,worse:'hi',fmt:v=>v.toFixed(0),
     cap:'Composite of surface heat, missing canopy, low A/C access and share aged 65+, scaled by the population exposed. Weights are live — drag them above. Deeper = greater need for cooling investment.'},
   lst:{title:'Surface temperature',ramp:HEAT,worse:'hi',fmt:v=>fTemp(v),
     cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
@@ -662,7 +662,7 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * generated from these constants rather than restating them by hand, so the two
  * cannot drift the way hardcoded legend text did.
  *
- * Checked against the committed data/sanramon.geojson at these defaults; the
+ * Checked against the committed data/contracosta.geojson at these defaults; the
  * only residual is the geojson storing lst/green/ac rounded to 1 dp — rounding,
  * not a second model. Say that out loud if asked.
  *
@@ -670,35 +670,44 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * stay on the features untouched, and everything on screen reads through
  * sc()/rk() instead. So "reset" is exact, not approximate.
  */
-/* `access` is an input the shipped pipeline does NOT use: config.py weights the
- * others, and this app's parity claim against data/sanramon.geojson depends on
- * reproducing exactly those. So it ships at weight 0 — present, movable, and off
- * by default, which keeps "Pipeline default" an honest name.
+/* HEAT SHIPS AT WEIGHT 0 ON THIS BRANCH, and it is the decision most worth
+ * understanding here. Every input is normalised min-max WITHIN the study area,
+ * which assumes the study area is one climate. A city is. This county is not: it
+ * runs from the Richmond shoreline to the Delta, mean summer surface temperature
+ * 36.8 °C west against 43.1 °C east, and 38.8% of ALL variance in surface
+ * temperature is explained by longitude and latitude alone.
  *
- * It belongs on the list because distance to relief is the one input here that
- * describes what a resident can do about the heat today, before any tree is
- * planted. In San Ramon the spread is wide for a city of 52 km² — under a minute
- * to 46 minutes on foot — because the mapped sites cluster along the Bollinger
- * Canyon and Crow Canyon corridors.
+ * The effect is measurable rather than theoretical. On the San Ramon branch
+ * corr(LST, canopy) = -0.800, and -0.808 after removing a spatial trend: shade
+ * demonstrably cools. Here it is -0.120, -0.149 detrended, and by longitude band
+ * it swings from +0.381 to -0.092. There is no consistent shade effect at this
+ * scale to score. So heat keeps its layer, its legend and its per-hex numbers —
+ * all measured, all real — and carries no weight. The "Heat first" preset shows
+ * what it says on its own, which is mostly a map of distance from the Bay.
  *
- * A/C ALSO ships at 0, and for a different and more important reason. It is
- * modelled by ranking each hex's median household income within the city. San
- * Ramon's block-group medians run $102k–$250k — narrow and uniformly high — so
- * that percentile stretch would paint a 35%-to-95% spread of "A/C access" across
- * a city where essentially everyone can afford it. That is variation invented by
- * the transform, not measured, and it is not allowed to carry a quarter of the
- * score. The layer is still built from real ACS income and can still be viewed.
- * Mirrors pipeline/config.py WEIGHTS; LA's 35/25/25/15 renormalises to 45/33/22
- * once A/C leaves the sum. */
-const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0};
+ * A/C IS scored here, unlike on the San Ramon branch. It is modelled by ranking
+ * each hex's median household income within the study area, so it only means
+ * anything where income varies. San Ramon's block groups ran $101k–$250k and it
+ * was zeroed there. This county's 674 with income run $18,071–$250,001, p10
+ * $69,526, median $128,142 — 30% of them below San Ramon's poorest. Real signal.
+ *
+ * CIRCULARITY WARNING: because ac_est derives from income, the score is not
+ * independent of income, and must never be used to argue that priority "tracks
+ * income". The canopy-equity finding on this branch is computed on raw measured
+ * canopy against income with no score involved. The "Canopy only" preset exists
+ * so anyone can check the answer without the income model in it at all.
+ *
+ * `access` also ships at 0 — present, movable, off — so "Canopy deficit" names
+ * exactly what config.py weights. Mirrors pipeline/config.py WEIGHTS. */
+const DEFAULT_W={heat:0.00,green:0.55,ac:0.25,age65:0.20,access:0};
 const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
 const W_INPUTS=[
   {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
-   note:'hotter hex → higher risk'},
+   note:'climate-confounded at county scale — starts at 0'},
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income — not scored here'},
+   note:'modelled from income — scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -711,30 +720,40 @@ const W_INPUTS=[
  *  pair of hexes and not enough to look like anything happened. Each preset is
  *  a policy question someone might actually be asked to defend. */
 const PRESETS=[
-  {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
-   why:'<b>The shipped model.</b> Surface heat, missing canopy and age, weighted by how many '
-      +'people are exposed. Every other preset is a departure from this one. Air conditioning '
-      +'is deliberately weighted zero here — open the sliders below for why.'},
-  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0},pop:.45,
-   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity '
-      +'check: if a block ranks high here and low by default, the difference is everything '
-      +'except heat.'},
-  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0},pop:.45,
-   why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
-      +'the input a city can actually change. San Ramon averages 21% canopy over its typical '
-      +'resident, so this preset is really asking which blocks got left out of that.'},
-  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0},pop:.45,
-   why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
-      +'runs from under 4% to 48% depending on the block. Amador Lakes N — 48% aged 65+ — goes '
-      +'from #3 by default to #1.'},
-  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25},pop:.45,
-   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
-      +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
-      +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
+  {id:'default',name:'Canopy deficit',w:{...DEFAULT_W},pop:DEFAULT_POPW,
+   why:'<b>The shipped model.</b> Missing tree canopy (55%), no air conditioning (25%) and '
+      +'age 65+ (20%), scaled by how many people live on the block. <b>Surface heat is '
+      +'deliberately weighted zero</b> — open the sliders below for why, it is the most '
+      +'important decision in this build.'},
+  {id:'canopy',name:'Canopy only',w:{heat:0,green:1,ac:0,age65:0,access:0},pop:.45,
+   why:'<b>Just the shade gap.</b> Nothing but measured vegetation cover and population — no '
+      +'income model, no age. If you distrust the A/C estimate, this is the view that removes '
+      +'it entirely. The Richmond blocks stay at the top.'},
+  {id:'heat',name:'Heat first',w:{heat:1,green:0,ac:0,age65:0,access:0},pop:.45,
+   why:'<b>What the heat layer alone says — and why it is not scored.</b> The answer moves '
+      +'inland, to Concord and Antioch, and off the Richmond shoreline almost entirely: '
+      +'summer surface temperature runs 36.8&nbsp;°C in the west against 43.1&nbsp;°C at the '
+      +'Delta, and <b>38.8% of all variance in it is explained by longitude and latitude '
+      +'alone</b>. County-wide, corr(heat, canopy) is just &minus;0.12 — against &minus;0.80 '
+      +'in San&nbsp;Ramon. At this scale absolute heat maps distance from the Bay, not shade, '
+      +'which is why it carries no weight in the score.'},
+  {id:'seniors',name:'Protect seniors',w:{heat:0,green:.35,ac:.15,age65:.50,access:0},pop:.45,
+   why:'<b>Who is least able to cope?</b> The 65+ share runs from 0 to 84% across these '
+      +'blocks. The answer moves to <b>Rossmoor</b>, the Walnut Creek retirement community, at '
+      +'84% aged 65+ — though note it already has 31% canopy, well above the county median. '
+      +'The Richmond blocks that lead by default are young: 8–11% aged 65+.'},
+  {id:'ac',name:'A/C poverty',w:{heat:0,green:.30,ac:.60,age65:.10,access:0},pop:.45,
+   why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
+      +'<i>modelled</i> from income rather than measured. Worth naming out loud — and worth '
+      +'comparing against <b>Canopy only</b>, which uses no income data at all.'},
+  {id:'stranded',name:'No relief nearby',w:{heat:0,green:.40,ac:.20,age65:.15,access:.25},pop:.45,
+   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 488 mapped '
+      +'cooling sites. Distance is what a county can fix this week by opening a building, '
+      +'rather than in twenty years by planting a tree. Estimated, not routed, and the shipped '
       +'pipeline does not use it.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
-   why:'<b>Reach over severity.</b> Same weights, but density dominates: a townhome block with '
-      +'900 residents outranks a hotter cul-de-sac with 90.'},
+   why:'<b>Reach over severity.</b> Same weights, but density dominates: a block with 5,000 '
+      +'residents and moderate canopy outranks a barer one with 300.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -1126,13 +1145,16 @@ function setLayer(k){
  *  because its files are not on this one. Claiming it here would be exactly the
  *  lie this list exists to prevent. */
 const CITIES=[
-  {name:'San Ramon',cc:'United States',have:'sanramon',
-   note:'The built dataset. 419 populated hexes at H3 resolution 9, ~0.11 km² each, '
-       +'covering the city limits — 85,569 residents, within 0.2% of the ACS place '
-       +'total of 85,734. Landsat 8/9 '
-       +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
-       +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
-       +'neighborhood names.'},
+  {name:'Contra Costa County',cc:'United States',have:'contracosta',
+   note:'The built dataset. 2,695 populated hexes at H3 resolution 8, ~0.77 km² each, '
+       +'covering the county — 1,161,570 residents, within 0.01% of the ACS county '
+       +'total of 1,161,458. Landsat 8/9 thermal and Sentinel-2 NDVI composited over '
+       +'the summers of 2022–2024, ACS 2023, and OpenStreetMap for cooling sites, '
+       +'streets and place names.'},
+  {name:'San Ramon',cc:'United States',
+   note:'Built on the <code>san-ramon</code> branch at H3 resolution 9 — 419 hexes, '
+       +'85,569 residents. A single city inside this county, at seven times this '
+       +'resolution.'},
   {name:'Los Angeles',cc:'United States',
    note:'Built on this project&rsquo;s <code>master</code> branch — 3,008 hexes at '
        +'resolution 8 — but its data files are not on this branch, so this build '
@@ -1189,12 +1211,13 @@ function buildIntro(){
   buildPicker();
 
   document.getElementById('ifine').innerHTML=
-    'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
-   +'income are real ACS figures interpolated from census block groups about nine times the '
-   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
-   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is a '
-   +'circuity-adjusted straight line, not a routed street path. '
-   +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
+    'Tree canopy and surface heat are measured per hex, from satellite. Population, age and '
+   +'income are real ACS figures interpolated from census block groups about 3.6&times; the '
+   +'size of one hex, so they vary smoothly rather than per block. <b>Surface heat is measured '
+   +'but weighted zero</b> in the score — this county spans marine to Delta and absolute '
+   +'temperature across it mostly tracks distance from the Bay. A/C access is <b>modelled</b> '
+   +'from income, not measured. Walk time is a circuity-adjusted straight line, not a routed '
+   +'street path. Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
 
   document.getElementById('intro-go').onclick=dismissIntro;
   document.addEventListener('keydown',e=>{
@@ -1249,7 +1272,7 @@ function buildPicker(){
     input.value=c.name;
     info.hidden=false;info.innerHTML=c.have?c.note:BUILD_NOTE(c);
     // The CTA only ever opens what is actually loaded.
-    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore San Ramon ';
+    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore Contra Costa County ';
     open(false);render();
   }
 
@@ -1274,7 +1297,7 @@ function buildPicker(){
   list.addEventListener('click',e=>{const b=e.target.closest('.city');if(b)choose(+b.dataset.i);});
   document.addEventListener('click',e=>{if(!box.contains(e.target))open(false);});
 
-  render();choose(0);          // San Ramon selected on load — it is the built dataset
+  render();choose(0);          // Contra Costa selected on load — it is the built dataset
 }
 
 /** Backdrop is the real hex layer, drawn straight to a canvas from the same
@@ -1449,19 +1472,23 @@ function applyWeights(){
     W_INPUTS.map(w=>Math.round(W[w.k]*100)+'%').join(' · ');
   // The caption for the priority layer is generated from the weights in force,
   // so it can't sit there quoting 35% while the slider says 60%.
-  LAYERS.score.cap=`Composite of surface heat (${Math.round(W.heat*100)}%), missing canopy `
-    +`(${Math.round(W.green*100)}%), no A/C access (${Math.round(W.ac*100)}%), share aged 65+ `
-    +`(${Math.round(W.age65*100)}%)`
-    +(W.access>0.005?` and walk to relief (${Math.round(W.access*100)}%)`:'')
-    +`, then weighted by the population exposed. `
+  const parts=[];
+  if(W.green>0.005) parts.push(`missing canopy (${Math.round(W.green*100)}%)`);
+  if(W.heat>0.005)  parts.push(`surface heat (${Math.round(W.heat*100)}%)`);
+  if(W.ac>0.005)    parts.push(`no A/C access (${Math.round(W.ac*100)}%)`);
+  if(W.age65>0.005) parts.push(`share aged 65+ (${Math.round(W.age65*100)}%)`);
+  if(W.access>0.005)parts.push(`walk to relief (${Math.round(W.access*100)}%)`);
+  LAYERS.score.cap=`Composite of ${parts.join(', ').replace(/, ([^,]*)$/,' and $1')}, `
+    +`then weighted by the population living there. `
     +(def?'These are the weights pipeline/config.py shipped with. ':'Re-scored live in your browser. ')
-    // The "if the whole city were freezing, everything should be low priority"
-    // objection. It is correct, and the answer is that this layer never claims
-    // otherwise: 100 means "first in line here", not "hot in absolute terms".
-    // Surface temperature is the layer that answers the absolute question.
-    +'This is a ranking within this city, not an absolute hazard level — 100 means first '
-    +'in line here, not hot by world standards. For absolute values use the Surface '
-    +'temperature layer. Deeper = greater need for cooling investment.';
+    +(W.heat<=0.005
+      ? 'Surface heat is weighted zero on purpose: this county spans marine to Delta, '
+        +'38% of all variance in surface temperature is explained by position alone, and '
+        +'county-wide corr(heat, canopy) is only −0.12. It stays viewable as its own layer. '
+      : '')
+    // A within-area min-max: 100 means first in line HERE, not bad in absolute terms.
+    +'This is a ranking within this county, not an absolute hazard level — 100 means '
+    +'first in line here. Deeper = thinner canopy over more people.';
   if(current==='score')setLayer('score');     // repaints AND refreshes the caption
   buildRank();
   if(selId!=null)selectHex(selId,false);
@@ -1658,6 +1685,14 @@ function updateROI(p){
      '<b>Where these numbers come from</b>'
     +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
     +'about +10% canopy cover per −0.3 °C of afternoon air temperature.</div>'
+    // Someone will notice the score ignores heat and ask why the ROI still promises
+    // cooling. These are different claims and the distinction is worth stating.
+    +'<div><b>Why cooling is claimed here when heat is not scored.</b> Those are different '
+    +'questions. Planting shade on a block cools that block — that is a measured local '
+    +'effect and it is what this figure uses. The score ignores heat because <i>comparing '
+    +'absolute temperature between blocks 60 km apart</i> mostly measures distance from the '
+    +'Bay, not shade. Adding trees still cools; ranking Richmond against Antioch by raw '
+    +'thermal reading is what does not work.</div>'
     +`<div><b>Tree count.</b> ${TREE_M2} m² of crown per mature street tree, applied to this `
     +'hex&rsquo;s own measured area.</div>'
     +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
