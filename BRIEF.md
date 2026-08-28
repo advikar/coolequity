@@ -1,11 +1,37 @@
-# Where San Ramon's tree canopy is thinnest, and what it would cost to fix
+# A first-pass canopy assessment for CAP Measure CS-1b
 
-**A one-page analysis for the City of San Ramon Sustainability Division**
+**Where San Ramon's tree canopy is thinnest, block by block — and what closing the gap
+would cost**
+
 Prepared by *[your name]*, an independent student project · Data current as of August 2026
 Method, source code and every figure below: `github.com/advikar/coolequity` (`san-ramon` branch)
+Interactive map: `advikar.github.io/coolequity/sanramon/app/`
 
 > This is an outside analysis offered for cross-checking. It is not a City product and has
 > not been reviewed by the City. Where it is uncertain, it says so.
+
+---
+
+## Why this is addressed to you
+
+San Ramon's **Draft Climate Action Plan (April 10, 2025), Measure CS-1**, commits the City to
+work this analysis was independently built to do:
+
+- **CS-1b** — *"Conduct a Tree Canopy assessment … including **identifying areas with below
+  average canopy coverage**"*, and set *"a goal of having **no significant difference in canopy
+  coverage between census blocks** in the community."*
+- **CS-1c** — *"prioritize tree implementation in **areas with populations most at risk to
+  extreme heat impacts** (e.g., older adults …)."*
+- **CS-1d** — a Tree Trust for *"selected communities with below average tree canopy coverage"*,
+  plus USDA / California ReLeaf / Urban and Community Forestry grant applications.
+- **CS-1e** — *"an **interactive map** showing the results of the tree canopy assessment along
+  with areas identified for new tree canopy."*
+
+**This document is a free first pass at CS-1b and CS-1c, with a working interactive map.** It is
+not a substitute for the professional assessment the CAP calls for — it uses a satellite
+vegetation proxy, not a tree inventory. It is offered as something to scope that assessment
+against, to cross-check a consultant's results, or to attach to a grant application as evidence
+that the need is quantified. Every figure is reproducible from public data and open source code.
 
 ---
 
@@ -104,11 +130,18 @@ they are not San Ramon figures.
 
 ## One ask
 
-**Cross-reference these 25 blocks against the City's existing street tree inventory and
-recent planting records.** If the City's own data shows these streets are already planted,
-the NDVI proxy is measuring something other than canopy and this analysis needs correcting —
-which is worth knowing. If it shows they are not, the City has a ranked, costed list of where
-its next 4,484 street trees would do the most good, and 32 km of its own right-of-way to put
-them in.
+**Cross-reference these 25 blocks against whatever street tree records the City already holds.**
 
-No software adoption, no procurement, no commitment. One data cross-check.
+If those records show these streets are already planted, then the satellite proxy is measuring
+irrigation rather than canopy, this analysis is wrong, and CS-1b's assessment should be scoped
+knowing that NDVI alone will not answer it. That is worth finding out cheaply.
+
+If they show these streets are *not* planted, then CS-1b has a ranked, costed starting list —
+25 blocks, 10,113 residents, 4,484 trees, 32 km of City right-of-way — and CS-1d has a
+quantified need to put in a grant application.
+
+Either outcome is useful to you. No software to adopt, no procurement, no commitment: one
+cross-check against data the City already owns.
+
+**Also worth knowing before you act on it:** one block in the top ten (Capella) is flagged above
+as possibly a data artifact, and should be looked at before it appears on any list.

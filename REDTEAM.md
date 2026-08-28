@@ -100,10 +100,20 @@ ground-truth rather than presented as a finding.
 
 ## 7. "Who are you, and why should we spend staff time?" — **the real one**
 
-No answer from the data. The mitigation is that the ask costs the City one cross-check against
-a dataset it already owns, the method and code are public and inspectable, and the brief leads
-with a null result — no income gradient — which is not what someone trying to sell something
-would lead with.
+No answer from the data, but the framing does most of the work: San Ramon's own Draft Climate
+Action Plan (April 10, 2025) **Measure CS-1b** already commits the City to "identifying areas
+with below average canopy coverage" and to "no significant difference in canopy coverage
+between census blocks", and **CS-1e** to publishing an interactive map of exactly that. This is
+not an unsolicited pitch; it is a free first pass at work the City has already said it will do.
+
+The remaining mitigations: the ask costs one cross-check against data the City already owns,
+the method and code are public and inspectable, and the brief leads with a **null result** — no
+income gradient — which is not what someone selling something would lead with.
+
+**Do not overclaim on this.** CS-1b asks for a canopy assessment *and a tree inventory*. This
+delivers neither: it is a satellite vegetation proxy, and objection 1 is precisely the reason it
+cannot substitute for the real thing. Say "first pass, to scope or cross-check yours", never
+"this satisfies CS-1b".
 
 ---
 

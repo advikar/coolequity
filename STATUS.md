@@ -86,6 +86,28 @@ and Holmby Hills). The pattern is always the same: a plausible story written fro
 names or intuition, never tested. **Any claim about what the ranking "tracks"
 must be a measured correlation before it goes in copy.**
 
+### The City has already asked for this — CAP Measure CS-1
+
+San Ramon's Draft Climate Action Plan (10 April 2025, prepared by Rincon Consultants;
+Planning Services contact listed as Ryan Driscoll, Associate Planner) contains **Measure
+CS-1**, whose actions map almost exactly onto what this branch does:
+
+  - **CS-1b** — conduct a Tree Canopy assessment "including identifying areas with below
+    average canopy coverage"; set "a goal of having no significant difference in canopy
+    coverage between census blocks in the community".
+  - **CS-1c** — prioritise planting "in areas with populations most at risk to extreme heat
+    impacts (e.g., older adults …)".
+  - **CS-1d** — a Tree Trust for "selected communities with below average tree canopy
+    coverage", plus USDA / California ReLeaf / Urban and Community Forestry grant applications.
+  - **CS-1e** — publish "an interactive map showing the results of the tree canopy assessment
+    along with areas identified for new tree canopy".
+
+`BRIEF.md` now leads with this rather than pitching cold. **The honesty limit matters here:**
+CS-1b asks for a canopy assessment *and a tree inventory*, and this delivers neither — it is a
+satellite vegetation proxy, which is exactly what REDTEAM objection 1 is about. The brief says
+"first pass, to scope or cross-check yours", never "this satisfies CS-1b". Do not let that
+slide.
+
 ### Deployed — two cities, one site
 
 Live at **<https://advikar.github.io/coolequity/>**: a chooser at the root, Los
