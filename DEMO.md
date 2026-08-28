@@ -36,20 +36,36 @@ Then click **Explore San Ramon**.
 
 **2 · Map (15s)**
 
-> "This is all of San Ramon — every block inside the city limits, 540 hexes,
-> 85,150 residents, about a tenth of a square kilometre each. Every one scored
+> "This is all of San Ramon — every block inside the city limits, 419 populated hexes,
+> 85,569 residents, about a tenth of a square kilometre each. Every one scored
 > on real satellite heat, real tree canopy, population and age. Nothing here is
 > drawn by hand. The darker it is, the more help it needs."
 
-**3 · The suburb result (20s)** — this is the beat that makes San Ramon
-interesting rather than a smaller Los Angeles.
+**3 · The suburb result (25s)** — this is the beat that makes San Ramon
+interesting rather than a smaller Los Angeles. It is also the beat that got
+rewritten after the data contradicted the first version; see "What we checked
+and had to drop" below.
 
-> "San Ramon is a wealthy, leafy suburb — 21% canopy over the average resident.
-> So you might expect this map to be flat. It isn't. Surface temperature runs
-> from 39 to 51 degrees across four miles, and the top of the list is not a
-> neighbourhood — it's **apartment complexes**. Fairway Village, Amador Lakes.
-> Less shade, more people per hex, and in Amador Lakes' case **40% of residents
-> over 65**. Heat inequity in a rich town looks like housing type, not income."
+> "San Ramon is wealthy and leafy — 21% canopy over the typical resident, median
+> household income over $220,000. You'd expect this map to be flat. It isn't.
+> Canopy runs from **5% to 41%** of the ground and surface temperature from
+> **39 to 51 °C** across four miles, and the two move together almost
+> one-for-one: **r = −0.80**, and −0.81 after removing any spatial trend. Shade
+> is doing the work.
+>
+> The thing we expected to find, and didn't, is a **who**. Priority does not
+> track income — **r = −0.02**. It doesn't track housing type, and it doesn't
+> track how old the housing is. The poorest quarter of this city has a median
+> income of $164,000 and *slightly more* canopy than the richest quarter. So
+> there is no heat-equity story here, and we're not going to invent one. What
+> there is, is a **canopy gap**: the top 25 blocks average 14.5% canopy against
+> a city median of 21%."
+
+Where the gap actually is, if asked: **8 of the top 10 hexes are east of
+Dougherty Road**, in Dougherty Valley — which holds 37% of the city's populated
+hexes. East vs west is 19.8% vs 22.6% canopy (t = −4.8) and +0.9 °C (t = +5.4).
+Real and statistically clear, but a 2.8-point canopy difference, so describe it
+as a tilt, not a divide.
 
 If asked about redlining: **San Ramon has no HOLC map, and the app says so
 rather than showing an empty layer.** HOLC surveyed built-up cities in 1935–40;
@@ -59,34 +75,36 @@ San Ramon was farmland and didn't incorporate until 1983.
 **Pipeline default**.
 
 > "The weights aren't buried in a config file. Ask a different question and the
-> whole model recomputes across all 540 hexes, live. Ask 'who is most likely to
-> *die* of this?' and the top spot moves from Fairway Village to **Amador
-> Lakes**, where two in five residents are over 65."
+> whole model recomputes across all 419 populated hexes, live. Ask 'who is most
+> likely to *die* of this?' and the top spot moves from Valencia to **Amador
+> Lakes North**, where **48% of residents are over 65** — the highest in the
+> city."
 
-Verified preset → #1 hex, if a judge wants to check:
+Verified preset → #1 hex, re-checked against the rebuilt data:
 
 | Preset | #1 |
 |---|---|
-| Pipeline default | Fairway Village Apartments SE |
-| Heat first | Fairway Village Apartments SE |
-| Shade gap | Fairway Village Apartments SE |
-| Protect seniors | Amador Lakes Apartments N |
-| No relief nearby | Canyon Oaks |
-| Most people | Canyon Oaks |
+| Pipeline default | Valencia S |
+| Heat first | Valencia S |
+| Shade gap | Valencia S |
+| Protect seniors | Amador Lakes Apartments N (47.6% aged 65+) |
+| No relief nearby | Chantera E |
+| Most people | Valencia S |
 
 Then click any hex:
 
 > "And for any block, here's the arithmetic — what we measured, where it sits on
 > the city's scale, times the weight, equals points."
 
-**5 · Decision (25s)** — click the **#1 hex** (Fairway Village Apartments SE),
-drag the canopy slider to **25%**.
+**5 · Decision (25s)** — click the **#1 hex** (Valencia S), drag the canopy
+slider to **25%**.
 
-> "Number one: Fairway Village. 47.2 °C surface temperature, **16% canopy**, 451
-> residents, 106 of them over 65. Raise canopy here to 25% and you cool
-> afternoons an estimated **0.28 °C** for all of them. Cost: about **$129,000**,
-> or **$286 a resident**. That's a number a city council can actually vote on —
-> and for a town this size it's a line item, not a bond measure."
+> "Number one: Valencia South. 46.9 °C surface temperature, **12.9% canopy**,
+> **925 residents** — the densest block in the city at about 8,400 people per
+> square kilometre. Raise canopy here to 25%, roughly the city median, and that
+> is **333 trees**, an estimated **0.36 °C** cooler afternoon for all 925 of
+> them, at about **$167,000** — **$180 a resident**. That's a line item, not a
+> bond measure."
 
 **6 · Close (10s)**
 
@@ -97,6 +115,28 @@ drag the canopy slider to **25%**.
 > does the first tree go?"
 
 ---
+
+## What we checked and had to drop
+
+Both of these were in an earlier version of this script. Both were wrong, and
+both were caught by testing them rather than by thinking harder about them. They
+are written down so nobody says them from memory.
+
+**"Heat inequity here looks like housing type — apartment complexes."** False.
+Measured against OSM building footprints (26,346 of them, effectively complete
+coverage for a city of ~30k housing units), the correlation between a hex's
+priority score and its share of multi-family floor area is **+0.08**. The median
+top-10 hex has **0%** multi-family floor area. The claim came from hex *names* —
+"Fairway Village Apartments SE" is named after the nearest landmark and contains
+4% apartment floor area. The name was doing the arguing.
+
+**"Newer subdivisions have less canopy."** Also false, and tested because it was
+the obvious next hypothesis. Median year built by block group (ACS B25035)
+against priority: **r = +0.02**. Mean canopy by construction era is 22.7%
+(pre-1980), 22.6% (1980–94), 20.2% (1995–2004), 20.9% (2005+). Flat.
+
+What survived: the canopy–heat coupling (**r = −0.80**, −0.81 detrended) and the
+absence of an income gradient (**r = −0.02**). Those are the two things to say.
 
 ## Questions you should expect
 
@@ -130,8 +170,9 @@ smoothly across neighbours rather than block by block. That's stated in the app'
 footer. The alternative was res 8, which is 71 hexes for the whole city and
 doesn't look like a map.
 
-**"Does shade actually cool, or is that just terrain?"** Across the 540 populated
-hexes, heat and greenness correlate at **r = −0.797**. That's stronger than the
+**"Does shade actually cool, or is that just terrain?"** Across the 419 populated
+hexes, heat and greenness correlate at **r = −0.800** (−0.808 after removing a
+quadratic spatial trend). That's stronger than the
 LA build's −0.61, and unlike LA there's no coastline here to confound it.
 
 **"Is the walk time routed?"** No — straight-line × 1.273 (= 4/π, the exact

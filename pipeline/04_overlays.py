@@ -388,6 +388,58 @@ def hex_names(hexes, places_gj):
 
 
 # --------------------------------------------------------------------- main
+# Streets the city can plant along. Residential and tertiary roads only:
+# motorway and trunk are Caltrans/county right-of-way with no planting strip, and
+# service ways are driveways and parking aisles. This is the closest thing in
+# open data to "frontage San Ramon actually controls", and it is the difference
+# between a map that says where trees should go and one a planner can act on --
+# the top-ranked hexes are private subdivisions, so street frontage is where the
+# city's own authority to plant actually lives.
+STREETS_OQL = f"""[out:json][timeout:{C.OVERPASS_TIMEOUT_S}];
+way["highway"~"^(residential|tertiary|unclassified|living_street|secondary)$"]\
+({C.BBOX[1]},{C.BBOX[0]},{C.BBOX[3]},{C.BBOX[2]});
+out geom;
+"""
+
+
+def street_frontage(hexes, refresh):
+    """Metres of plantable street centreline inside each hex.
+
+    Returns a Series indexed like `hexes`. Both sides of a street are plantable,
+    so capacity is 2 x length / spacing -- that doubling happens in the app,
+    where the spacing assumption is visible, not buried here.
+    """
+    import geopandas as gpd
+    from shapely.geometry import LineString
+
+    def build():
+        return {"type": "FeatureCollection", "features": [
+            {"type": "Feature",
+             "properties": {"hw": e["tags"].get("highway", "")},
+             "geometry": {"type": "LineString",
+                          "coordinates": [[round(p["lon"], 5), round(p["lat"], 5)]
+                                          for p in e["geometry"]]}}
+            for e in overpass(STREETS_OQL, "streets")
+            if len(e.get("geometry") or []) >= 2]}
+
+    gj = cached(C.STREETS_FILE, build, "streets", refresh)
+    if gj is None:
+        # Non-fatal, like every other overlay here: the score does not depend on
+        # frontage, so a failed Overpass pull costs the planner column and
+        # nothing else.
+        log("  streets: unavailable — frontage column will be 0")
+        return hexes["h3"].map({}).fillna(0.0)
+
+    st = gpd.GeoDataFrame.from_features(gj["features"], crs="EPSG:4326").to_crs(C.RASTER_CRS)
+    hx = hexes.to_crs(C.RASTER_CRS)[["h3", "geometry"]]
+    inter = gpd.overlay(
+        gpd.GeoDataFrame(geometry=st.geometry, crs=C.RASTER_CRS).assign(k=1),
+        hx, how="intersection", keep_geom_type=False)
+    inter = inter[inter.geometry.geom_type.isin(["LineString", "MultiLineString"])]
+    m = inter.assign(m=inter.geometry.length).groupby("h3")["m"].sum()
+    return hexes["h3"].map(m).fillna(0.0)
+
+
 def main():
     import geopandas as gpd
     refresh = "--refresh" in sys.argv
@@ -431,6 +483,12 @@ def main():
     mins, km = access_time(hexes, centers)
     out["access_min"] = np.round(mins, 1)
     out["access_km"] = np.round(km, 2)
+
+    fr = street_frontage(hexes, refresh)
+    out["street_m"] = np.round(fr, 0)
+    log(f"  streets: {fr.sum()/1000:,.0f} km of plantable frontage, "
+        f"median {fr.median():,.0f} m per hex, "
+        f"{int((fr == 0).sum())} hexes with none")
 
     out.to_csv(OUT_CSV, index=False)
     log(f"  centers: {len(centers['features'])} sites")

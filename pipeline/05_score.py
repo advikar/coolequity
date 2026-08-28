@@ -23,7 +23,7 @@ import config as C
 # The front end reads exactly these. Renaming one breaks the UI silently —
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
-            "access_min", "access_km", "score", "rank", "area_m2"]
+            "access_min", "access_km", "score", "rank", "area_m2", "street_m"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -122,6 +122,11 @@ def main():
         "score":      df["score"].round(1),
         "rank":       df["rank"],
         "area_m2":    df["area_m2"].round(0).astype(int),
+        # Metres of city-plantable street centreline. Not scored — it answers
+        # "can the city act here?", which is a different question from
+        # "should it?", and mixing the two would let good access paper over
+        # real need.
+        "street_m":   df["street_m"].fillna(0).round(0).astype(int),
     })[CONTRACT]
 
     by_id = {int(r["id"]): r for r in out.to_dict("records")}

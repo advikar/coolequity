@@ -296,6 +296,10 @@
   .stat .k{font-size:10px;color:var(--muted2);margin-top:3px;line-height:1.25}
   .stat.hero .v{color:var(--good)}
   .roi-note{font-size:9.5px;color:var(--muted2);margin-top:11px;line-height:1.4}
+  .roi-feas{font-size:10.5px;line-height:1.55;margin-top:11px;padding:9px 11px;
+    border-radius:9px;background:#0c1219;border:1px solid var(--edge);color:var(--muted)}
+  .roi-feas b{color:var(--txt)}
+  .roi-feas .ok{color:#6ee7a8}.roi-feas .gap{color:var(--accent)}
   .roi-src{font-size:9.5px;color:var(--muted2);margin-top:9px;line-height:1.5;
     border-top:1px solid var(--edge);padding-top:9px}
   .roi-src b{color:var(--muted);font-weight:600}
@@ -322,18 +326,17 @@
   <div class="intro-scrim"></div>
   <div class="intro-card">
     <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
-    <div class="eyebrow">Heat &amp; cooling equity</div>
-    <h1>Which neighborhoods<br>should a city cool&nbsp;first?</h1>
-    <p class="lede">Heat is the deadliest weather hazard on Earth, and it lands hardest on the
-      poorest, least-shaded blocks. Cities have cooling budgets. What they don’t have is a
-      precise way to aim them.
+    <div class="eyebrow">Tree canopy &amp; urban heat</div>
+    <h1>Where should San&nbsp;Ramon<br>plant its next trees?</h1>
+    <p class="lede">Across San Ramon, tree canopy runs from under 6% to over 40% of the ground,
+      and surface heat tracks it almost one-for-one — <b>r&nbsp;=&nbsp;&minus;0.80</b>. What it
+      does <i>not</i> track is income.
       <!-- One sentence, not a paragraph. The landing card is 979px tall against a
            720px viewport at 1280x720, so anything added here pushes the wordmark
            above the fold — which is exactly how the product name went missing. If
            you add copy to this screen, re-measure .wordmark's top afterwards. -->
-      Tree canopy is the lever this tool aims: it is the one input a city can
-      change directly, and every neighborhood here is measured for the shade it
-      is missing and priced for the trees it would take.</p>
+      So this is not a map of who is rich and who is poor. It is a map of where the
+      shade is missing, what that costs in degrees, and what it would take to fix.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Choose a city</p>
     <div class="picker" id="picker">
@@ -371,7 +374,7 @@
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
       </div>
-      <p>Which neighborhoods should a city cool first? A heat-equity engine that runs on global satellite data — shown here on San Ramon, California.</p>
+      <p>Where should a city plant its next trees? Canopy and surface heat measured per block from satellite, priced per intervention — shown here on San Ramon, California.</p>
     </div>
 
     <div class="scroll">
@@ -505,6 +508,10 @@
         <!-- Where the three constants come from. A dollar figure with no stated
              source is the fastest way to lose a room, and $500 is an assumption,
              not a quote — say so on the screen, not only in the README. -->
+        <!-- The question the ranking cannot answer: the top hexes are private
+             subdivisions, so "plant here" is only actionable where the city
+             owns the ground. Street frontage is that, measured from OSM. -->
+        <div class="roi-feas" id="roi-feas"></div>
         <div class="roi-src" id="roi-src"></div>
       </div>
     </div>
@@ -632,6 +639,11 @@ const FLAT_STYLE={version:8,sources:{},layers:[
 let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
 const vals={};
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
+/* Street trees go on both sides of a road at roughly this spacing. The number
+ * is a planning convention, not a measurement — it is stated on screen next to
+ * the figure it produces, because the whole point of the frontage panel is to
+ * be checkable against the city's own standard. */
+const TREE_SPACING_M=10;
 let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
 
 /* ================================================================ live model
@@ -713,16 +725,16 @@ const PRESETS=[
       +'resident, so this preset is really asking which blocks got left out of that.'},
   {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0},pop:.45,
    why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
-      +'runs from 4% to 40% depending on the block. Watch the retirement-oriented apartment '
-      +'complexes climb.'},
+      +'runs from under 4% to 48% depending on the block. Amador Lakes N — 48% aged 65+ — goes '
+      +'from #3 by default to #1.'},
   {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25},pop:.45,
    why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
       +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
       +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
       +'pipeline does not use it.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
-   why:'<b>Reach over severity.</b> Same weights, but density dominates: an apartment block with '
-      +'700 residents outranks a hotter cul-de-sac with 90.'},
+   why:'<b>Reach over severity.</b> Same weights, but density dominates: a townhome block with '
+      +'900 residents outranks a hotter cul-de-sac with 90.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -1115,8 +1127,9 @@ function setLayer(k){
  *  lie this list exists to prevent. */
 const CITIES=[
   {name:'San Ramon',cc:'United States',have:'sanramon',
-   note:'The built dataset. 540 populated hexes at H3 resolution 9, ~0.11 km² each, '
-       +'covering all 52 km² inside the city limits — 85,150 residents. Landsat 8/9 '
+   note:'The built dataset. 419 populated hexes at H3 resolution 9, ~0.11 km² each, '
+       +'covering the city limits — 85,569 residents, within 0.2% of the ACS place '
+       +'total of 85,734. Landsat 8/9 '
        +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
        +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
        +'neighborhood names.'},
@@ -1165,7 +1178,7 @@ function buildIntro(){
     // wraps alone onto a second line reads as a mistake.
     [HEX.features.length.toLocaleString(),'neighborhoods'],
     // Not always millions. LA's 6.5M formatted fine as "6.5M"; San Ramon's
-    // 85,150 came out "0.1M", which reads as a rounding error rather than a
+    // 85,569 came out "0.1M", which reads as a rounding error rather than a
     // population. Switch units at a million.
     [pop>=1e6?(pop/1e6).toFixed(1)+'M':Math.round(pop).toLocaleString(),'residents'],
     [fTemp(hot),'hottest block'],
@@ -1619,6 +1632,28 @@ function updateROI(p){
   document.getElementById('roi-note').textContent=acts
     ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents, ${fInt(seniors)} of whom are aged 65 or over.`
     : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
+  // What the city can actually do here, as opposed to what the model wants.
+  const fm=p.street_m||0;
+  const capacity=Math.floor(fm*2/TREE_SPACING_M);
+  const feas=document.getElementById('roi-feas');
+  if(!fm){
+    feas.innerHTML='<b>No mapped public street frontage in this hex.</b> Any planting here '
+      +'would be on private ground — an incentive, permission or partnership question, '
+      +'not a public-works one.';
+  }else{
+    const enough=capacity>=trees;
+    const km=(fm/1000);
+    feas.innerHTML=`<b>${(km*(isImp()?0.621371:1)).toFixed(1)} ${isImp()?'mi':'km'}</b> of city street `
+      +`frontage here — room for about <b>${fInt(capacity)}</b> street trees at `
+      +`${TREE_SPACING_M} m spacing, both sides. `
+      +(acts
+        ? (enough
+           ? `<span class="ok">The ${fInt(trees)} trees above fit within public right-of-way.</span>`
+           : `<span class="gap">Only ${fInt(capacity)} of the ${fInt(trees)} trees above fit in `
+             +`public right-of-way — the remaining ${fInt(trees-capacity)} would need private `
+             +`land.</span>`)
+        : 'Drag the slider to compare against a planting target.');
+  }
   document.getElementById('roi-src').innerHTML=
      '<b>Where these numbers come from</b>'
     +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
@@ -1628,7 +1663,12 @@ function updateROI(p){
     +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
     +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
     +'roughly three years of establishment care. Real unit costs vary widely with species, site '
-    +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>';
+    +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
+    +`<div><b>Street frontage.</b> Metres of residential, tertiary and unclassified road `
+    +`centreline inside this hex, from OpenStreetMap. Capacity assumes both sides at `
+    +`${TREE_SPACING_M} m spacing and takes no account of driveways, utilities, sight lines `
+    +`or existing trees, so read it as an upper bound on what the public right-of-way could `
+    +`hold — not a planting plan.</div>`;
 }
 
 function wireHover(){

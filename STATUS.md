@@ -2,8 +2,8 @@
 
 > ## Branch: `san-ramon`
 >
-> This branch retargets the whole engine at **San Ramon, California** — 540 hexes
-> at H3 res 9, 85,150 residents, all data freshly built. `master` (Los Angeles)
+> This branch retargets the whole engine at **San Ramon, California** — 419 populated hexes
+> at H3 res 9, 85,569 residents, all data freshly built. `master` (Los Angeles)
 > is untouched: every data artefact here is suffixed `_sanramon`, so the two
 > cities' files coexist instead of overwriting each other.
 >
@@ -16,18 +16,77 @@
 >
 > | | |
 > |---|---|
-> | Hexes | 540 populated (1 dropped), res 9, ~0.11 km² each |
+> | Hexes | 419 populated (122 with no housing dropped), res 9, ~0.11 km² each |
 > | Coverage | the incorporated city, clipped to TIGERweb place GEOID 0668378 |
-> | Population | 85,150 (published ~84–86k — the area weighting checks out) |
-> | Surface temp | 39.2–51.1 °C, median 46.1 |
-> | Canopy proxy | 5.3–43.4%, median 19.9, **21.2% over the average resident** |
-> | Aged 65+ | 4.3–39.8%, median 12.2 |
+> | Population | **85,569** against a true ACS place total of **85,734** — 0.19% |
+> | Hexes | 419 populated of 541 (122 with no housing, correctly dropped) |
+> | Surface temp | 39.2–51.1 °C, median 45.8 |
+> | Canopy proxy | 5.3–40.8%, median 20.9 |
+> | Aged 65+ | 0–47.6%, median 11.8 (smoothed) |
 > | Cooling sites | 25 — 12 community centres, 5 pools, 5 senior/shelter, 3 libraries |
-> | Walk to relief | 0.2–45.8 min, median 14.2 |
-> | corr(LST, canopy) | **−0.797** (LA was −0.61, and this city has no coast) |
-> | #1 hex | Fairway Village Apartments SE — 47.2 °C, 15.6% canopy, 451 people, 23.6% aged 65+ |
+> | Walk to relief | 0–46 min, median 14 |
+> | corr(LST, canopy) | **−0.800**, −0.808 detrended (LA was −0.61) |
+> | corr(income, priority) | **−0.02** — no income gradient; see Phase 10 |
+> | #1 hex | Valencia S — 46.9 °C, 12.9% canopy, 925 people, 8.6% aged 65+ |
 >
-> ### Four things that did NOT transfer from LA, and would fail quietly
+> ### Phase 10 — the population was wrong, and so was the headline
+
+Two independent problems, found by checking rather than by reasoning. Both are
+fixed; the second is a lesson about this project's failure mode.
+
+**1. Area weighting manufactured residents.** `03_census.py` split each block
+group's population across hexes by AREA. At LA's res 8 (0.82 km²) that is a fair
+areal-interpolation assumption. At San Ramon's res 9 (0.11 km²) it is not: **57
+of 540 hexes held ≥50 "residents" each while containing zero residential
+buildings** — 5,850 people, 6.9% of the city, placed on golf courses, ridgelines
+and the Bishop Ranch office park. One empty hex ranked **#10**. Population is a
+multiplier in the score, so those hexes were promoted, and a planner sent to look
+at one would find a hillside.
+
+Fixed with dasymetric refinement — new `pipeline/02b_buildings.py` pulls OSM
+residential footprints and `03_census.py` splits block groups by residential
+**floor area** instead of ground area. Three subtleties, each of which produced a
+visibly wrong total before it was right:
+
+  - the **denominator** must be the whole block group including the part outside
+    the grid, or partly-covered block groups assign all their residents to their
+    in-city half (this gave 108,178 people);
+  - the **numerator** must be clipped to the city limits, because hexes are kept
+    if they *intersect* the boundary and so overhang into Danville and Dublin
+    (unclipped: 92,395; clipped both ends wrongly: 96,801);
+  - the buildings query must run **wider than the bbox** (`MARGIN_DEG = 0.09`),
+    because 17 of the 61 block groups touching San Ramon extend past it and their
+    missing houses shrink the denominator (this was most of a 2.7% overcount).
+
+Result: **85,569 vs a true ACS place total of 85,734 — 0.19%.** Zero hexes now
+have population without housing. The ACS reconciliation check in `03_census.py`
+is what caught every one of these; keep it.
+
+**2. The headline finding was false.** The branch claimed heat inequity in San
+Ramon "tracks housing type — apartment complexes like Fairway Village and Amador
+Lakes." Tested against 26,346 OSM building footprints: `corr(priority,
+multi-family floor share) = +0.08`, and the median top-10 hex is **0%**
+multi-family. The claim came from hex **names** — "Fairway Village Apartments SE"
+is named for the nearest landmark and contains 4% apartment floor area. The
+follow-up hypothesis (newer subdivisions) also failed: ACS B25035 median year
+built gives `r = +0.02`.
+
+What is actually true, and now what the app says:
+
+  - `corr(LST, canopy) = −0.80`, **−0.808 after removing a quadratic spatial
+    trend** — a real shade effect, stronger than LA's −0.61;
+  - `corr(income, priority) = −0.02`. Canopy by income quartile: 21.5 / 22.6 /
+    21.7 / 20.4%. **There is no heat-equity gradient in San Ramon.** The app is
+    reframed as canopy targeting and says so on the landing screen;
+  - geography carries what is left: 8 of the top 10 hexes are in Dougherty
+    Valley (east of Dougherty Rd), 19.8% vs 22.6% canopy, t = −4.8.
+
+**This is the third claim of this shape to ship wrong** (after the LA A/C swap
+and Holmby Hills). The pattern is always the same: a plausible story written from
+names or intuition, never tested. **Any claim about what the ranking "tracks"
+must be a measured correlation before it goes in copy.**
+
+### Four things that did NOT transfer from LA, and would fail quietly
 >
 > 1. **One summer is one Landsat scene here**, not twenty. `SUMMER_YEARS` is now
 >    `(2022, 2023, 2024)` and `02_satellite.py` searches each summer separately
@@ -55,7 +114,7 @@
 >   `display:flex`, so marking the HOLC toggle hidden did nothing and it stayed
 >   on screen. Restated at class specificity: `.toggle[hidden],.hint[hidden]`.
 > - **The population stat assumed millions.** `(pop/1e6).toFixed(1)+'M'` rendered
->   85,150 as "0.1M". Now switches units at a million.
+>   85,569 as "0.1M". Now switches units at a million.
 >
 > ### Resume here
 >

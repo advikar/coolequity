@@ -102,12 +102,55 @@ def load_block_groups():
     return gdf[["GEOID", "geometry"]].to_crs(C.RASTER_CRS)
 
 
-def area_weight(hexes, bgs):
-    """Split each block group's people across the hexes it overlaps, by area.
+def load_buildings():
+    """Residential building centroids + floor area from 02b.
 
-    Assumes people are spread evenly within a block group. That's the standard
-    areal-interpolation assumption and it's reasonable at block-group size, but
-    it is an assumption — worth saying out loud if a judge asks.
+    Returns (all_buildings, city_buildings). Both are needed, and mixing them
+    up is the easy way to get this wrong:
+
+      * the DENOMINATOR (a block group's total housing) must use ALL buildings,
+        including the ones outside the city limits, or a block group straddling
+        the border assigns every one of its residents to its in-city half;
+      * the NUMERATOR (housing inside a given hex) must use only in-city
+        buildings, because hexes are kept if they *intersect* the boundary and
+        so deliberately overhang into Danville, Dublin and Blackhawk.
+
+    Optional on purpose: before 02b has been run, or outside the US, the
+    pipeline still works — it falls back to area weighting and says so.
+    """
+    if not C.BUILDINGS_FILE.exists():
+        return None, None
+    import geopandas as gpd
+    b = gpd.read_file(C.BUILDINGS_FILE).to_crs(C.RASTER_CRS)[["area_m2", "geometry"]]
+    if not C.BOUNDARY_FILE.exists():
+        return b, b
+    city = gpd.read_file(C.BOUNDARY_FILE).to_crs(C.RASTER_CRS)
+    inside = gpd.sjoin(b, city[["geometry"]], how="inner", predicate="within")
+    return b, inside[["area_m2", "geometry"]]
+
+
+def area_weight(hexes, bgs, buildings=None, city_buildings=None):
+    """Split each block group's people across the hexes it overlaps.
+
+    Two ways to do the split, and which one is used matters a lot at res 9.
+
+    AREA weighting assumes people are spread evenly across a block group. That
+    is the standard areal-interpolation assumption and it is fine at res 8,
+    where a hex is 0.82 km2 and averages over whatever is inside it. At res 9
+    (0.11 km2) it breaks: a block group that contains both an apartment complex
+    and a golf course hands the golf course a proportional share of the
+    residents. Measured on the first San Ramon build, that put >=50 phantom
+    residents into each of 57 hexes with no housing in them at all -- 6.9% of
+    the city -- and pushed one empty hex to #10 in the priority ranking.
+
+    DASYMETRIC weighting splits by residential floor area instead, using the
+    building footprints from 02b as the mask for where people can actually be.
+    Same total population, placed where the housing is. Hexes with no housing
+    get no residents, which is the correct answer rather than a small one.
+
+    Falls back to area weighting per block group where no buildings are mapped,
+    so a gap in OSM coverage loses those residents' precision but never deletes
+    them -- the city total still reconciles against ACS.
     """
     import geopandas as gpd
     bgs = bgs.copy()
@@ -117,6 +160,36 @@ def area_weight(hexes, bgs):
         hexes[["h3", "geometry"]], bgs, how="intersection", keep_geom_type=True
     )
     inter["frac"] = inter.geometry.area / inter["bg_area"]
+
+    if buildings is not None:
+        inter = inter.reset_index(drop=True)
+        inter["piece"] = inter.index
+        # Numerator: in-city housing only (see load_buildings).
+        hit = gpd.sjoin(city_buildings, inter[["piece", "geometry"]],
+                        how="inner", predicate="within")
+        floor = hit.groupby("piece")["area_m2"].sum()
+        inter["floor"] = inter["piece"].map(floor).fillna(0.0)
+        # The denominator has to be the floor area of the WHOLE block group,
+        # including the part lying outside the hex grid. Summing only the
+        # pieces that intersect the grid would make each partly-covered block
+        # group's shares total 1 over its covered half, importing residents who
+        # live in Danville. That mistake inflated the city total from 85k to
+        # 108k the first time this ran, which is how it was caught -- the ACS
+        # reconciliation check below is the thing that catches it.
+        # Denominator: ALL housing in the block group, in-city or not.
+        bg_hit = gpd.sjoin(buildings, bgs[["GEOID", "geometry"]],
+                           how="inner", predicate="within")
+        bg_total = bg_hit.groupby("GEOID")["area_m2"].sum()
+        bg_floor = inter["GEOID"].map(bg_total).fillna(0.0)
+        housed = bg_floor > 0
+        inter["frac"] = np.where(housed, inter["floor"] / bg_floor.replace(0, np.nan),
+                                 inter["frac"])
+        inter["frac"] = inter["frac"].fillna(0.0)
+        n_fallback = int((~housed).groupby(inter["GEOID"]).first().sum())
+        log(f"    dasymetric: {int(housed.sum())} of {len(inter)} pieces "
+            f"weighted by residential floor area"
+            + (f"; {n_fallback} block groups had no mapped housing "
+               f"and kept area weighting" if n_fallback else ""))
     inter["pop_s"] = inter["pop"] * inter["frac"]
     inter["pop65_s"] = inter["pop65"] * inter["frac"]
 
@@ -176,8 +249,15 @@ def main():
         log(f"  {miss} block groups had no ACS row — treated as empty")
     bgs[["pop", "pop65"]] = bgs[["pop", "pop65"]].fillna(0)
 
-    log("  area-weighting into hexes...")
-    per_hex = area_weight(hexes, bgs)
+    buildings, city_buildings = load_buildings()
+    if buildings is None:
+        log("  area-weighting into hexes (no buildings file — run 02b for "
+            "dasymetric placement)...")
+    else:
+        log(f"  dasymetric-weighting into hexes "
+            f"({len(city_buildings):,} residential buildings inside "
+            f"{C.CITY}, {len(buildings):,} used for block-group totals)...")
+    per_hex = area_weight(hexes, bgs, buildings, city_buildings)
 
     out = hexes[["h3"]].merge(per_hex, on="h3", how="left")
     out[["pop", "pop65"]] = out[["pop", "pop65"]].fillna(0)

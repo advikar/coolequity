@@ -219,6 +219,12 @@ HOLC_FILE = DATA / f"holc_{SLUG}.geojson"        # 04 fallback (unused: HOLC_URL
 PLACES_FILE = DATA / f"places_{SLUG}.geojson"    # 04 fallback, committed (hex names)
 BOUNDARY_FILE = DATA / f"boundary_{SLUG}.geojson"  # 01 clip polygon, committed
 ACS_FILE = DATA / f"acs_{SLUG}.csv"              # 03 fallback, committed
+# Residential building footprints, committed. 03 uses them to place people
+# INSIDE a block group instead of smearing them evenly across its area.
+BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
+# Plantable street centrelines, committed. 04 measures frontage per hex; the app
+# turns that into how many street trees the city could actually put in.
+STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
 LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
 NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
 SAT_CSV = DATA / f"satellite_{SLUG}.csv"

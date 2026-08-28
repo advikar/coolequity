@@ -4,9 +4,9 @@
 every hex in a city on satellite heat, tree canopy, population, age and walking
 distance to relief — then prices the intervention.
 
-> **This is the `san-ramon` branch.** It runs on **San Ramon, California**: 540
-> hexes at H3 resolution 9 (~0.11 km² each) covering all 52 km² inside the city
-> limits, 85,150 residents. The Los Angeles build lives on `master` and is
+> **This is the `san-ramon` branch.** It runs on **San Ramon, California**: 419
+> populated hexes at H3 resolution 9 (~0.11 km² each) inside the city limits,
+> 85,569 residents — within 0.2% of the ACS place total of 85,734. The Los Angeles build lives on `master` and is
 > untouched by this branch — every artefact here is suffixed `_sanramon`, so the
 > two sets of data files coexist rather than overwrite each other.
 
@@ -57,8 +57,9 @@ echo "CENSUS_API_KEY=..." > .env && chmod 600 .env    # api.census.gov/data/key_
 cd pipeline
 ../.venv/bin/python 01_make_grid.py     # H3 res-8 grid over the bbox    → grid.geojson
 ../.venv/bin/python 02_satellite.py     # Landsat LST + Sentinel-2 NDVI  → satellite.csv
+../.venv/bin/python 02b_buildings.py    # OSM residential footprints     → buildings.geojson
 ../.venv/bin/python 03_census.py        # ACS pop / age / income         → census.csv
-../.venv/bin/python 04_overlays.py      # HOLC + cooling centres + walk  → overlays.csv
+../.venv/bin/python 04_overlays.py      # cooling sites + walk + streets → overlays.csv
 ../.venv/bin/python 05_score.py         # composite score + rank         → la.geojson
 ```
 
@@ -66,6 +67,9 @@ Two flags, deliberately opposite:
 
 - `02_satellite.py --cached` — skips the network and uses the committed rasters.
   It goes live by default.
+- `02b_buildings.py --refresh` — re-pulls building footprints. **Run 02b before
+  03**: without it `03_census.py` falls back to area weighting, which at res 9
+  places residents on open space. It says which mode it used.
 - `04_overlays.py --refresh` — forces a live Overpass pull. It uses the cache by
   default, because Overpass rate-limits and re-pulling 645 amenities on every
   tweak is how you get 504'd an hour before a demo.
@@ -75,7 +79,43 @@ the county FIPS and `CLIP_URL` in `pipeline/config.py`. Outside the US,
 `03_census.py` needs a WorldPop path and `04_overlays.py` will find no HOLC map —
 the overlay is US-only by construction.
 
-### What retargeting to San Ramon actually took
+### What San Ramon actually showed, including what it didn't
+
+The interesting result here is a negative one, and it is worth stating before
+anything else because it is what a San Ramon planner will test first.
+
+**Canopy and heat are tightly coupled.** Across the 419 populated hexes,
+`corr(LST, canopy) = −0.80`, and **−0.81** after removing a quadratic lon/lat
+trend, so it is a shade effect and not a spatial gradient. Canopy runs 5.3–40.8%
+of the ground; surface temperature 39.2–51.1 °C. The top 25 blocks average 14.5%
+canopy against a city median of 20.9%.
+
+**Heat exposure has no income gradient.** `corr(income, priority) = −0.02`;
+`corr(income, canopy) = −0.04`. By income quartile, mean canopy is 21.5 / 22.6 /
+21.7 / 20.4% — flat, with the *richest* quartile marginally the least shaded. San
+Ramon's poorest quartile has a median household income of $163,938. **There is no
+heat-equity story in this city and the app does not claim one.** That is why the
+San Ramon build is framed as canopy targeting rather than equity: the LA framing
+would be the easiest thing in the project for a planner to disprove.
+
+**Two hypotheses were tested and rejected.** Both had been written into the demo
+script before they were checked:
+
+| Claim | Test | Result |
+|---|---|---|
+| Priority tracks housing type (apartment complexes) | share of multi-family floor area per hex, from 26,346 OSM footprints | `r = +0.08`; median top-10 hex is **0%** multi-family |
+| Priority tracks housing age (newer subdivisions) | ACS B25035 median year built by block group | `r = +0.02`; canopy by era 22.7 / 22.6 / 20.2 / 20.9% |
+
+The apartment claim came from hex *names*: "Fairway Village Apartments SE" is
+named for the nearest landmark and contains 4% apartment floor area. A name is
+not a measurement.
+
+**What is left is geographic.** 8 of the top 10 hexes sit east of Dougherty Road
+in Dougherty Valley, which holds 37% of populated hexes. East vs west: 19.8% vs
+22.6% canopy (t = −4.8), +0.9 °C (t = +5.4), +6.2 priority points (t = +4.3). All
+significant, but a 2.8-point canopy difference is a tilt, not a divide.
+
+## What retargeting to San Ramon actually took
 
 Worth reading before you point this at a third city, because none of these were
 predictable from the LA build and all four are the kind of thing that fails
@@ -89,10 +129,14 @@ quietly:
    concatenates; a continuous `2022-06-01/2024-09-15` range would have pulled in
    January scenes and turned a summer thermal median into an annual mean.
 2. **Resolution had to go up, and that has a cost.** At res 8 a 52 km² city is
-   71 hexes. Res 9 gives 540 and a real map — but San Ramon holds only ~55
+   71 hexes. Res 9 gives 541 and a real map — but San Ramon holds only ~55
    census block groups, so a hex is about a *ninth* of a block group. Heat and
    canopy are genuinely measured per hex (30 m rasters); **population, age and
-   income are interpolated downward** and vary smoothly across neighbours. Real
+   income are interpolated downward**. That interpolation used to be by area,
+   which at this resolution invented residents on golf courses; it is now
+   dasymetric, weighted by OSM residential floor area, which is why the city
+   total reconciles to 0.2%. Age and income still vary smoothly across
+   neighbours inside a block group. Real
    data, coarser than the grid drawn over it. The app says so.
 3. **A/C access had to leave the score.** See below.
 4. **The hex names were unusable.** LA had plenty of OSM place nodes; San Ramon
@@ -131,7 +175,7 @@ measured, not modelled.**
 
 **The weights are not buried in a config file.** The app opens on six named
 presets — *Pipeline default*, *Heat first*, *Shade gap*, *Protect seniors*, *No
-relief nearby*, *Most people* — and each one re-scores and re-ranks all 540 hexes
+relief nearby*, *Most people* — and each one re-scores and re-ranks all 419 hexes
 in the browser, with the map, ranked list, legend copy and ROI all following. The
 sliders are one click away under **Adjust the weights yourself**. (LA's *A/C
 poverty* preset is gone here; leaning a preset on the one input weighted zero for
@@ -152,12 +196,12 @@ moves with the question asked:
 
 | Preset | #1 hex |
 |---|---|
-| Pipeline default | Fairway Village Apartments SE |
-| Heat first | Fairway Village Apartments SE |
-| Shade gap | Fairway Village Apartments SE |
-| Protect seniors | **Amador Lakes Apartments N** (39.8% aged 65+) |
-| No relief nearby | **Canyon Oaks** |
-| Most people | **Canyon Oaks** (707 residents) |
+| Pipeline default | Valencia S |
+| Heat first | Valencia S |
+| Shade gap | Valencia S |
+| Protect seniors | **Amador Lakes Apartments N** (47.6% aged 65+) |
+| No relief nearby | **Chantera E** |
+| Most people | Valencia S (925 residents) |
 
 It is the same model, not a demo approximation — the browser runs the same
 arithmetic as `pipeline/05_score.py` against the committed `data/sanramon.geojson`,
@@ -253,9 +297,9 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   would still have a rank-1 hex. The legend says this outright, and the Surface
   temperature layer is the one that answers the absolute question.
 
-Holding up: across the 540 populated hexes, heat and greenness correlate at
-**r = −0.797** — stronger than LA's −0.61, and in a city with no coastline to
-confound it.
+Holding up: across the 419 populated hexes, heat and greenness correlate at
+**r = −0.800**, and **−0.808** after removing a quadratic lon/lat trend —
+stronger than LA's −0.61, and in a city with no coastline to confound it.
 
 ## Repo
 
