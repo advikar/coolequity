@@ -160,6 +160,10 @@
   .tag.us{background:#221c2e;color:#c7a3e6;border-color:#402f57}
   /* toggles */
   .toggle{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer}
+  /* `hidden` loses to any class rule that sets display, so the attribute
+     alone does nothing here — the HOLC toggle stayed on screen in San
+     Ramon despite being marked hidden. Restate it at class specificity. */
+  .toggle[hidden],.hint[hidden]{display:none}
   .toggle .sw{width:34px;height:19px;border-radius:20px;background:#25303c;position:relative;flex:none;transition:.2s}
   .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#6b7885;transition:.2s}
   .toggle.on .sw{background:rgba(255,122,69,.35)}
@@ -336,14 +340,14 @@
       <div class="cinput">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="citysearch" type="text" autocomplete="off" spellcheck="false"
-          placeholder="Search a city — Los Angeles, Phoenix, Delhi…"
+          placeholder="Search a city — San Ramon, Phoenix, Delhi…"
           role="combobox" aria-expanded="false" aria-controls="cities" aria-autocomplete="list"/>
         <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
       </div>
       <div class="cities" id="cities" role="listbox" aria-label="Cities"></div>
     </div>
     <div class="cityinfo" id="cityinfo" hidden></div>
-    <button class="cta" id="intro-go">Explore Los Angeles
+    <button class="cta" id="intro-go">Explore San Ramon
       <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     <p class="fine" id="ifine"></p>
   </div>
@@ -367,7 +371,7 @@
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
       </div>
-      <p>Which neighborhoods should a city cool first? A heat-equity engine that runs on global satellite data — shown here on Los Angeles.</p>
+      <p>Which neighborhoods should a city cool first? A heat-equity engine that runs on global satellite data — shown here on San Ramon, California.</p>
     </div>
 
     <div class="scroll">
@@ -409,7 +413,15 @@
 
       <div class="section">
         <p class="lbl">Story overlays</p>
-        <div class="toggle" id="tg-holc" data-layer="holc">
+        <p class="hint" id="story-note" hidden>No 1930s redlining map exists for
+          this city — HOLC surveyed built-up cities in 1935&ndash;40, and San Ramon
+          was farmland until it incorporated in 1983. The layer is switched off
+          rather than filled in with a neighbouring city's grades.</p>
+        <!-- Hidden at boot when no hex carries a grade — see syncHolcAvailable().
+             San Ramon has no HOLC map because it was farmland in 1935 and did not
+             incorporate until 1983. An empty toggle would imply the data failed
+             to load; removing it says the layer does not apply here. -->
+        <div class="toggle" id="tg-holc" data-layer="holc" hidden>
           <div class="sw"></div>
           <div><div class="tt">Redlining (HOLC) <span class="tag us">US only</span></div><div class="ts">1930s grades vs. today's heat</div></div>
         </div>
@@ -456,7 +468,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is modeled from income, not measured. Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites and neighborhood names. A/C access is modeled from income and is <b>weighted zero</b> in this city's score. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -465,7 +477,7 @@
     <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
          count here would keep reading as true on the one screen where it isn't —
          when the data failed to load. -->
-    <div id="chip" class="float">Los Angeles · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
+    <div id="chip" class="float">San Ramon · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
   </div>
 
   <aside id="detail">
@@ -504,9 +516,10 @@
 // ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
 // pointing the same app at another city's output.
 const _q = new URLSearchParams(location.search);
-const DATA_URL     = `../data/${_q.get('data') || 'la'}.geojson`;
-const CENTERS_URL  = '../data/centers.geojson';
-const BOUNDARY_URL = '../data/boundary.geojson';   // only drawn on the flat fallback
+const CITY_SLUG    = 'sanramon';
+const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson`;
+const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson`;
+const BOUNDARY_URL = `../data/boundary_${CITY_SLUG}.geojson`;  // flat fallback only
 
 /* ---------------------------------------------------------------- colour ramps
  *
@@ -637,26 +650,35 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * generated from these constants rather than restating them by hand, so the two
  * cannot drift the way hardcoded legend text did.
  *
- * Checked against the committed data/la.geojson at these defaults: max
- * absolute difference 0.16 points, mean 0.04, top-10 order identical bar one
- * adjacent swap. The residual is the geojson storing lst/green/ac rounded to
- * 1 dp — it is rounding, not a second model. Say that out loud if asked.
+ * Checked against the committed data/sanramon.geojson at these defaults; the
+ * only residual is the geojson storing lst/green/ac rounded to 1 dp — rounding,
+ * not a second model. Say that out loud if asked.
  *
  * The pipeline's own `score` and `rank` properties are never overwritten; they
  * stay on the features untouched, and everything on screen reads through
  * sc()/rk() instead. So "reset" is exact, not approximate.
  */
-/* `access` is a fifth input the shipped pipeline does NOT use: config.py weights
- * four things, and this app's whole parity claim against data/la.geojson depends
- * on reproducing exactly those four. So it ships at weight 0 — present, movable,
- * and off by default, which keeps "Pipeline default" an honest name.
+/* `access` is an input the shipped pipeline does NOT use: config.py weights the
+ * others, and this app's parity claim against data/sanramon.geojson depends on
+ * reproducing exactly those. So it ships at weight 0 — present, movable, and off
+ * by default, which keeps "Pipeline default" an honest name.
  *
  * It belongs on the list because distance to relief is the one input here that
  * describes what a resident can do about the heat today, before any tree is
- * planted. In LA it cuts against the others (the redlined core is close to
- * libraries, the leafy suburbs are far), which is exactly why giving it a small
- * weight is interesting rather than redundant. */
-const DEFAULT_W={heat:0.35,green:0.25,ac:0.25,age65:0.15,access:0};
+ * planted. In San Ramon the spread is wide for a city of 52 km² — under a minute
+ * to 46 minutes on foot — because the mapped sites cluster along the Bollinger
+ * Canyon and Crow Canyon corridors.
+ *
+ * A/C ALSO ships at 0, and for a different and more important reason. It is
+ * modelled by ranking each hex's median household income within the city. San
+ * Ramon's block-group medians run $102k–$250k — narrow and uniformly high — so
+ * that percentile stretch would paint a 35%-to-95% spread of "A/C access" across
+ * a city where essentially everyone can afford it. That is variation invented by
+ * the transform, not measured, and it is not allowed to carry a quarter of the
+ * score. The layer is still built from real ACS income and can still be viewed.
+ * Mirrors pipeline/config.py WEIGHTS; LA's 35/25/25/15 renormalises to 45/33/22
+ * once A/C leaves the sum. */
+const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0};
 const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
 const W_INPUTS=[
   {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
@@ -664,7 +686,7 @@ const W_INPUTS=[
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income'},
+   note:'modelled from income — not scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -678,32 +700,29 @@ const W_INPUTS=[
  *  a policy question someone might actually be asked to defend. */
 const PRESETS=[
   {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
-   why:'<b>The shipped model.</b> A balance of heat, missing shade, no air conditioning and age, '
-      +'weighted by how many people are exposed. Every other preset is a departure from this one.'},
-  {id:'heat',name:'Heat first',w:{heat:.70,green:.15,ac:.10,age65:.05,access:0},pop:.45,
-   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity check: '
-      +'if a block ranks high here and low by default, the difference is everything except heat.'},
-  {id:'shade',name:'Shade gap',w:{heat:.25,green:.60,ac:.10,age65:.05,access:0},pop:.45,
+   why:'<b>The shipped model.</b> Surface heat, missing canopy and age, weighted by how many '
+      +'people are exposed. Every other preset is a departure from this one. Air conditioning '
+      +'is deliberately weighted zero here — open the sliders below for why.'},
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0},pop:.45,
+   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity '
+      +'check: if a block ranks high here and low by default, the difference is everything '
+      +'except heat.'},
+  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0},pop:.45,
    why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
-      +'the input a city can actually change.'},
-  {id:'seniors',name:'Protect seniors',w:{heat:.20,green:.05,ac:.15,age65:.60,access:0},pop:.45,
-   why:'<b>Who is most likely to die of it?</b> Heat kills the old first. Watch Holmby Hills — one '
-      +'of the wealthiest zip codes in America — climb from roughly 2,100th to the high 20s. '
-      +'The answer depends on the question you asked.'},
-  {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05,access:0},pop:.45,
-   why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
-      +'<i>modelled</i> from income rather than measured — worth naming out loud.'},
-  {id:'stranded',name:'No relief nearby',w:{heat:.30,green:.20,ac:.20,age65:.10,access:.20},pop:.45,
-   why:'<b>Who has nowhere to go today?</b> The only preset that uses the fifth input, walking '
-      +'time to a cooling site, and it is deliberately a minority share. Distance is the one '
-      +'thing a city can fix this week by opening a building, rather than in twenty years by '
-      +'planting a tree. In Los Angeles the top ten barely moves — the dense inner-city blocks '
-      +'that lead are already close to libraries and pools — but 722 of the 3,008 hexes shift '
-      +'by more than a hundred places, all of it in the middle of the list. Walking time is '
-      +'estimated, not routed, and the shipped pipeline does not use it.'},
+      +'the input a city can actually change. San Ramon averages 21% canopy over its typical '
+      +'resident, so this preset is really asking which blocks got left out of that.'},
+  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0},pop:.45,
+   why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
+      +'runs from 4% to 40% depending on the block. Watch the retirement-oriented apartment '
+      +'complexes climb.'},
+  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25},pop:.45,
+   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
+      +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
+      +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
+      +'pipeline does not use it.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
-   why:'<b>Reach over severity.</b> Same four weights, but density dominates: a moderately hot '
-      +'block with 15,000 residents outranks a scorching one with 800.'},
+   why:'<b>Reach over severity.</b> Same weights, but density dominates: an apartment block with '
+      +'700 residents outranks a hotter cul-de-sac with 90.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -771,6 +790,19 @@ function liveScoreExpr(){
   return ['*',100,['/',['-',pri,LIVE.lo],Math.max(1e-12,LIVE.hi-LIVE.lo)]];
 }
 
+/** Show the redlining toggle only where the pipeline actually produced grades.
+ *  Reads the data rather than the city name, so it is right for every city:
+ *  outside the US there is no HOLC by construction, and inside the US there is
+ *  none for anywhere built after about 1940. */
+function syncHolcAvailable(){
+  const any=HEX.features.some(f=>f.properties.holc);
+  const tg=document.getElementById('tg-holc');
+  tg.hidden=!any;
+  const note=document.getElementById('story-note');
+  if(note)note.hidden=any;
+  return any;
+}
+
 function computeRanges(){
   ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{
     const a=HEX.features.map(f=>f.properties[k]).filter(v=>typeof v==='number'&&isFinite(v));
@@ -834,7 +866,8 @@ function rampStops(k,lo,hi){
   return out;
 }
 function fillExpr(k){
-  // Ungraded hexes are 1,962 of 3,008 and legitimately outside the 1939 map —
+  // Ungraded hexes are legitimately outside whatever 1930s map exists (all of
+  // them, in San Ramon, which has no map at all) —
   // a neutral light grey on the light basemap, not a dark blob that reads as
   // a fifth grade.
   if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#d6dbe1'];
@@ -858,6 +891,7 @@ async function boot(){
   HEX=h;CENTERS=c;BOUNDARY=b;
   computeRanges();
   document.getElementById('chip-n').textContent=`${HEX.features.length} hexes`;
+  syncHolcAvailable();
 
   // Panel UI is data-only. Render it BEFORE the map so a slow or blocked basemap
   // CDN can never leave the demo staring at an empty screen.
@@ -1063,22 +1097,33 @@ function setLayer(k){
 // ---------------------------------------------------------------- intro
 /* The city list is deliberately honest about what exists.
  *
- * Only Los Angeles has been through the pipeline. A dropdown that appeared to
- * load Delhi and quietly showed LA's numbers under a different name would be
- * the single worst thing in this repo, and "every input is global" is a claim
+ * Only San Ramon has been through the pipeline on this branch. A dropdown that
+ * appeared to load Delhi and quietly showed San Ramon's numbers under a
+ * different name would be the single worst thing in this repo, and "every input is global" is a claim
  * that has to survive someone clicking it. So the unbuilt cities say they are
  * unbuilt, and say exactly what building one takes — which argues portability
  * better than a fake selector does, because it is checkable.
  *
  * `have` is the data file each city would load, so wiring a second real city
  * up later is one build and one line here. */
-/** Search list. Only Los Angeles carries `have` — that flag is what decides
+/** Search list. Only San Ramon carries `have` — that flag is what decides
  *  whether the button opens a dataset or explains how to build one, so a city
- *  can never be added here in a way that fakes data it does not have. */
+ *  can never be added here in a way that fakes data it does not have.
+ *
+ *  Los Angeles is built too, on the master branch, and is listed WITHOUT `have`
+ *  because its files are not on this one. Claiming it here would be exactly the
+ *  lie this list exists to prevent. */
 const CITIES=[
-  {name:'Los Angeles',cc:'United States',have:'la',
-   note:'The built dataset. 3,008 populated hexes at H3 resolution 8, ~0.82 km² each, '
-       +'from Landsat 8/9 thermal, Sentinel-2 NDVI, ACS 2023 and OpenStreetMap.'},
+  {name:'San Ramon',cc:'United States',have:'sanramon',
+   note:'The built dataset. 540 populated hexes at H3 resolution 9, ~0.11 km² each, '
+       +'covering all 52 km² inside the city limits — 85,150 residents. Landsat 8/9 '
+       +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
+       +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
+       +'neighborhood names.'},
+  {name:'Los Angeles',cc:'United States',
+   note:'Built on this project&rsquo;s <code>master</code> branch — 3,008 hexes at '
+       +'resolution 8 — but its data files are not on this branch, so this build '
+       +'cannot open it.'},
   {name:'Phoenix',cc:'United States'},
   {name:'Houston',cc:'United States'},
   {name:'New York',cc:'United States'},
@@ -1119,7 +1164,10 @@ function buildIntro(){
     // Labels stay short so all five sit on one row at 760px. A fifth stat that
     // wraps alone onto a second line reads as a mistake.
     [HEX.features.length.toLocaleString(),'neighborhoods'],
-    [(pop/1e6).toFixed(1)+'M','residents'],
+    // Not always millions. LA's 6.5M formatted fine as "6.5M"; San Ramon's
+    // 85,150 came out "0.1M", which reads as a rounding error rather than a
+    // population. Switch units at a million.
+    [pop>=1e6?(pop/1e6).toFixed(1)+'M':Math.round(pop).toLocaleString(),'residents'],
     [fTemp(hot),'hottest block'],
     [canopy.toFixed(0)+'%','avg. canopy'],
     [CENTERS.features.length.toLocaleString(),'cooling sites'],
@@ -1128,10 +1176,12 @@ function buildIntro(){
   buildPicker();
 
   document.getElementById('ifine').innerHTML=
-    'Real measurements throughout, except where labelled: A/C access is <b>modelled</b> from '
-   +'median household income, and walk time is a circuity-adjusted straight line, not a routed '
-   +'street path. Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap · '
-   +'HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>.';
+    'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
+   +'income are real ACS figures interpolated from census block groups about nine times the '
+   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
+   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is a '
+   +'circuity-adjusted straight line, not a routed street path. '
+   +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
 
   document.getElementById('intro-go').onclick=dismissIntro;
   document.addEventListener('keydown',e=>{
@@ -1151,7 +1201,7 @@ function buildIntro(){
  *  to scroll and "type your city" is the interaction a judge will reach for.
  *  What it must never do is imply a city is available when it isn't: selecting
  *  an unbuilt city is allowed and shows exactly what building it takes, but the
- *  CTA still says "Explore Los Angeles", because LA is the only data on disk. */
+ *  CTA still says "Explore San Ramon", because that is the only data on disk. */
 function buildPicker(){
   const box=document.getElementById('picker'),
         input=document.getElementById('citysearch'),
@@ -1186,7 +1236,7 @@ function buildPicker(){
     input.value=c.name;
     info.hidden=false;info.innerHTML=c.have?c.note:BUILD_NOTE(c);
     // The CTA only ever opens what is actually loaded.
-    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore Los Angeles ';
+    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore San Ramon ';
     open(false);render();
   }
 
@@ -1211,7 +1261,7 @@ function buildPicker(){
   list.addEventListener('click',e=>{const b=e.target.closest('.city');if(b)choose(+b.dataset.i);});
   document.addEventListener('click',e=>{if(!box.contains(e.target))open(false);});
 
-  render();choose(0);          // LA selected on load — it is the built dataset
+  render();choose(0);          // San Ramon selected on load — it is the built dataset
 }
 
 /** Backdrop is the real hex layer, drawn straight to a canvas from the same
