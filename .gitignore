@@ -6,3 +6,6 @@ __pycache__/
 
 # Large intermediate rasters — the committed fallbacks are the small derived files.
 data/_cache/
+# Derived building mask for Bakersfield (32 MB). Regenerate with
+#   python pipeline/02b_buildings.py --refresh
+data/buildings_bakersfield.geojson

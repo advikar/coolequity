@@ -77,6 +77,11 @@ ROW_HALF_WIDTH_M = 7.0
 # 5 px across) and quarters the bytes pulled over HTTP. Decimation was tested and
 # moves the canopy fraction by ~1 point, which is inside the product's own bias.
 READ_M = 1.2
+# Above this many hexes the study area is a county, not a city, and 1.2 m over
+# the whole of it is billions of pixels. 2.4 m still puts ~130,000 samples in a
+# res-8 hex, which is far more than the statistic needs.
+BIG_AREA_HEXES = 1500
+READ_M_BIG = 2.4
 
 
 def log(msg):
@@ -151,7 +156,8 @@ def main():
             if bb[2] <= bb[0] or bb[3] <= bb[1]:
                 continue
             w = from_bounds(*bb, transform=src.transform)
-            dec = max(1, int(round(READ_M / src.res[0])))
+            target_m = READ_M_BIG if len(hx) > BIG_AREA_HEXES else READ_M
+            dec = max(1, int(round(target_m / src.res[0])))
             oh, ow = int(w.height // dec), int(w.width // dec)
             log(f"    tile {ti}/{len(tiles)} {t}: reading {ow}x{oh} px "
                 f"(~{src.res[0]*dec:.1f} m)")
@@ -169,25 +175,29 @@ def main():
             row_mask = rasterize([(row_geom, 1)], out_shape=canopy.shape,
                                  transform=tr, fill=0, dtype="uint8").astype(bool)
 
-        for i, geom in enumerate(hx.geometry):
-            if not geom.intersects(box(*bb)):
-                continue
-            m = geometry_mask([geom], out_shape=canopy.shape, transform=tr,
-                              invert=True)
-            if not m.any():
-                continue
-            px_tot[i] += m.sum()
-            px_can[i] += (canopy & m).sum()
-            if row_mask is not None:
-                row_tot[i] += (row_mask & m).sum()
-                row_can[i] += (row_mask & m & canopy).sum()
-
+        # One rasterise of hex INDEX per tile, then bincount — not one mask per
+        # hex. The county has 2,695 hexes and 24 tiles; masking each hex against
+        # each tile would be 64,680 passes over a 100-megapixel array, which does
+        # not finish. This is the same arithmetic in two passes.
+        idx = rasterize(
+            ((g, i + 1) for i, g in enumerate(hx.geometry)),
+            out_shape=canopy.shape, transform=tr, fill=0, dtype="int32")
+        flat = idx.ravel()
+        nb = len(hx) + 1
+        px_tot += np.bincount(flat, minlength=nb)[1:]
+        px_can += np.bincount(flat, weights=canopy.ravel(), minlength=nb)[1:]
+        if row_mask is not None:
+            rm = row_mask.ravel()
+            row_tot += np.bincount(flat, weights=rm, minlength=nb)[1:]
+            row_can += np.bincount(flat, weights=(rm & canopy.ravel()),
+                                   minlength=nb)[1:]
 
     out = pd.DataFrame({"h3": hexes["h3"]})
     with np.errstate(invalid="ignore", divide="ignore"):
         out["canopy_pct"] = np.where(px_tot > 0, px_can / px_tot * 100, np.nan)
         out["row_canopy_pct"] = np.where(row_tot > 0, row_can / row_tot * 100, 0.0)
-    out["row_m2"] = (row_tot - row_can) * (READ_M ** 2)      # unshaded public strip
+    px_m2_out = (READ_M_BIG if len(hx) > BIG_AREA_HEXES else READ_M) ** 2
+    out["row_m2"] = (row_tot - row_can) * px_m2_out      # unshaded public strip
     out["row_m2"] = out["row_m2"].clip(lower=0).round(0)
     areas = gpd.read_file(C.GRID_FILE)[["h3", "area_m2"]]
     out = out.merge(areas, on="h3", how="left")

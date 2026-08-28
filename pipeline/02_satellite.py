@@ -82,6 +82,22 @@ def zonal_mean(arr, transform, gdf):
 
 
 # ------------------------------------------------------------------ STAC loads
+def tile_key(item):
+    """Which satellite tile a scene belongs to, for per-tile scene budgeting.
+
+    Sentinel-2 is gridded by MGRS tile, Landsat by WRS-2 path/row. Falls back to
+    a rounded bbox centroid so an unknown collection still gets grouped by
+    location rather than collapsing into one bucket.
+    """
+    p = item.properties
+    if "s2:mgrs_tile" in p:
+        return f"mgrs:{p['s2:mgrs_tile']}"
+    if "landsat:wrs_path" in p:
+        return f"wrs:{p['landsat:wrs_path']}/{p.get('landsat:wrs_row')}"
+    bb = item.bbox or [0, 0, 0, 0]
+    return f"bbox:{round((bb[0] + bb[2]) / 2, 1)},{round((bb[1] + bb[3]) / 2, 1)}"
+
+
 def search(catalog, collection, extra_query=None):
     """Scenes inside the summer window of EACH configured year.
 
@@ -104,12 +120,27 @@ def search(catalog, collection, extra_query=None):
             if it.id not in seen:
                 seen.add(it.id)
                 items.append(it)
-    # Least cloudy first, then cap — bounded runtime, best pixels.
+    # Least cloudy first, then cap PER TILE — not globally.
+    #
+    # A global sort-then-cap is fine for a city inside one satellite tile, and
+    # quietly catastrophic for anything larger. Contra Costa spans several
+    # Sentinel-2 MGRS tiles; taking the 30 least cloudy scenes county-wide took
+    # them almost entirely from the clearest tile and left the rest with nothing,
+    # so NDVI came back 37% valid with 1,723 of 2,859 hexes empty. The scenes
+    # existed — they were sorted out of the running by a neighbouring tile that
+    # happened to have clearer weather.
+    #
+    # Capping per tile keeps the runtime bound (the point of MAX_SCENES) while
+    # guaranteeing every part of the study area gets its own best scenes.
     items.sort(key=lambda i: i.properties.get("eo:cloud_cover", 100))
-    items = items[: C.MAX_SCENES]
+    by_tile = {}
+    for it in items:
+        by_tile.setdefault(tile_key(it), []).append(it)
+    items = [it for group in by_tile.values() for it in group[: C.MAX_SCENES]]
     if items:
-        cc = [i.properties.get("eo:cloud_cover", 0) for i in items]
-        log(f"  {collection}: {len(items)} scenes (cloud {cc[0]:.0f}–{cc[-1]:.0f}%)")
+        cc = sorted(i.properties.get("eo:cloud_cover", 0) for i in items)
+        log(f"  {collection}: {len(items)} scenes across {len(by_tile)} tiles "
+            f"(cloud {cc[0]:.0f}–{cc[-1]:.0f}%, max {C.MAX_SCENES}/tile)")
     else:
         log(f"  {collection}: 0 scenes")
     return items

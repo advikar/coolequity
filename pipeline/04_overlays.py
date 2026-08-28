@@ -148,16 +148,36 @@ def osm_point(el):
     return (ctr["lon"], ctr["lat"]) if ctr else None
 
 
+# The four categories the front end knows how to draw, count and toggle. Kept
+# here rather than implied, because the failure mode is silent: a site with a
+# kind the app has never heard of still gets drawn on the map but is missing from
+# every count, so the panel reads "487 of 488 shown" and nobody can find the one.
+# That is exactly what happened -- kind_of() used to RETURN the fallthrough value
+# "public_bath", a fifth category the app had no entry for. LA had none, so it
+# never surfaced; Contra Costa has one.
+KINDS = ("library", "community_centre", "pool", "shelter/senior")
+
+
 def kind_of(tags):
-    if tags.get("amenity") == "library":
+    """Map OSM tags to one of KINDS, or None to drop the site.
+
+    Every branch is explicit. Public baths fold into "pool" -- both are public
+    water facilities and a category with a single member is UI noise, not
+    information. Anything unmatched returns None and is dropped rather than
+    quietly inventing a category.
+    """
+    amenity = tags.get("amenity")
+    if amenity == "library":
         return "library"
-    if tags.get("amenity") == "community_centre":
+    if amenity == "community_centre":
         return "community_centre"
-    if tags.get("amenity") == "social_facility":
+    if amenity == "social_facility":
         return "shelter/senior"
+    if amenity == "public_bath":
+        return "pool"
     if tags.get("leisure") in ("swimming_pool", "water_park"):
         return "pool"
-    return "public_bath"
+    return None
 
 
 def check_coords(els, label):
@@ -172,7 +192,7 @@ def check_coords(els, label):
 
 
 def fetch_centers():
-    feats, seen = [], set()
+    feats, seen, dropped = [], set(), []
     for el in check_coords(overpass(CENTERS_OQL, "cooling centers"), "centers"):
         pt = osm_point(el)
         # A pool inside a rec center is often mapped as both a node and a way;
@@ -182,15 +202,23 @@ def fetch_centers():
             continue
         seen.add(key)
         tags = el.get("tags", {})
+        kind = kind_of(tags)
+        if kind is None:
+            # Dropped, not defaulted. See the note above KINDS.
+            dropped.append(tags.get("name") or "unnamed")
+            continue
         feats.append({
             "type": "Feature",
             "properties": {
-                "kind": kind_of(tags),
+                "kind": kind,
                 "name": tags.get("name", "Unnamed cooling site"),
             },
             "geometry": {"type": "Point", "coordinates": [round(pt[0], 5),
                                                           round(pt[1], 5)]},
         })
+    if dropped:
+        log(f"    dropped {len(dropped)} site(s) matching no known category "
+            f"(e.g. {dropped[0]}) — see KINDS in this file")
     return {"type": "FeatureCollection", "features": feats}
 
 

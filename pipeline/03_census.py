@@ -30,6 +30,7 @@ OUT_CSV = C.CENSUS_CSV
 
 POP = "B01001_001E"
 INCOME = "B19013_001E"
+UNITS = "B25001_001E"   # total housing units — denominator for the dasymetric guard
 # B01001 age brackets from 65 up, male then female.
 AGE65 = [f"B01001_{n:03d}E" for n in (20, 21, 22, 23, 24, 25,
                                       44, 45, 46, 47, 48, 49)]
@@ -57,7 +58,7 @@ def fetch_acs():
     """Block-group ACS table for the target county. Cached to data/acs.csv."""
     key = load_key()
     params = {
-        "get": ",".join([POP, INCOME] + AGE65),
+        "get": ",".join([POP, INCOME, UNITS] + AGE65),
         "for": "block group:*",
         "in": f"state:{C.STATE_FIPS} county:{C.COUNTY_FIPS}",
     }
@@ -71,7 +72,7 @@ def fetch_acs():
     rows = r.json()
     df = pd.DataFrame(rows[1:], columns=rows[0])
 
-    num = [POP, INCOME] + AGE65
+    num = [POP, INCOME, UNITS] + AGE65
     df[num] = df[num].apply(pd.to_numeric, errors="coerce")
     # ACS uses large negative sentinels (-666666666) for suppressed estimates.
     df[num] = df[num].mask(df[num] < -1e6)
@@ -80,8 +81,9 @@ def fetch_acs():
     df["pop"] = df[POP].fillna(0)
     df["pop65"] = df[AGE65].sum(axis=1, min_count=1).fillna(0)
     df["income"] = df[INCOME]
+    df["units"] = df[UNITS].fillna(0)
 
-    out = df[["GEOID", "pop", "pop65", "income"]]
+    out = df[["GEOID", "pop", "pop65", "income", "units"]]
     out.to_csv(ACS_CSV, index=False)
     log(f"  ACS: {len(out)} block groups, pop {out['pop'].sum():,.0f} "
         f"-> cached {ACS_CSV.name}")
@@ -129,6 +131,55 @@ def load_buildings():
     return b, inside[["area_m2", "geometry"]]
 
 
+def dasymetric_is_safe(city_buildings, bgs):
+    """Is the building mask complete and unbiased enough to place people with?
+
+    Two ways it can fail, and the second is the one that matters.
+
+    COMPLETENESS: if OSM has mapped a third of the housing, floor area is a
+    sample, not a census, and area weighting is the more honest estimator.
+
+    BIAS: OSM is volunteer-mapped, and volunteers do not distribute themselves
+    evenly across a county. If wealthy block groups are mapped better than poor
+    ones -- and in Contra Costa they are, 4.7x better -- then weighting by
+    mapped floor area moves residents from poor areas to rich ones. Population
+    multiplies the priority score, so that would systematically demote exactly
+    the neighbourhoods an equity tool exists to find. This check is the reason
+    the county build does not use dasymetric placement.
+
+    Returns (ok, reason).
+    """
+    import geopandas as gpd
+    have = bgs[bgs["units"] > 0].copy()
+    if have.empty:
+        return False, "no housing-unit counts to check the mask against"
+
+    hit = gpd.sjoin(city_buildings, have[["GEOID", "geometry"]],
+                    how="inner", predicate="within")
+    have["mapped"] = have["GEOID"].map(hit.groupby("GEOID").size()).fillna(0)
+
+    cov = have["mapped"].sum() / have["units"].sum()
+    log(f"    mask check: {have['mapped'].sum():,.0f} mapped buildings vs "
+        f"{have['units'].sum():,.0f} ACS housing units = {cov:.2f} coverage")
+    if cov < C.DASY_MIN_COVERAGE:
+        return False, (f"coverage {cov:.2f} < {C.DASY_MIN_COVERAGE:.2f} — the mask "
+                       f"is a sample, not a census")
+
+    inc = have[have["income"].notna() & (have["income"] > 0)].copy()
+    if len(inc) >= 40:
+        inc["cov"] = inc["mapped"] / inc["units"]
+        q = pd.qcut(inc["income"], 4, labels=False, duplicates="drop")
+        lo, hi = inc.loc[q == 0, "cov"].median(), inc.loc[q == q.max(), "cov"].median()
+        bias = (hi / lo) if lo > 0 else float("inf")
+        log(f"    mask check: coverage by income quartile "
+            f"{inc.groupby(q, observed=True)['cov'].median().round(2).tolist()} "
+            f"-> richest/poorest = {bias:.1f}x")
+        if bias > C.DASY_MAX_INCOME_BIAS:
+            return False, (f"mask is {bias:.1f}x better in rich block groups than poor "
+                           f"ones — weighting by it would demote poor neighbourhoods")
+    return True, f"coverage {cov:.2f}, no material income bias"
+
+
 def area_weight(hexes, bgs, buildings=None, city_buildings=None):
     """Split each block group's people across the hexes it overlaps.
 
@@ -159,6 +210,23 @@ def area_weight(hexes, bgs, buildings=None, city_buildings=None):
     inter = gpd.overlay(
         hexes[["h3", "geometry"]], bgs, how="intersection", keep_geom_type=True
     )
+
+    # Clip every piece to the study boundary before measuring it. 01_make_grid
+    # keeps any hex that *intersects* the boundary, so the grid deliberately
+    # overhangs the city — and an unclipped area weight then hands those hexes a
+    # share of residents who live outside it. Measured on Bakersfield: 457,733
+    # people against an ACS place total of 408,366, a 12% overcount concentrated
+    # on exactly the edge hexes a planner would question first. The dasymetric
+    # path solves this by clipping the building mask; area weighting needs the
+    # same treatment, and it is the path taken whenever the mask is too sparse.
+    if C.BOUNDARY_FILE.exists():
+        city = gpd.read_file(C.BOUNDARY_FILE).to_crs(inter.crs).geometry.union_all()
+        before = inter.geometry.area.sum()
+        inter["geometry"] = inter.geometry.intersection(city)
+        inter = inter[~inter.geometry.is_empty]
+        log(f"    clipped pieces to {C.CITY} limits: "
+            f"{before/1e6:,.0f} -> {inter.geometry.area.sum()/1e6:,.0f} km2")
+
     inter["frac"] = inter.geometry.area / inter["bg_area"]
 
     if buildings is not None:
@@ -254,9 +322,18 @@ def main():
         log("  area-weighting into hexes (no buildings file — run 02b for "
             "dasymetric placement)...")
     else:
-        log(f"  dasymetric-weighting into hexes "
-            f"({len(city_buildings):,} residential buildings inside "
-            f"{C.CITY}, {len(buildings):,} used for block-group totals)...")
+        ok, why = dasymetric_is_safe(city_buildings, bgs)
+        if ok:
+            log(f"  dasymetric-weighting into hexes ({why}; "
+                f"{len(city_buildings):,} buildings inside {C.CITY}, "
+                f"{len(buildings):,} for block-group totals)...")
+        else:
+            # Loud, not a footnote: silently swapping estimators is how a build
+            # ends up with a method nobody can describe six weeks later.
+            log(f"  !! DASYMETRIC REFUSED: {why}")
+            log(f"  !! falling back to AREA weighting — see config.DASY_* "
+                f"for why this guard exists")
+            buildings = city_buildings = None
     per_hex = area_weight(hexes, bgs, buildings, city_buildings)
 
     out = hexes[["h3"]].merge(per_hex, on="h3", how="left")

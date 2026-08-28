@@ -326,31 +326,30 @@
   <div class="intro-scrim"></div>
   <div class="intro-card">
     <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
-    <div class="eyebrow">Tree canopy &amp; urban heat</div>
-    <h1>Where should San&nbsp;Ramon<br>plant its next trees?</h1>
-    <p class="lede">Across San Ramon, tree canopy runs from under 6% to over 40% of the ground,
-      and surface heat tracks it almost one-for-one — <b>r&nbsp;=&nbsp;&minus;0.80</b>. What it
-      does <i>not</i> track is income.
-      <!-- One sentence, not a paragraph. The landing card is 979px tall against a
+    <div class="eyebrow">Tree canopy &amp; extreme heat</div>
+    <h1>95% of Bakersfield lives<br>under 15% tree cover.</h1>
+    <p class="lede">Bakersfield's summer ground runs a median of <b>49.8&nbsp;°C</b>, and half its
+      blocks have under <b>2.4%</b> tree canopy. <b>387,026 of its 408,905 residents</b> live
+      where canopy is below 15%.
+      <!-- One sentence, not a paragraph. The landing card is ~980px tall against a
            720px viewport at 1280x720, so anything added here pushes the wordmark
-           above the fold — which is exactly how the product name went missing. If
-           you add copy to this screen, re-measure .wordmark's top afterwards. -->
-      So this is not a map of who is rich and who is poor. It is a map of where the
-      shade is missing, what that costs in degrees, and what it would take to fix.</p>
+           above the fold. If you add copy, re-measure .wordmark's top afterwards. -->
+      This is not a map of a few bad blocks. It is a map of a city with almost no shade,
+      and of the 44.6&nbsp;km² of public street the city could plant tomorrow.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Choose a city</p>
     <div class="picker" id="picker">
       <div class="cinput">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="citysearch" type="text" autocomplete="off" spellcheck="false"
-          placeholder="Search a city — San Ramon, Phoenix, Delhi…"
+          placeholder="Search a city — Bakersfield, Phoenix, Delhi…"
           role="combobox" aria-expanded="false" aria-controls="cities" aria-autocomplete="list"/>
         <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
       </div>
       <div class="cities" id="cities" role="listbox" aria-label="Cities"></div>
     </div>
     <div class="cityinfo" id="cityinfo" hidden></div>
-    <button class="cta" id="intro-go">Explore San Ramon
+    <button class="cta" id="intro-go">Explore Bakersfield
       <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     <p class="fine" id="ifine"></p>
   </div>
@@ -481,7 +480,7 @@
     <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
          count here would keep reading as true on the one screen where it isn't —
          when the data failed to load. -->
-    <div id="chip" class="float">San Ramon · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
+    <div id="chip" class="float">Bakersfield · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
   </div>
 
   <aside id="detail">
@@ -525,7 +524,7 @@
 // ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
 // pointing the same app at another city's output.
 const _q = new URLSearchParams(location.search);
-const CITY_SLUG    = 'sanramon';
+const CITY_SLUG    = 'bakersfield';
 const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson`;
 const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson`;
 const BOUNDARY_URL = `../data/boundary_${CITY_SLUG}.geojson`;  // flat fallback only
@@ -711,7 +710,7 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * score. The layer is still built from real ACS income and can still be viewed.
  * Mirrors pipeline/config.py WEIGHTS; LA's 35/25/25/15 renormalises to 45/33/22
  * once A/C leaves the sum. */
-const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0,turf:0};
+const DEFAULT_W={heat:0.35,green:0.25,ac:0.25,age65:0.15,access:0,turf:0};
 const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
 const W_INPUTS=[
   {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
@@ -719,7 +718,7 @@ const W_INPUTS=[
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income — not scored here'},
+   note:'modelled from income — scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -739,36 +738,37 @@ const W_INPUTS=[
  *  a policy question someone might actually be asked to defend. */
 const PRESETS=[
   {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
-   why:'<b>The shipped model.</b> Surface heat, missing canopy and age, weighted by how many '
-      +'people are exposed. Every other preset is a departure from this one. Air conditioning '
-      +'is deliberately weighted zero here — open the sliders below for why.'},
-  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0,turf:0},pop:.45,
-   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity '
-      +'check: if a block ranks high here and low by default, the difference is everything '
-      +'except heat.'},
-  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0,turf:0},pop:.45,
-   why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
-      +'the input a city can actually change. San Ramon averages 21% canopy over its typical '
-      +'resident, so this preset is really asking which blocks got left out of that.'},
-  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0,turf:0},pop:.45,
-   why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
-      +'runs from under 4% to 48% depending on the block. Amador Lakes N — 48% aged 65+ — goes '
-      +'from #3 by default to #1.'},
-  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25,turf:0},pop:.45,
-   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
-      +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
-      +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
-      +'pipeline does not use it.'},
+   why:'<b>The shipped model.</b> Surface heat (35%), missing canopy (25%), no air '
+      +'conditioning (25%) and age 65+ (15%), scaled by how many people live on the block. '
+      +'Bakersfield is the only build here that scores all four — it is one flat valley '
+      +'climate, so heat compares like with like, and Kern incomes run $14,159–$250,001, '
+      +'so the A/C model has real signal to work with.'},
+  {id:'canopy',name:'Canopy only',w:{heat:0,green:1,ac:0,age65:0,access:0,turf:0},pop:.45,
+   why:'<b>Just the shade gap.</b> Measured canopy and population, nothing else — no income '
+      +'model, no heat, no age. If you distrust the A/C estimate, this is the view without '
+      +'it. Half of Bakersfield\'s blocks sit under 2.4% canopy.'},
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.15,ac:.10,age65:.05,access:0,turf:0},pop:.45,
+   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Bakersfield\'s '
+      +'ground runs 33.2–58.1&nbsp;°C in summer with a median of 49.8. Useful as a sanity '
+      +'check: a block high here and low by default differs on everything except heat.'},
+  {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05,access:0,turf:0},pop:.45,
+   why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
+      +'<i>modelled</i> from income rather than measured — worth naming out loud. Compare '
+      +'it against <b>Canopy only</b>, which uses no income data at all.'},
+  {id:'seniors',name:'Protect seniors',w:{heat:.25,green:.15,ac:.15,age65:.45,access:0,turf:0},pop:.45,
+   why:'<b>Who is least able to cope?</b> Heat kills the old first, and the 65+ share runs '
+      +'from 0 to 67% across these blocks.'},
   {id:'turf',name:'Watered but unshaded',w:{heat:.20,green:.40,ac:0,age65:.10,access:0,turf:.30},pop:.45,
-   turf:true,
-   why:'<b>Where is a tree cheapest to plant?</b> Leans on missing canopy, then ranks up the '
-      +'blocks that are already irrigated — green ground with nothing shading it. In San Ramon '
-      +'59 blocks are in the top quarter for lawn and the bottom third for canopy, holding '
-      +'12,914 residents and <b>83 hectares</b> of unshaded public right-of-way. Watered ground '
-      +'means irrigation is already there, which is what decides whether a young tree lives.'},
+   why:'<b>Where is a tree cheapest to plant?</b> Ranks up blocks that are already irrigated '
+      +'but have nothing shading them. Watered ground means the irrigation is already in, '
+      +'which is what decides whether a young tree survives a Bakersfield summer — and the '
+      +'City\'s own staff name missing irrigation as their cost and survival problem.'},
+  {id:'stranded',name:'No relief nearby',w:{heat:.30,green:.20,ac:.20,age65:.10,access:.20,turf:0},pop:.45,
+   why:'<b>Who has nowhere to go today?</b> Brings in walking time to a mapped cooling site. '
+      +'Distance is what a city can fix this week by opening a building, rather than in '
+      +'twenty years by planting a tree. Estimated, not routed; the shipped model omits it.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
-   why:'<b>Reach over severity.</b> Same weights, but density dominates: a townhome block with '
-      +'900 residents outranks a hotter cul-de-sac with 90.'},
+   why:'<b>Reach over severity.</b> Same weights, density dominates.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -1173,13 +1173,18 @@ function setLayer(k){
  *  because its files are not on this one. Claiming it here would be exactly the
  *  lie this list exists to prevent. */
 const CITIES=[
-  {name:'San Ramon',cc:'United States',have:'sanramon',
-   note:'The built dataset. 419 populated hexes at H3 resolution 9, ~0.11 km² each, '
-       +'covering the city limits — 85,569 residents, within 0.2% of the ACS place '
-       +'total of 85,734. Landsat 8/9 '
-       +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
-       +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
-       +'neighborhood names.'},
+  {name:'Bakersfield',cc:'United States',have:'bakersfield',
+   note:'The built dataset. 3,777 populated hexes at H3 resolution 9, ~0.12 km² each, '
+       +'covering the city — 408,905 residents, within 0.13% of the ACS place total of '
+       +'408,366. Landsat 8/9 thermal and Sentinel-2 NDVI over the summers of 2022–2024, '
+       +'tree canopy from a 0.6 m canopy-height model, ACS 2023 for Kern County, and '
+       +'OpenStreetMap for streets, cooling sites and place names.'},
+  {name:'Contra Costa County',cc:'United States',
+   note:'Built on the <code>contra-costa</code> branch — 2,695 hexes at resolution 8, '
+       +'1.16M residents, where the canopy gap tracks income.'},
+  {name:'San Ramon',cc:'United States',
+   note:'Built on the <code>san-ramon</code> branch at resolution 9 — 419 hexes, '
+       +'85,569 residents.'},
   {name:'Los Angeles',cc:'United States',
    note:'Built on this project&rsquo;s <code>master</code> branch — 3,008 hexes at '
        +'resolution 8 — but its data files are not on this branch, so this build '
@@ -1296,7 +1301,7 @@ function buildPicker(){
     input.value=c.name;
     info.hidden=false;info.innerHTML=c.have?c.note:BUILD_NOTE(c);
     // The CTA only ever opens what is actually loaded.
-    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore San Ramon ';
+    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore Bakersfield ';
     open(false);render();
   }
 
@@ -1321,7 +1326,7 @@ function buildPicker(){
   list.addEventListener('click',e=>{const b=e.target.closest('.city');if(b)choose(+b.dataset.i);});
   document.addEventListener('click',e=>{if(!box.contains(e.target))open(false);});
 
-  render();choose(0);          // San Ramon selected on load — it is the built dataset
+  render();choose(0);          // Bakersfield selected on load — it is the built dataset
 }
 
 /** Backdrop is the real hex layer, drawn straight to a canvas from the same
