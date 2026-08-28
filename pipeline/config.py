@@ -7,8 +7,8 @@ point of the project, so nothing else in the pipeline should hardcode "Los Angel
 from pathlib import Path
 
 # ---------------------------------------------------------------- geography
-CITY = "San Ramon"
-SLUG = "sanramon"               # names every artefact, so two cities can coexist
+CITY = "Contra Costa County"
+SLUG = "contracosta"            # names every artefact, so cities/counties coexist
 COUNTRY = "USA"                 # gates the US-only layers (HOLC, ACS)
 
 # west, south, east, north. NOT hand-drawn: this is the exact bounding box of the
@@ -16,7 +16,7 @@ COUNTRY = "USA"                 # gates the US-only layers (HOLC, ACS)
 # off the geometry rather than eyeballed off a map. The polygon itself clips the
 # grid in 01, so the hexes follow the real city limits, which are ragged — San
 # Ramon annexed in pieces and has Dougherty Valley hanging off the east side.
-BBOX = (-122.0050, 37.7213, -121.8770, 37.7951)
+BBOX = (-122.4301, 37.7185, -121.5342, 38.0999)
 
 # San Ramon is 52.0 km2. At res 8 (0.74 km2) that is 71 hexes — statistically
 # tidy, since the city holds ~55 census block groups, but far too coarse to look
@@ -29,32 +29,34 @@ BBOX = (-122.0050, 37.7213, -121.8770, 37.7951)
 # population, age and income are areally interpolated DOWNWARD and vary smoothly
 # across neighbours. Real data, coarser than the grid drawn over it. Said out
 # loud in the app and in the README.
-H3_RES = 9
+H3_RES = 8
 
 # ---------------------------------------------------------------- scoring
 # Section 7 of the build spec. Exposed here so they're tunable and defensible
 # when a judge asks "why 35%?".
-# LA weighted A/C access at 25%. San Ramon does not, and the reason is a
-# property of the data rather than a preference.
 #
-# A/C access is modelled by ranking each hex's median household income WITHIN the
-# city and mapping that percentile onto AC_PCT_MIN..AC_PCT_MAX. In LA that spans
-# a genuine spread — block-group medians run from about $20k to $250k, so the
-# percentile is carrying real signal. San Ramon's block-group medians are narrow
-# and uniformly high, so the same percentile stretch would take a city where
-# essentially everyone can afford air conditioning and paint a 35%-to-95% spread
-# across it. That is not a measurement with error bars; it is variation invented
-# by the transform, and it would then carry a quarter of the score.
+# A/C access is BACK IN THE SCORE here, and that is the single most important
+# difference between this build and the San Ramon one. It is modelled by ranking
+# each hex's median household income within the study area and stretching that
+# percentile across AC_PCT_MIN..AC_PCT_MAX, so it is only meaningful where income
+# genuinely varies. San Ramon's block-group medians ran $100,906-$250,001 — the
+# transform would have invented a 35-95% spread across a uniformly wealthy town,
+# so it was weighted zero there.
 #
-# So the layer is still BUILT from real ACS income and can still be viewed, and
-# it is scored at zero. The rest is LA's ratio renormalised: 35/25/15 of 0.75
-# becomes 0.4667/0.3333/0.20, rounded to sum to exactly 1. Every input the San
-# Ramon score actually uses is therefore measured, not modelled.
+# Contra Costa is a different animal. Measured across its 674 block groups with
+# income: $18,071 to $250,001, p10 $69,526, median $128,142, p90 $240,586. Thirty
+# percent of them fall below San Ramon's POOREST block group. Richmond, San Pablo
+# and Bay Point against Blackhawk, Alamo and Diablo is a real gradient, so the
+# percentile carries real signal and LA's original weights apply unchanged.
+#
+# It is still MODELLED, not measured — no census counts air conditioners — and
+# the UI must keep labelling it `est`. Restoring its weight restores its
+# obligation to be labelled.
 WEIGHTS = {
-    "heat":     0.45,   # heat_n
-    "green":    0.33,   # (1 - greenness_n)
-    "ac":       0.00,   # (1 - ac_access_n)  -- built, not scored; see above
-    "age65":    0.22,   # age65_n
+    "heat":     0.35,   # heat_n
+    "green":    0.25,   # (1 - greenness_n)
+    "ac":       0.25,   # (1 - ac_access_n)  -- MODELED from income; see above
+    "age65":    0.15,   # age65_n
 }
 # priority = base_risk * (POP_FLOOR + POP_WEIGHT * population_n)
 POP_FLOOR = 0.55
@@ -133,9 +135,11 @@ COUNTY_POP_RANGE = (0.9e6, 1.4e6)
 # TIGERweb feature used to clip the grid to land/city in 01. LA clipped to the
 # whole county; San Ramon clips to the incorporated place, because a county-sized
 # clip here would leave the grid covering Mount Diablo and half of Danville.
+# County polygon this time, not a place polygon — a different TIGERweb service
+# and layer. GEOID 06013 is Contra Costa County.
 CLIP_URL = ("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/"
-            "Places_CouSub_ConCity_SubMCD/MapServer/4/query?"
-            "where=GEOID%3D%270668378%27&outFields=GEOID,NAME&"
+            "State_County/MapServer/13/query?"
+            "where=GEOID%3D%2706013%27&outFields=GEOID,NAME&"
             "returnGeometry=true&outSR=4326&f=geojson")
 
 # A/C access is MODELED from an income percentile — there is no A/C census.
@@ -153,6 +157,12 @@ AC_PCT_MAX = 95.0
 # Berkeley, Richmond, San Francisco, San Jose and Stockton; there is no Contra
 # Costa suburb map to load. Setting this to None turns the layer off end to end
 # rather than colouring the city with somebody else's grades.
+# No HOLC map covers Contra Costa in any useful way. Checked against Mapping
+# Inequality directly rather than assumed: the East Bay 1937 survey is an
+# Oakland/Berkeley map, and only 8 of its 120 polygons touch this county — all
+# graded A, B or C, with NO D grades at all. Turning the layer on would draw a
+# sliver over El Cerrito and imply a redlining story the data cannot support.
+# LA's best story beat simply does not exist here; say so rather than fake it.
 HOLC_URL = None
 
 # A hex must be at least this covered by graded polygons before it inherits a
@@ -225,6 +235,39 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 # Plantable street centrelines, committed. 04 measures frontage per hex; the app
 # turns that into how many street trees the city could actually put in.
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
+
+# How far outside BBOX 02b pulls buildings. 03 divides a block group's residents
+# by that block group's TOTAL housing, so any block group straddling the bbox
+# edge needs its outside-the-bbox houses counted or the denominator is short and
+# every in-area hex sharing it is inflated.
+#
+# San Ramon needed 0.09 deg: its bbox was the city, and 17 of the 61 block groups
+# touching it ran up to 0.07 deg past the edge. Here BBOX is derived from the
+# county's own block groups' bounds, so every one of them is inside it by
+# construction and the margin only has to cover geometry slop.
+BUILDINGS_MARGIN_DEG = 0.02
+
+# --- when dasymetric placement is allowed at all -------------------------------
+# Splitting a block group's residents by building floor area is only better than
+# splitting by area if the building mask is COMPLETE and UNBIASED. OSM is neither,
+# everywhere. Measured:
+#
+#   San Ramon         20,417 buildings / ~31k ACS housing units = 0.66 coverage,
+#                     even across income (the city is uniformly wealthy)  -> USE IT
+#   Contra Costa Co.  139,121 / 426,585 = 0.33 coverage, and coverage by income
+#                     quartile runs 0.07 / 0.07 / 0.08 / 0.33 -- the richest
+#                     quartile is mapped 4.7x better than the poorest  -> REFUSE
+#
+# The county case is the dangerous one and it is dangerous in a specific
+# direction: population is a MULTIPLIER in the score, so concentrating residents
+# into well-mapped areas would systematically demote poor neighbourhoods. An
+# equity tool that under-ranks poverty because volunteers mapped Blackhawk more
+# thoroughly than North Richmond is worse than useless.
+#
+# 03_census.py checks both numbers and falls back to area weighting if either
+# fails. Do not raise these to force dasymetric on; fix the mask instead.
+DASY_MIN_COVERAGE = 0.50     # mapped buildings per ACS housing unit, study-wide
+DASY_MAX_INCOME_BIAS = 2.0   # richest-quartile coverage / poorest-quartile
 LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
 NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
 SAT_CSV = DATA / f"satellite_{SLUG}.csv"

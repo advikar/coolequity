@@ -6,3 +6,22 @@ __pycache__/
 
 # Large intermediate rasters — the committed fallbacks are the small derived files.
 data/_cache/
+
+# Building footprints are DERIVED data: regenerate with
+#   python pipeline/02b_buildings.py --refresh
+# San Ramon's (16 MB) is committed because that build's population placement
+# depends on it and it is small enough to carry. A county-scale mask is 84 MB of
+# centroids, breaks `git push` over HTTPS, and -- since the dasymetric guard
+# refuses it at that coverage anyway -- is not an input to the committed result.
+data/buildings_contracosta.geojson
+# Same reasoning for the county's other derived caches. At city scale these are
+# 0.3-1 MB and committing them makes a build reproducible offline; at county
+# scale they are 10-17 MB each, and together they exceed what `git push` will
+# carry over HTTPS on a normal connection. Regenerate:
+#   python pipeline/02_satellite.py            (lst_*.tif, ndvi_*.tif)
+#   python pipeline/04_overlays.py --refresh   (streets_*.geojson)
+# The committed outputs -- contracosta.geojson and the CSVs -- are what the app
+# and every figure actually read.
+data/streets_contracosta.geojson
+data/lst_contracosta.tif
+data/ndvi_contracosta.tif
