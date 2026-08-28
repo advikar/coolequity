@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CoolEquity — Heat & Cooling Equity Mapper</title>
+<!-- MapLibre is vendored, not CDN'd. The whole risk register hangs on "the app is
+     static and local"; a <script src=unpkg> makes that false — no venue Wi-Fi means
+     no `maplibregl` at all, and the map never gets as far as the basemap fallback.
+     v4.7.1, BSD-3, self-contained (its CSS inlines every icon as a data: URI). -->
+<link href="vendor/maplibre-gl.css" rel="stylesheet"/>
+<script src="vendor/maplibre-gl.js"></script>
+<style>
+  /* Typefaces are VENDORED, not linked from fonts.googleapis.com — same reason
+     MapLibre is (fixed bug 11). A <link> to Google Fonts would put an off-host
+     request back on the critical path and cost `?flat=1` its "zero external
+     requests" property; on dead venue Wi-Fi you'd also eat a swap flash on
+     every heading. Latin subsets only, 63 KB for both. Inter and Instrument
+     Serif are both SIL Open Font License 1.1. */
+  @font-face{font-family:Inter;src:url(vendor/inter-latin.woff2) format('woff2');
+    font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Instrument Serif";src:url(vendor/instrumentserif-latin.woff2) format('woff2');
+    font-weight:400;font-style:normal;font-display:swap}
+  :root{
+    --bg:#0b0f14;--panel:#111720;--panel2:#0d1219;--edge:#1f2a36;--edge2:#2b3947;
+    --txt:#eef3f8;--muted:#93a1b0;--muted2:#67757f;
+    --accent:#ff7a45;--accent2:#ffb703;--good:#39b98a;--blue:#4c9fce;
+    --shadow:0 18px 50px rgba(0,0,0,.55);
+    /* The map is light (CARTO positron) so that "deeper = worse" can read at all;
+       see the RAMPS comment in the script. Chrome stays dark around it. */
+    --map-bg:#eceff3;
+    --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --display:"Instrument Serif",Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:var(--sans);background:var(--bg);color:var(--txt);overflow:hidden;
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-synthesis:none}
+  /* Numbers are read comparatively all over this UI — rank vs rank, score vs
+     score — so they get tabular figures globally rather than per-rule. */
+  .num,.sc,.stat .v,.metric .top span:last-child,.badge,.tt-row span:last-child{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  svg.ico{width:13px;height:13px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+  #app{display:grid;grid-template-columns:366px 1fr;height:100vh;position:relative}
+  #panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border-right:1px solid var(--edge);display:flex;flex-direction:column;min-height:0}
+  /* ------------------------------------------------------------ intro */
+  /* `align-items:center` + `overflow:hidden` clips a too-tall card at BOTH ends,
+     and the end that matters is the top — that is how the wordmark went missing
+     on a 720px-tall window. `margin:auto` centres the card when there is room and
+     lets it scroll from its own top when there is not, which no value of
+     align-items will do. Keep it this way rather than trimming copy each time
+     the card grows. */
+  #intro{position:fixed;inset:0;z-index:50;background:#080b10;overflow-y:auto;overflow-x:hidden;
+    display:flex;justify-content:center;padding:28px 0;
+    transition:opacity .55s ease,transform .55s cubic-bezier(.4,0,.2,1)}
+  #intro.gone{opacity:0;transform:scale(1.05);pointer-events:none}
+  #intro-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5;
+    filter:blur(.4px);transform:scale(1.02)}
+  .intro-scrim{position:absolute;inset:0;
+    background:radial-gradient(115% 85% at 22% 45%,rgba(8,11,16,.97) 20%,rgba(8,11,16,.72) 52%,rgba(8,11,16,.35) 100%)}
+  .intro-card{position:relative;width:min(760px,calc(100% - 64px));padding:0 8px;margin:auto 0}
+  /* The product has to say its own name on the screen the judges see first. */
+  .wordmark{display:flex;align-items:baseline;gap:11px;margin-bottom:22px}
+  .wordmark .wm{font-family:var(--display);font-weight:400;font-size:34px;line-height:1;
+    letter-spacing:-.01em;color:#fff}
+  .wordmark .wm i{font-style:normal;color:var(--accent)}
+  .wordmark .wdot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px rgba(255,183,3,.16);align-self:center}
+  .eyebrow{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:20px}
+  .intro-card h1{font-family:var(--display);font-weight:400;margin:0;
+    font-size:clamp(38px,5.6vw,68px);line-height:1.03;letter-spacing:-.015em;color:#fff}
+  .lede{max-width:52ch;margin:20px 0 0;color:var(--muted);font-size:15px;line-height:1.62}
+  .istats{display:flex;flex-wrap:wrap;gap:34px;margin:30px 0 34px}
+  .istats div b{display:block;font-size:25px;font-weight:600;letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;color:var(--txt)}
+  .istats div span{font-size:11px;color:var(--muted2);letter-spacing:.05em;text-transform:uppercase}
+  .ilbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted2);
+    font-weight:600;margin:0 0 11px}
+  /* Combobox: a text field you can type into, with a filtered list under it.
+     Not a <select>, because the list has to carry a build-state badge per row. */
+  .picker{position:relative;max-width:460px}
+  .cinput{display:flex;align-items:center;gap:10px;background:#0e141c;
+    border:1px solid var(--edge);border-radius:11px;padding:0 13px;transition:.16s}
+  .cinput:focus-within{border-color:var(--accent);background:#12161d}
+  .cinput svg{width:15px;height:15px;stroke:var(--muted2);fill:none;stroke-width:2;flex:none}
+  .cinput input{flex:1;background:none;border:0;outline:none;font:inherit;font-size:13.5px;
+    color:var(--txt);padding:12px 0}
+  .cinput input::placeholder{color:var(--muted2)}
+  .cinput .cchev{width:13px;height:13px;stroke:var(--muted2);transition:transform .18s}
+  .picker.open .cinput .cchev{transform:rotate(180deg)}
+  .cities{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:5;max-height:264px;
+    overflow-y:auto;background:#0c1219;border:1px solid var(--edge);border-radius:11px;
+    padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6);display:none}
+  .picker.open .cities{display:block}
+  .city{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;
+    color:var(--muted);border-radius:8px;padding:9px 11px;font:inherit;font-size:12.5px;
+    cursor:pointer;text-align:left;transition:.12s}
+  .city .cnm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .city .cco{font-size:10.5px;color:var(--muted2);flex:none}
+  .city:hover,.city.cur{background:#151d27;color:var(--txt)}
+  .city.on{background:#1a1310;color:var(--txt);box-shadow:inset 0 0 0 1px var(--accent)}
+  .city .cs{font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;
+    padding:2px 6px;border-radius:20px;background:#12261e;color:#4fd1a0;flex:none}
+  .city .cs.soon{background:#1a1f27;color:var(--muted2)}
+  .cnone{padding:11px 12px;font-size:11.5px;color:var(--muted2);line-height:1.5}
+  .cityinfo{margin-top:13px;font-size:11.5px;line-height:1.6;color:var(--muted);
+    background:#0c1219;border:1px solid var(--edge);border-radius:10px;padding:12px 14px;max-width:60ch}
+  .cityinfo code{font-family:var(--mono);font-size:10.5px;color:var(--accent2);
+    background:#141c26;padding:1px 5px;border-radius:4px}
+  .cta{margin-top:28px;display:inline-flex;align-items:center;gap:9px;font:inherit;font-size:14px;
+    font-weight:600;color:#0b0f14;background:linear-gradient(135deg,#ffb703,#ff7a45);
+    border:0;border-radius:11px;padding:13px 22px;cursor:pointer;
+    box-shadow:0 8px 26px rgba(255,122,69,.28);transition:transform .16s,box-shadow .16s}
+  .cta:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(255,122,69,.36)}
+  .cta .ico{opacity:1;stroke-width:2}
+  .fine{margin:20px 0 0;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:62ch}
+  @media (prefers-reduced-motion:reduce){#intro{transition:opacity .01s}#intro.gone{transform:none}}
+  /* Short-window ladder. The card is ~910px tall at its most generous, so on a
+     720–860px laptop it would scroll; these tighten it to fit before the scroll
+     is ever needed. Each step gives up the least important thing left, and the
+     wordmark is never one of them. */
+  @media (max-height:860px){
+    .intro-card h1{font-size:clamp(34px,4.6vw,52px)}
+    .wordmark{margin-bottom:16px}.eyebrow{margin-bottom:14px}
+    .lede{margin-top:15px;font-size:14px}
+    .istats{gap:26px;margin:20px 0 22px}.istats div b{font-size:21px}
+    .fine{margin-top:14px}
+  }
+  @media (max-height:740px){
+    .intro-card h1{font-size:clamp(30px,4vw,42px)}
+    .istats{gap:22px;margin:16px 0 18px}
+    .fine{display:none}
+  }
+  @media (max-height:640px){.lede{display:none}}
+  .brand{padding:16px 20px 14px;border-bottom:1px solid var(--edge)}
+  .brand h1{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:9px}
+  .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
+  .brand p{margin:8px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5;letter-spacing:.005em}
+  .brandtop{display:flex;align-items:center;gap:10px}
+  .home{margin-left:auto;display:flex;align-items:center;justify-content:center;width:28px;height:26px;
+    background:#0c1219;border:1px solid var(--edge);border-radius:8px;color:var(--muted2);
+    cursor:pointer;padding:0;transition:.14s;flex:none}
+  .home:hover{color:var(--txt);border-color:var(--accent)}
+  .home svg{width:14px;height:14px}
+  .seg{display:flex;gap:2px;padding:2px;background:#0c1219;border:1px solid var(--edge);border-radius:8px}
+  .seg button{font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.01em;color:var(--muted2);
+    background:none;border:0;padding:4px 8px;border-radius:6px;cursor:pointer;transition:.14s;white-space:nowrap}
+  .seg button:hover{color:var(--txt)}
+  .seg button.on{background:#1d2732;color:var(--txt)}
+  .scroll{overflow-y:auto;min-height:0}
+  .section{padding:15px 20px;border-bottom:1px solid var(--edge)}
+  .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted2);margin:0 0 10px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .layers{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .layer{border:1px solid var(--edge);background:#0c1219;color:var(--muted);padding:9px 10px;border-radius:9px;font-size:12px;cursor:pointer;text-align:left;transition:.15s;display:flex;flex-direction:column;gap:1px}
+  .layer:hover{border-color:#2c3a49;color:var(--txt)}
+  .layer.active{border-color:var(--accent);background:#1a1410;color:var(--txt);box-shadow:inset 0 0 0 1px rgba(255,122,69,.35)}
+  .layer b{font-size:12.5px;font-weight:600}
+  .layer span{font-size:10.5px;color:var(--muted2)}
+  .tag{font-size:9px;letter-spacing:.04em;background:#2a2030;color:#d3a4e0;border:1px solid #47324f;padding:1px 5px;border-radius:20px;font-weight:600}
+  .tag.us{background:#221c2e;color:#c7a3e6;border-color:#402f57}
+  /* toggles */
+  .toggle{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer}
+  /* `hidden` loses to any class rule that sets display, so the attribute
+     alone does nothing here — the HOLC toggle stayed on screen in San
+     Ramon despite being marked hidden. Restate it at class specificity. */
+  .toggle[hidden],.hint[hidden]{display:none}
+  .toggle .sw{width:34px;height:19px;border-radius:20px;background:#25303c;position:relative;flex:none;transition:.2s}
+  .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#6b7885;transition:.2s}
+  .toggle.on .sw{background:rgba(255,122,69,.35)}
+  .toggle.on .sw::after{transform:translateX(15px);background:var(--accent)}
+  .toggle .tt{font-size:12.5px}
+  .toggle .ts{font-size:11px;color:var(--muted2)}
+  /* ---- cooling relief sites ---- */
+  .cnt{font-size:10px;color:var(--muted2);font-weight:500;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+  .kind{display:flex;align-items:flex-start;gap:9px;padding:7px 9px;margin:0 -9px;border-radius:9px;
+    cursor:pointer;transition:background .14s,opacity .14s;user-select:none}
+  .kind:hover{background:#0e1620}
+  .kind.off{opacity:.38}
+  .kind .kdot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex:none;transition:background .14s}
+  .kind.off .kdot{background:#46535f!important}
+  .kind .kb{flex:1;min-width:0}
+  .kind .khd{display:flex;align-items:baseline;gap:8px}
+  .kind .kn{font-size:12.5px;color:var(--txt)}
+  .kind .kc{margin-left:auto;font-size:11px;color:var(--muted2);font-variant-numeric:tabular-nums}
+  .kind .kw{font-size:10.5px;color:var(--muted2);line-height:1.45;margin-top:2px}
+  .tt-kind{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;color:var(--txt)}
+  .tt-kind i{width:8px;height:8px;border-radius:50%;flex:none}
+  .tt-what{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:4px}
+  /* ---- model weights ---- */
+  .hint{font-size:11px;color:var(--muted);line-height:1.5;margin:-4px 0 12px}
+  /* Presets are the front door; the four sliders live behind a disclosure so the
+     panel reads as a choice, not a control surface. */
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+  .pst{background:#0e141c;border:1px solid var(--edge);color:var(--muted);border-radius:8px;
+    padding:6px 10px;font:inherit;font-size:11.5px;cursor:pointer;transition:.14s}
+  .pst:hover{border-color:#3a4a5c;color:var(--txt)}
+  .pst.on{border-color:var(--accent);background:#1a1310;color:var(--txt);font-weight:600}
+  .pwhy{font-size:11px;color:var(--muted);line-height:1.5;background:#0c1219;
+    border:1px solid var(--edge);border-radius:9px;padding:9px 11px;margin-bottom:10px}
+  .pwhy b{color:var(--txt);font-weight:600}
+  .disc{display:flex;align-items:center;gap:7px;width:100%;background:none;border:0;
+    color:var(--muted);font:inherit;font-size:11.5px;cursor:pointer;padding:3px 0;transition:.14s}
+  .disc:hover{color:var(--txt)}
+  .disc .dchev{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;
+    transition:transform .18s}
+  .disc[aria-expanded=true] .dchev{transform:rotate(90deg)}
+  .disc .dnote{margin-left:auto;font-size:10px;color:var(--muted2)}
+  #wadv[hidden],#kadv[hidden]{display:none}
+  #wadv,#kadv{padding-top:11px}
+  .wexp{font-size:10.5px;color:var(--muted2);line-height:1.55;margin:0 0 11px}
+  .wexp code{font-family:var(--mono);font-size:10px;color:var(--accent2)}
+  .wrow{margin-bottom:11px}
+  .wrow .wtop{display:flex;align-items:baseline;gap:7px;font-size:12px;margin-bottom:5px}
+  .wrow .wsw{width:8px;height:8px;border-radius:2px;flex:none;align-self:center}
+  .wrow .wnm{color:var(--txt)}
+  .wrow .wval{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:650;font-size:12.5px}
+  .wrow input[type=range]{margin:0}
+  .wfoot{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:10.5px;color:var(--muted2);line-height:1.4}
+  #w-reset{margin-left:auto;flex:none;background:#161f2a;border:1px solid var(--edge2);color:var(--muted);
+    font:inherit;font-size:10.5px;padding:4px 9px;border-radius:7px;cursor:pointer;transition:.15s}
+  #w-reset:hover{color:var(--txt);border-color:#3a4a5c}
+  #w-reset[disabled]{opacity:.4;cursor:default}
+  .wstate{font-size:9px;letter-spacing:.06em;font-weight:600;padding:2px 7px;border-radius:20px;
+    text-transform:none;border:1px solid #2a4a3d;background:#0f2019;color:#4fd1a0}
+  .wstate.custom{border-color:#4a3520;background:#211609;color:var(--accent2)}
+  /* ---- score breakdown ---- */
+  .bd{margin:2px 0 14px}
+  .bd .stack{display:flex;height:9px;border-radius:3px;overflow:hidden;background:#0a0e13;margin-bottom:9px}
+  .bd .stack i{display:block;transition:width .25s cubic-bezier(.2,.8,.2,1)}
+  .bd table{width:100%;border-collapse:collapse;font-size:11px}
+  .bd td{padding:3.5px 0;color:var(--muted);vertical-align:middle}
+  .bd td.k{color:var(--txt);white-space:nowrap;font-size:11.5px}
+  .bd td.k i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px}
+  .bd td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px;font-size:10.5px}
+  .bd td.p{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt);font-weight:650;padding-left:10px;width:44px}
+  .bd tr.sum td{border-top:1px solid var(--edge);padding-top:6px;color:var(--txt)}
+  .bd .eq{font-size:10px;color:var(--muted2);margin-top:8px;line-height:1.5;font-family:var(--mono)}
+  .legend .bar{height:12px;border-radius:3px;margin:2px 0 6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .legend .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .legend .cap{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+  /* The direction of the ramp is the single thing a reader gets wrong on a
+     choropleth, so it is stated in words under the bar, on the correct side. */
+  .legend .dir{display:flex;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--accent2);font-weight:600;margin-top:5px}
+  .legend .dir.hi{justify-content:flex-end}
+  .holc-key{display:flex;gap:6px;margin-top:4px}
+  .holc-key div{flex:1;text-align:center;font-size:10px;color:#0b0f14;font-weight:700;border-radius:5px;padding:3px 0}
+  #rankwrap{display:flex;flex-direction:column}
+  #rank{padding:4px 12px 10px}
+  .row{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:.12s}
+  .row:hover{background:#0e1620}
+  .row.sel{background:#161d27;box-shadow:inset 0 0 0 1px var(--edge)}
+  .badge{width:25px;height:25px;flex:none;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#0b0f14}
+  .row .nm{font-size:12.5px;font-weight:550}
+  .row .sub{font-size:10.5px;color:var(--muted2);margin-top:1px}
+  .row .sc{margin-left:auto;font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:600}
+  #mapwrap{position:relative}
+  #map{position:absolute;inset:0}
+  .float{position:absolute;z-index:5}
+  #chip{top:14px;left:14px;background:rgba(12,17,23,.82);backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:10px;padding:7px 12px;font-size:12px;color:var(--muted)}
+  #chip b{color:var(--txt)}
+  /* detail panel (right dock) */
+  #detail{position:absolute;top:0;right:0;height:100%;width:340px;background:linear-gradient(180deg,#111721,#0d121a);border-left:1px solid var(--edge);box-shadow:var(--shadow);transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;z-index:6}
+  #detail.show{transform:translateX(0)}
+  .dhead{padding:15px 16px;border-bottom:1px solid var(--edge);display:flex;align-items:center;gap:11px}
+  .dhead .badge{width:32px;height:32px;border-radius:8px;font-size:13px}
+  .dhead .nm{font-size:15px;font-weight:650}
+  .dhead .rk{font-size:11px;color:var(--muted);margin-top:1px}
+  .dhead .x{margin-left:auto;color:var(--muted2);cursor:pointer;font-size:20px;line-height:1;padding:2px 5px}
+  .dhead .x:hover{color:var(--txt)}
+  .dbody{overflow-y:auto;padding:14px 16px 22px}
+  .metric{margin-bottom:11px}
+  .metric .top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+  .metric .top span:first-child{color:var(--muted)}
+  .metric .top span:last-child{font-weight:650;font-variant-numeric:tabular-nums}
+  .track{height:6px;background:#0a0e13;border-radius:4px;overflow:hidden}
+  .fill{height:100%;border-radius:4px}
+  .est{font-size:9px;color:#c7a3e6;border:1px solid #402f57;border-radius:10px;padding:0 5px;margin-left:6px;vertical-align:middle}
+  /* ROI */
+  .roi{margin-top:8px;background:#0c141d;border:1px solid var(--edge);border-radius:12px;padding:14px 14px 16px}
+  .roi h3{margin:0 0 3px;font-size:13px;display:flex;align-items:center;gap:7px}
+  .roi .sub{font-size:11px;color:var(--muted);margin:0 0 12px;line-height:1.4}
+  .slider-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px}
+  .slider-row b{color:var(--good);font-variant-numeric:tabular-nums;font-size:13px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;
+    background:#1a2632;outline:none;margin:2px 0 14px;--sl:var(--good)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--sl);cursor:pointer;border:2px solid #0d1219;box-shadow:0 0 0 3px color-mix(in srgb,var(--sl) 22%,transparent);transition:box-shadow .15s}
+  input[type=range]:hover::-webkit-slider-thumb,input[type=range]:focus-visible::-webkit-slider-thumb{
+    box-shadow:0 0 0 6px color-mix(in srgb,var(--sl) 26%,transparent)}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--sl);
+    cursor:pointer;border:2px solid #0d1219}
+  .roi-out{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .stat{background:#0a1017;border:1px solid var(--edge);border-radius:9px;padding:9px 11px}
+  .stat .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .stat .k{font-size:10px;color:var(--muted2);margin-top:3px;line-height:1.25}
+  .stat.hero .v{color:var(--good)}
+  .roi-note{font-size:9.5px;color:var(--muted2);margin-top:11px;line-height:1.4}
+  .roi-feas{font-size:10.5px;line-height:1.55;margin-top:11px;padding:9px 11px;
+    border-radius:9px;background:#0c1219;border:1px solid var(--edge);color:var(--muted)}
+  .roi-feas b{color:var(--txt)}
+  .roi-feas .ok{color:#6ee7a8}.roi-feas .gap{color:var(--accent)}
+  .roi-src{font-size:9.5px;color:var(--muted2);margin-top:9px;line-height:1.5;
+    border-top:1px solid var(--edge);padding-top:9px}
+  .roi-src b{color:var(--muted);font-weight:600}
+  .roi-src div{margin-top:3px}
+  .maplibregl-popup{max-width:230px!important}
+  .maplibregl-popup-content{background:#0d1219;color:var(--txt);border:1px solid var(--edge);border-radius:10px;padding:9px 12px;font-size:12px;box-shadow:var(--shadow)}
+  .maplibregl-popup-content .tt-row{display:flex;justify-content:space-between;gap:16px;color:var(--muted);margin-top:4px}
+  .maplibregl-popup-content .tt-row span:last-child{color:var(--txt);font-variant-numeric:tabular-nums}
+  .maplibregl-popup-tip{border-top-color:var(--edge)!important}
+  .maplibregl-ctrl-group{background:#0d1219!important;border:1px solid var(--edge)!important}
+  .maplibregl-ctrl button .maplibregl-ctrl-icon{filter:invert(.9)}
+  .scroll::-webkit-scrollbar,.dbody::-webkit-scrollbar{width:9px}
+  .scroll::-webkit-scrollbar-thumb,.dbody::-webkit-scrollbar-thumb{background:#1c2530;border-radius:6px;border:2px solid transparent;background-clip:content-box}
+  .foot{padding:11px 20px;font-size:10px;color:var(--muted2);line-height:1.4}
+</style>
+</head>
+<body>
+<!-- Landing overlay. Sits ON TOP of a fully-booted app rather than gating it:
+     the map, the data and the panel are all live behind this, so dismissing it
+     is a fade, not a load. Nothing here waits on the intro, which is the same
+     rule as fixed bugs 4/5/9 — never put the data path behind an interaction. -->
+<div id="intro">
+  <canvas id="intro-canvas" aria-hidden="true"></canvas>
+  <div class="intro-scrim"></div>
+  <div class="intro-card">
+    <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
+    <div class="eyebrow">Tree canopy &amp; urban heat</div>
+    <h1>Where should San&nbsp;Ramon<br>plant its next trees?</h1>
+    <p class="lede">Across San Ramon, tree canopy runs from under 6% to over 40% of the ground,
+      and surface heat tracks it almost one-for-one — <b>r&nbsp;=&nbsp;&minus;0.80</b>. What it
+      does <i>not</i> track is income.
+      <!-- One sentence, not a paragraph. The landing card is 979px tall against a
+           720px viewport at 1280x720, so anything added here pushes the wordmark
+           above the fold — which is exactly how the product name went missing. If
+           you add copy to this screen, re-measure .wordmark's top afterwards. -->
+      So this is not a map of who is rich and who is poor. It is a map of where the
+      shade is missing, what that costs in degrees, and what it would take to fix.</p>
+    <div class="istats" id="istats"></div>
+    <p class="ilbl">Choose a city</p>
+    <div class="picker" id="picker">
+      <div class="cinput">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="citysearch" type="text" autocomplete="off" spellcheck="false"
+          placeholder="Search a city — San Ramon, Phoenix, Delhi…"
+          role="combobox" aria-expanded="false" aria-controls="cities" aria-autocomplete="list"/>
+        <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="cities" id="cities" role="listbox" aria-label="Cities"></div>
+    </div>
+    <div class="cityinfo" id="cityinfo" hidden></div>
+    <button class="cta" id="intro-go">Explore San Ramon
+      <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+    <p class="fine" id="ifine"></p>
+  </div>
+</div>
+
+<div id="app">
+  <aside id="panel">
+    <div class="brand">
+      <div class="brandtop">
+        <h1><span class="dot"></span> CoolEquity</h1>
+        <!-- Back to the landing screen. A reload rather than re-inserting the
+             overlay: the intro is built once from HEX/CENTERS during boot, so
+             rebuilding it live would mean a second construction path to keep
+             correct. Everything is local, so the reload is instant. -->
+        <button class="home" id="go-home" type="button" title="Back to the start screen"
+          aria-label="Back to the start screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        </button>
+        <div class="seg" id="units" role="group" aria-label="Units">
+          <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
+        </div>
+      </div>
+      <p>Where should a city plant its next trees? Canopy and surface heat measured per block from satellite, priced per intervention — shown here on San Ramon, California.</p>
+    </div>
+
+    <div class="scroll">
+      <div class="section">
+        <p class="lbl">Map layer <span style="color:var(--muted2);font-weight:500;text-transform:none;letter-spacing:0">global inputs</span></p>
+        <div class="layers" id="layers">
+          <button class="layer active" data-k="score"><b>Priority</b><span>composite score</span></button>
+          <button class="layer" data-k="lst"><b>Surface heat</b><span>land surface temp</span></button>
+          <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
+          <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
+          <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
+          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
+        </div>
+      </div>
+
+      <div class="section" id="weights">
+        <p class="lbl">What should count most <span class="wstate" id="w-state">pipeline defaults</span></p>
+        <div class="presets" id="presets"></div>
+        <div class="pwhy" id="w-why"></div>
+        <button class="disc" id="w-disc" type="button" aria-expanded="false" aria-controls="wadv">
+          <svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+          Adjust the weights yourself
+          <span class="dnote" id="w-dnote">4 inputs</span>
+        </button>
+        <div id="wadv" hidden>
+          <p class="wexp">Each input is scaled 0–1 <b>within this city</b>, multiplied by its
+            weight, and the results are added. That sum is then scaled by how many people live
+            in the hex. Weights are relative: they are normalised to 100%, so raising one
+            lowers the rest — which is why moving a single slider changes less than you expect,
+            and why the presets move all of them at once. The first four defaults come from
+            <code>pipeline/config.py</code>. <b>Walk to relief is a fifth input the shipped
+            pipeline does not use</b>, so it starts at 0; raise it to weigh distance to a
+            cooling site alongside the rest.</p>
+          <div id="w-rows"></div>
+          <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
+            <button id="w-reset" disabled>Reset</button></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="lbl">Story overlays</p>
+        <p class="hint" id="story-note" hidden>No 1930s redlining map exists for
+          this city — HOLC surveyed built-up cities in 1935&ndash;40, and San Ramon
+          was farmland until it incorporated in 1983. The layer is switched off
+          rather than filled in with a neighbouring city's grades.</p>
+        <!-- Hidden at boot when no hex carries a grade — see syncHolcAvailable().
+             San Ramon has no HOLC map because it was farmland in 1935 and did not
+             incorporate until 1983. An empty toggle would imply the data failed
+             to load; removing it says the layer does not apply here. -->
+        <div class="toggle" id="tg-holc" data-layer="holc" hidden>
+          <div class="sw"></div>
+          <div><div class="tt">Redlining (HOLC) <span class="tag us">US only</span></div><div class="ts">1930s grades vs. today's heat</div></div>
+        </div>
+        <div class="toggle" id="tg-access" data-layer="access">
+          <div class="sw"></div>
+          <div><div class="tt">Cooling-access gap</div><div class="ts">walk-time to nearest relief</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="lbl">Cooling relief sites <span class="cnt" id="ct-n">—</span></p>
+        <!-- Same disclosure pattern as the weights panel: the count is the
+             headline, the four categories and their definitions are one click
+             away. Collapsed by default so the panel reads as a summary. -->
+        <button class="disc" id="k-disc" type="button" aria-expanded="false" aria-controls="kadv">
+          <svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+          Show the four categories
+          <span class="dnote" id="k-dnote"></span>
+        </button>
+        <div id="kadv" hidden>
+          <p class="hint">Somewhere a resident without air conditioning can walk to and stay cool
+            at no cost. The pipeline counts four OpenStreetMap categories as relief. Switch a
+            category off to see how much of the network depends on it.</p>
+          <div id="kinds"></div>
+        </div>
+      </div>
+
+      <div class="section legend">
+        <p class="lbl" id="legend-title">Priority score</p>
+        <div class="bar" id="legend-bar"></div>
+        <div class="ends"><span id="legend-lo">low</span><span id="legend-hi">high</span></div>
+        <div class="dir" id="legend-dir">↑ more need for cooling</div>
+        <div class="holc-key" id="holc-key" style="display:none">
+          <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
+          <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
+        </div>
+        <div class="cap" id="legend-cap"></div>
+      </div>
+
+      <div id="rankwrap">
+        <div class="section" style="border-bottom:none;padding-bottom:4px">
+          <p class="lbl" style="margin:0">Highest-priority neighborhoods</p>
+        </div>
+        <div id="rank"></div>
+      </div>
+
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites and neighborhood names. A/C access is modeled from income and is <b>weighted zero</b> in this city's score. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
+    </div>
+  </aside>
+
+  <div id="mapwrap">
+    <div id="map"></div>
+    <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
+         count here would keep reading as true on the one screen where it isn't —
+         when the data failed to load. -->
+    <div id="chip" class="float">San Ramon · <b id="chip-n">loading…</b> · <b id="chip-layer">Priority score</b></div>
+  </div>
+
+  <aside id="detail">
+    <div class="dhead">
+      <div class="badge" id="d-badge">1</div>
+      <div style="flex:1"><div class="nm" id="d-name">—</div><div class="rk" id="d-rank">—</div></div>
+      <div class="x" id="d-close">×</div>
+    </div>
+    <div class="dbody">
+      <div id="d-metrics"></div>
+      <p class="lbl" style="margin:16px 0 8px">How this score was built</p>
+      <div class="bd" id="d-breakdown"></div>
+      <div class="roi">
+        <h3><svg class="ico" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.9-7-6.4C5 5.2 8.1 3 12 3s7 2.2 7 5.6c0 3.5-3.1 6.4-7 6.4z"/></svg> Intervention ROI</h3>
+        <p class="sub">Raise tree canopy in this hex and price the result. Cooling factor from WRI; every number below is an estimate, not a measurement.</p>
+        <div class="slider-row"><span>Target canopy</span><b><span id="roi-target">–</span>%</b></div>
+        <input type="range" id="roi-slider" min="0" max="45" value="0"/>
+        <div class="roi-out">
+          <div class="stat hero"><div class="v" id="roi-temp">–</div><div class="k">est. afternoon cooling</div></div>
+          <div class="stat"><div class="v" id="roi-people">–</div><div class="k">residents cooled</div></div>
+          <div class="stat"><div class="v" id="roi-seniors">–</div><div class="k">of them aged 65+</div></div>
+          <div class="stat"><div class="v" id="roi-cost">–</div><div class="k">est. cost · <span id="roi-per">–</span>/resident</div></div>
+        </div>
+        <div class="roi-note" id="roi-note"></div>
+        <!-- Where the three constants come from. A dollar figure with no stated
+             source is the fastest way to lose a room, and $500 is an assumption,
+             not a quote — say so on the screen, not only in the README. -->
+        <!-- The question the ranking cannot answer: the top hexes are private
+             subdivisions, so "plant here" is only actionable where the city
+             owns the ground. Street frontage is that, measured from OSM. -->
+        <div class="roi-feas" id="roi-feas"></div>
+        <div class="roi-src" id="roi-src"></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// Served from the repo root (python -m http.server 8000 → /app/), so data/ is one level up.
+// ?data=<name> swaps the hex file — handy for comparing H3 resolutions, or for
+// pointing the same app at another city's output.
+const _q = new URLSearchParams(location.search);
+const CITY_SLUG    = 'sanramon';
+const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson`;
+const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson`;
+const BOUNDARY_URL = `../data/boundary_${CITY_SLUG}.geojson`;  // flat fallback only
+
+/* ---------------------------------------------------------------- colour ramps
+ *
+ * ONE RULE, and the legend states it out loud: **deeper and more saturated means
+ * more need for cooling investment.** Pale means the place is fine.
+ *
+ * The previous build ramped priority dark->bright (inferno, as-is), so the worst
+ * blocks glowed pale yellow and the safe ones sank into the near-black basemap —
+ * exactly backwards from how a reader assigns weight to ink. Reversing it is not
+ * a free swap: over a dark basemap the deep end disappears. So the basemap moved
+ * to CARTO positron (light) at the same time. The two changes only work together.
+ *
+ * Direction per layer follows the rule, not the variable:
+ *   heat, priority, age65, population, walk-time -> pale = low  ... deep = high
+ *   canopy, A/C access (protective)              -> deep = LOW  ... pale = high
+ * so a deep hex always means "this is the problem", whichever layer is up. */
+/* Priority's low third stays quiet — two thirds of the basin scores mid-range,
+   and if the mid-range is loud the deep core stops being the thing you look at
+   first, which is the entire job of this layer. Quiet, though, is not the same
+   as invisible: the first stops used to be lighter than the #eceff3 basemap, so
+   the low end read as a hole in the map rather than as a hexagon. Every ramp's
+   pale end now starts darker than the paper it sits on, so a hex is always
+   legible AS a hex and only its depth carries the meaning. */
+const PRIORITY=['#f4ead3','#f7dfb4','#f9cd93','#f2b675','#e79a5e','#d5734e','#bc4453','#932050','#5c0f42'];
+const HEAT    =['#fbe8d3','#f9d7b4','#f7c396','#f4a97b','#ef8a5c','#e5654a','#d7301f','#b30000','#7f0000'];
+/* Canopy reads brown->green rather than pale->deep: bare ground genuinely looks
+   like bare ground, and the dark end still lands on "needs trees". */
+const CANOPY  =['#5c3a17','#87582b','#ab8047','#c6ab6b','#b9c67c','#8dc276','#63c489','#7edeb1','#b4f0d2'];
+/* The two protective ramps run deep -> pale, so their PALE end is the "fine" end
+   and stopping short of white is what keeps a well-served hex visible. */
+const ACCESS_AC=['#08306b','#0a4a92','#1f6cb5','#4292c6','#6baed6','#9ecae1','#bcd4ea','#cfe0f0','#dfe9f5'];
+const POPU    =['#dbe4ee','#c2d2e4','#aabdd8','#96a8cc','#8b90bd','#8574ac','#7f5099','#6f2680','#4d004b'];
+const AGE     =['#fbf1c6','#fbe4a2','#fbd382','#f9bd5c','#f2a03d','#e17a1e','#c85c07','#973404','#662506'];
+const WALK    =['#fbdfd9','#f9c8c6','#f6adb4','#f28ea6','#e96f9a','#d94f92','#ae017e','#7a0177','#49006a'];
+
+function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function ramp(cols,t){t=Math.max(0,Math.min(1,t));const x=t*(cols.length-1),i=Math.floor(x),f=x-i;
+  if(i>=cols.length-1)return cols[cols.length-1];const a=hex(cols[i]),b=hex(cols[i+1]);
+  return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;}
+
+const HOLC={A:'#6ea966',B:'#6a9fb5',C:'#c9b458',D:'#c0603f'};
+
+/* ------------------------------------------------- what a "cooling center" is
+ * Not a guess and not a category we invented: these are the four OpenStreetMap
+ * tags 04_overlays.py actually queries, kept keyed by the exact `kind` string
+ * the pipeline writes into centers.geojson. Counts are LA's, filled at boot from
+ * the file rather than hardcoded, so this stays true if you repoint the city. */
+const KIND={
+  library:           {c:'#1d4ed8',label:'Public library',
+    what:'Air-conditioned and open to the public at no cost. Usually the largest category in a US city.'},
+  community_centre:  {c:'#7c3aed',label:'Community center',
+    what:'Recreation centers and civic halls. These are the buildings a city typically opens as a designated cooling center during a heat emergency.'},
+  pool:              {c:'#0891b2',label:'Public pool',
+    what:'Municipal swimming pools. Effective relief, but seasonal and limited to opening hours.'},
+  'shelter/senior':  {c:'#db2777',label:'Senior center / shelter',
+    what:'Senior centers and shelters. A small category, located where many high-risk residents already are.'},
+};
+const KIND_KEYS=Object.keys(KIND);
+let kindOn=new Set(KIND_KEYS);
+/* An `in` over the live set rather than four visibility toggles: one layer, one
+   filter, and the map cannot drift out of sync with the checkboxes. */
+function centersFilter(){return ['in',['get','kind'],['literal',[...kindOn]]];}
+
+/* ---------------------------------------------------------------- units
+ * Display layer only. Every stored value and every line of ROI arithmetic stays
+ * metric — the WRI cooling coefficient, the 40 m² per tree and the 4.8 km/h walk
+ * pace are all defined in metric, and converting the inputs instead of the
+ * outputs is how you end up with a $500 tree costing $/ft². Convert at render. */
+let UNITS = localStorage.getItem('ce-units') === 'imp' ? 'imp' : 'met';
+const isImp = () => UNITS === 'imp';
+const fTemp  = c => isImp() ? (c*9/5+32).toFixed(1)+'°F' : c.toFixed(1)+'°C';
+const fTempD = d => isImp() ? (d*9/5).toFixed(2)+'°F' : d.toFixed(2)+'°C';   // a delta: no +32
+const fDist  = km => isImp() ? (km*0.621371).toFixed(2)+' mi' : km.toFixed(2)+' km';
+const fArea  = m2 => isImp() ? (m2*3.861e-7).toFixed(2)+' sq mi' : (m2/1e6).toFixed(2)+' km²';
+const fMin   = m => m.toFixed(0)+' min';   // time is time
+const fInt   = v => Math.round(v).toLocaleString();
+
+/* `worse` names the end of the ramp that means "more need", so the legend can
+   annotate it instead of leaving the reader to infer the direction. */
+const LAYERS={
+  score:{title:'Priority score',ramp:PRIORITY,worse:'hi',fmt:v=>v.toFixed(0),
+    cap:'Composite of surface heat, missing canopy, low A/C access and share aged 65+, scaled by the population exposed. Weights are live — drag them above. Deeper = greater need for cooling investment.'},
+  lst:{title:'Surface temperature',ramp:HEAT,worse:'hi',fmt:v=>fTemp(v),
+    cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
+  green:{title:'Tree canopy / vegetation',ramp:CANOPY,worse:'lo',fmt:v=>v.toFixed(0)+'%',
+    cap:'Share of ground under canopy or vegetation, from an NDVI proxy. Shade is the cheapest durable cooling there is — so here the brown end is the end that needs help.'},
+  pop:{title:'Population exposed',ramp:POPU,worse:'hi',fmt:v=>v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0),
+    cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
+  pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
+    cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
+  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:true,
+    cap:'ESTIMATED share of homes with air conditioning, modelled from median household income. Not measured — no census counts A/C. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
+  access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
+    cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
+  // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
+  // uniformly; the legend swaps to the A–D swatch key instead of a gradient bar.
+  holc:{title:'Redlining grade (HOLC)',ramp:null,fmt:v=>v,
+    cap:'1930s Home Owners’ Loan Corporation grades, drawn in the original map’s own colours. D-graded (“hazardous”) blocks are hotter and barer today. US-only historical layer.'}
+};
+
+/* Positron, not dark-matter. The ramps now run pale -> deep, so the basemap has
+   to be the pale thing for the deep end to carry weight; over dark-matter the
+   highest-priority hexes were the *least* visible ink on the screen. */
+const BASEMAP_URL='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+const BASEMAP_TIMEOUT_MS=6000;
+const FLAT_STYLE={version:8,sources:{},layers:[
+  {id:'bg',type:'background',paint:{'background-color':'#eceff3'}}]};
+
+// ---- state populated once the data lands ----
+let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
+const vals={};
+const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
+/* Street trees go on both sides of a road at roughly this spacing. The number
+ * is a planning convention, not a measurement — it is stated on screen next to
+ * the figure it produces, because the whole point of the frontage panel is to
+ * be checkable against the city's own standard. */
+const TREE_SPACING_M=10;
+let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
+
+/* ================================================================ live model
+ *
+ * The score is recomputed in the browser, from the same four weights and the
+ * same arithmetic as pipeline/05_score.py:
+ *
+ *   base_risk = w_heat*heat_n + w_green*(1-green_n) + w_ac*(1-ac_n) + w_age*age65_n
+ *   priority  = base_risk * (pop_floor + pop_weight*pop_n)
+ *   score     = 100 * minmax(priority)
+ *
+ * with every input min-max normalised WITHIN the city, which is the portability
+ * argument: 44 °C is an ordinary afternoon in Phoenix and an emergency in
+ * Seattle. Weights here MUST stay in sync with pipeline/config.py WEIGHTS —
+ * that is a standing contract in STATUS.md, and now the legend copy is
+ * generated from these constants rather than restating them by hand, so the two
+ * cannot drift the way hardcoded legend text did.
+ *
+ * Checked against the committed data/sanramon.geojson at these defaults; the
+ * only residual is the geojson storing lst/green/ac rounded to 1 dp — rounding,
+ * not a second model. Say that out loud if asked.
+ *
+ * The pipeline's own `score` and `rank` properties are never overwritten; they
+ * stay on the features untouched, and everything on screen reads through
+ * sc()/rk() instead. So "reset" is exact, not approximate.
+ */
+/* `access` is an input the shipped pipeline does NOT use: config.py weights the
+ * others, and this app's parity claim against data/sanramon.geojson depends on
+ * reproducing exactly those. So it ships at weight 0 — present, movable, and off
+ * by default, which keeps "Pipeline default" an honest name.
+ *
+ * It belongs on the list because distance to relief is the one input here that
+ * describes what a resident can do about the heat today, before any tree is
+ * planted. In San Ramon the spread is wide for a city of 52 km² — under a minute
+ * to 46 minutes on foot — because the mapped sites cluster along the Bollinger
+ * Canyon and Crow Canyon corridors.
+ *
+ * A/C ALSO ships at 0, and for a different and more important reason. It is
+ * modelled by ranking each hex's median household income within the city. San
+ * Ramon's block-group medians run $102k–$250k — narrow and uniformly high — so
+ * that percentile stretch would paint a 35%-to-95% spread of "A/C access" across
+ * a city where essentially everyone can afford it. That is variation invented by
+ * the transform, not measured, and it is not allowed to carry a quarter of the
+ * score. The layer is still built from real ACS income and can still be viewed.
+ * Mirrors pipeline/config.py WEIGHTS; LA's 35/25/25/15 renormalises to 45/33/22
+ * once A/C leaves the sum. */
+const DEFAULT_W={heat:0.45,green:0.33,ac:0.00,age65:0.22,access:0};
+const DEFAULT_POPW=0.45;                      // config.POP_WEIGHT; floor is 1-this
+const W_INPUTS=[
+  {k:'heat', prop:'lst',   label:'Surface heat',      swatch:HEAT[7],
+   note:'hotter hex → higher risk'},
+  {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
+   note:'less shade → higher risk'},
+  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
+   note:'modelled from income — not scored here'},
+  {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
+   note:'older residents die first'},
+  {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
+   note:'not in the shipped model — starts at 0', show:v=>fMin(v)},
+];
+/** Presets set all four weights at once, which is the only way a single click
+ *  can visibly change the answer. Moving one slider alone barely moves the map:
+ *  the weights are renormalised to 100%, so pushing one input to its maximum
+ *  while the other three hold still lands it around 40% — enough to reorder a
+ *  pair of hexes and not enough to look like anything happened. Each preset is
+ *  a policy question someone might actually be asked to defend. */
+const PRESETS=[
+  {id:'default',name:'Pipeline default',w:{...DEFAULT_W},pop:DEFAULT_POPW,
+   why:'<b>The shipped model.</b> Surface heat, missing canopy and age, weighted by how many '
+      +'people are exposed. Every other preset is a departure from this one. Air conditioning '
+      +'is deliberately weighted zero here — open the sliders below for why.'},
+  {id:'heat',name:'Heat first',w:{heat:.70,green:.18,ac:0,age65:.12,access:0},pop:.45,
+   why:'<b>Where is it simply hottest?</b> Almost the raw thermal image. Useful as a sanity '
+      +'check: if a block ranks high here and low by default, the difference is everything '
+      +'except heat.'},
+  {id:'shade',name:'Shade gap',w:{heat:.25,green:.62,ac:0,age65:.13,access:0},pop:.45,
+   why:'<b>Where is there least tree cover?</b> The view for a planting budget, since canopy is '
+      +'the input a city can actually change. San Ramon averages 21% canopy over its typical '
+      +'resident, so this preset is really asking which blocks got left out of that.'},
+  {id:'seniors',name:'Protect seniors',w:{heat:.22,green:.18,ac:0,age65:.60,access:0},pop:.45,
+   why:'<b>Who is most likely to die of it?</b> Heat kills the old first, and the 65+ share here '
+      +'runs from under 4% to 48% depending on the block. Amador Lakes N — 48% aged 65+ — goes '
+      +'from #3 by default to #1.'},
+  {id:'stranded',name:'No relief nearby',w:{heat:.34,green:.25,ac:0,age65:.16,access:.25},pop:.45,
+   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 25 mapped '
+      +'cooling sites. Distance is what a city can fix this week by opening a building, rather '
+      +'than in twenty years by planting a tree. Estimated, not routed, and the shipped '
+      +'pipeline does not use it.'},
+  {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
+   why:'<b>Reach over severity.</b> Same weights, but density dominates: a townhome block with '
+      +'900 residents outranks a hotter cul-de-sac with 90.'},
+];
+let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
+const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
+
+/** Weights are shares, so they are renormalised to sum to 1 before use. That is
+ *  why the readout can always total 100% no matter where the sliders sit. */
+function normW(){
+  const s=W_INPUTS.reduce((a,{k})=>a+(W_RAW[k]||0),0);
+  if(!(s>0))return {...DEFAULT_W};            // all-zero: nothing to weigh, hold defaults
+  const out={};W_INPUTS.forEach(({k})=>{out[k]=(W_RAW[k]||0)/s;});
+  return out;
+}
+function isDefaultW(){
+  const W=normW();
+  return Math.abs(POPW-DEFAULT_POPW)<1e-9 &&
+    W_INPUTS.every(({k})=>Math.abs(W[k]-DEFAULT_W[k])<5e-4);
+}
+
+/** Re-score and re-rank all hexes. ~3,000 features and a sort: sub-millisecond,
+ *  so it runs on every `input` event rather than being debounced. */
+function rescore(){
+  const W=normW(), F=HEX.features, n=F.length;
+  const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  const pri=new Float64Array(n);
+  for(let i=0;i<n;i++){
+    const p=F[i].properties;
+    const base=W.heat*nv(p,'lst') + W.green*(1-nv(p,'green'))
+             + W.ac*(1-nv(p,'ac')) + W.age65*nv(p,'pct65')
+             + W.access*nv(p,'access_min');
+    pri[i]=base*((1-POPW)+POPW*nv(p,'pop'));
+  }
+  let lo=Infinity,hi=-Infinity;
+  for(let i=0;i<n;i++){if(pri[i]<lo)lo=pri[i];if(pri[i]>hi)hi=pri[i];}
+  LIVE.lo=lo;LIVE.hi=hi;
+  const span=Math.max(1e-12,hi-lo);
+  const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>pri[b]-pri[a]);
+  LIVE.score.clear();LIVE.rank.clear();
+  for(let i=0;i<n;i++)LIVE.score.set(F[i].properties.id,100*(pri[i]-lo)/span);
+  order.forEach((i,r)=>LIVE.rank.set(F[i].properties.id,r+1));
+  LIVE.order=order.map(i=>F[i]);
+}
+const sc=p=>LIVE.score.get(p.id);
+const rk=p=>LIVE.rank.get(p.id);
+
+/** The same arithmetic again, as a MapLibre expression over the raw properties.
+ *
+ *  Written out rather than pushing recomputed values through
+ *  source.setData(HEX): setData re-serialises and re-parses 1.4 MB of geometry
+ *  on every frame of a slider drag. As an expression the geometry never moves —
+ *  only a paint property changes — so the map keeps up with the pointer.
+ *
+ *  It is the one place the model is duplicated, so it is generated from the same
+ *  `vals` ranges and the same normW() as rescore() above; there is no third set
+ *  of numbers to keep in sync. */
+function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+function liveScoreExpr(){
+  const W=normW();
+  const base=['+',
+    ['*',W.heat, nx('lst')],
+    ['*',W.green,['-',1,nx('green')]],
+    ['*',W.ac,   ['-',1,nx('ac')]],
+    ['*',W.age65,nx('pct65')],
+    ['*',W.access,nx('access_min')]];
+  const pri=['*',base,['+',1-POPW,['*',POPW,nx('pop')]]];
+  return ['*',100,['/',['-',pri,LIVE.lo],Math.max(1e-12,LIVE.hi-LIVE.lo)]];
+}
+
+/** Show the redlining toggle only where the pipeline actually produced grades.
+ *  Reads the data rather than the city name, so it is right for every city:
+ *  outside the US there is no HOLC by construction, and inside the US there is
+ *  none for anywhere built after about 1940. */
+function syncHolcAvailable(){
+  const any=HEX.features.some(f=>f.properties.holc);
+  const tg=document.getElementById('tg-holc');
+  tg.hidden=!any;
+  const note=document.getElementById('story-note');
+  if(note)note.hidden=any;
+  return any;
+}
+
+function computeRanges(){
+  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{
+    const a=HEX.features.map(f=>f.properties[k]).filter(v=>typeof v==='number'&&isFinite(v));
+    vals[k]=a.length?[Math.min(...a),Math.max(...a)]:[0,1];
+    if(vals[k][0]===vals[k][1])vals[k][1]=vals[k][0]+1;  // avoid divide-by-zero on flat fields
+  });
+  // Priority is a min-maxed index by construction, so its scale is 0–100 whatever
+  // the weights are. Pinning it stops the legend's endpoints twitching every time
+  // a slider moves, which would read as the scale rather than the map changing.
+  vals.score=[0,100];
+}
+function rng(k){return k==='access'?vals['access_min']:vals[k];}
+function propKey(k){return k==='access'?'access_min':k;}
+function norm(k,v){const[lo,hi]=rng(k);return (v-lo)/(hi-lo);}
+function colorFor(k,v){return ramp(LAYERS[k].ramp,norm(k,v));}
+
+/* The ramps are built for a LIGHT basemap, so their business end is very dark —
+ * and the panel around them is very dark too. Reusing a map colour verbatim for
+ * a badge or a number on the panel is how the #1 hex ends up rendered in
+ * near-black on near-black. Two helpers, used everywhere a map colour appears
+ * off-map, so the panel and the map never disagree about which hex is worst:
+ *   lift()     keeps the hue, raises luminance until it reads on the dark panel
+ *   inkOn()    picks black or white text for a swatch filled with the true colour
+ * Luminance coefficients are Rec. 709. */
+/* Must take BOTH forms that reach it: ramp() hands back "rgb(r,g,b)", but the
+   ramp arrays themselves are "#rrggbb" and get used raw for swatches. Digit-
+   scraping a hex string is silently wrong rather than loud — "#b30000" scrapes
+   to [30000] and lands on rgb(NaN), "#5c3a17" scrapes to [5,3,17] and lands on
+   a grey that looks deliberate. Branch on the leading '#'. */
+function rgbOf(css){
+  if(css[0]==='#')return hex(css);
+  const m=css.match(/-?[\d.]+/g);
+  return m?m.slice(0,3).map(Number):[0,0,0];
+}
+function lum(rgb){return 0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2];}
+function lift(css,target=152){
+  const c=rgbOf(css),L=lum(c);
+  if(L>=target)return css;
+  const m=(target-L)/(255-L);            // blend toward white just far enough
+  return `rgb(${c.map(v=>Math.round(v+(255-v)*m)).join(',')})`;
+}
+function inkOn(css){return lum(rgbOf(css))>150?'#0b0f14':'#ffffff';}
+function areaOf(p){return p.area_m2||AREA_M2_FALLBACK;}
+function nameOf(p){return p.name||`Hex ${p.id}`;}
+
+// Frame whatever city the pipeline produced, rather than a hardcoded LA view —
+// the engine is meant to be repointable, so the camera must be too.
+function dataBounds(){
+  let w=180,s=90,e=-180,n=-90;
+  for(const f of HEX.features)for(const ring of f.geometry.coordinates)for(const [x,y] of ring){
+    if(x<w)w=x; if(x>e)e=x; if(y<s)s=y; if(y>n)n=y;}
+  return [[w,s],[e,n]];
+}
+
+/** Every stop of the ramp, not the three-point sample this used to take. The
+ *  legend bar is drawn from the same array, so a nine-stop fill and a nine-stop
+ *  legend now agree everywhere along their length, not just at the ends. */
+function rampStops(k,lo,hi){
+  const cols=LAYERS[k].ramp,out=[];
+  for(let i=0;i<cols.length;i++)out.push(lo+(hi-lo)*i/(cols.length-1),cols[i]);
+  return out;
+}
+function fillExpr(k){
+  // Ungraded hexes are legitimately outside whatever 1930s map exists (all of
+  // them, in San Ramon, which has no map at all) —
+  // a neutral light grey on the light basemap, not a dark blob that reads as
+  // a fifth grade.
+  if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#d6dbe1'];
+  // Priority is recomputed from the live weights, in-expression. See liveScoreExpr().
+  if(k==='score') return ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)];
+  const pk=propKey(k),[lo,hi]=rng(k);
+  // coalesce: real pipelines leave no-data hexes null; without this they'd break the ramp
+  return ['interpolate',['linear'],['coalesce',['get',pk],lo],...rampStops(k,lo,hi)];
+}
+
+const EMPTY={type:'FeatureCollection',features:[]};
+const optional=url=>fetch(url).then(r=>r.ok?r.json():EMPTY).catch(()=>EMPTY);
+
+async function boot(){
+  // Only the hex file is load-bearing; the other two degrade to nothing.
+  const [h,c,b]=await Promise.all([
+    fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.json();}),
+    optional(CENTERS_URL),
+    optional(BOUNDARY_URL)
+  ]);
+  HEX=h;CENTERS=c;BOUNDARY=b;
+  computeRanges();
+  document.getElementById('chip-n').textContent=`${HEX.features.length} hexes`;
+  syncHolcAvailable();
+
+  // Panel UI is data-only. Render it BEFORE the map so a slow or blocked basemap
+  // CDN can never leave the demo staring at an empty screen.
+  // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
+  // so the panel is fully populated from the live model before the map exists.
+  buildWeights();buildKinds();wireUI();setUnits(UNITS);buildIntro();
+  // ?go=1 skips the landing screen. Rehearsal and the recorded walkthrough both
+  // want to open straight onto the map; so does anyone deep-linking ?data=.
+  if(_q.has('go')||_q.has('data'))dismissIntro();
+
+  // Canvas can latch MapLibre's 400x300 fallback when the map is built after an
+  // await; keep it pinned to the container for fullscreen/projector too.
+  new ResizeObserver(()=>{if(map)map.resize();}).observe(document.getElementById('mapwrap'));
+  initMap(await basemapStyle());
+}
+
+/** Resolve the basemap up front, so the map is built once with a style we know we have.
+ *  Deliberately NOT a timeout on the map's 'load' event: 'load' waits on the first
+ *  render, so a backgrounded tab (rAF suspended) looks identical to a dead CDN, and
+ *  a fallback keyed on it will tear down a perfectly good map. */
+async function basemapStyle(){
+  // ?flat=1 forces the no-network look. The fallback is the one path you can't
+  // rehearse without actually killing the Wi-Fi, which is not a thing to discover
+  // for the first time on stage.
+  if(_q.has('flat')){console.warn('Basemap skipped (?flat) — flat background');return FLAT_STYLE;}
+  try{
+    const ctl=new AbortController();
+    const t=setTimeout(()=>ctl.abort(),BASEMAP_TIMEOUT_MS);
+    const r=await fetch(BASEMAP_URL,{signal:ctl.signal});
+    clearTimeout(t);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    return await r.json();          // CARTO's style uses absolute sprite/glyph/tile URLs
+  }catch(e){
+    console.warn(`Basemap unreachable (${e.message}) — flat background; hexes still render`);
+    return FLAT_STYLE;
+  }
+}
+
+/** Build the map with the hexes already in the style.
+ *
+ *  The data layers are baked into the style object BEFORE construction rather
+ *  than added from a map event. Both candidate events are unreliable exactly
+ *  when it matters: 'load' waits on the first render, and 'styledata' /
+ *  isStyleLoaded() do not settle either while a tab is hidden — a hidden tab has
+ *  rAF suspended, so nothing renders and neither ever fires. Measured: with the
+ *  layers added on 'load', a tab opened in the background reports
+ *  document.hidden=true, map.loaded()=false forever, and presents a blank map
+ *  when you switch to it. That is the demo failing on stage.
+ *
+ *  A style that already contains the data needs no event at all — MapLibre draws
+ *  it whenever it first draws anything. Same lesson as the basemap fallback
+ *  above: never make the data path wait on a render. */
+function initMap(style){
+  // Copy before mutating: FLAT_STYLE is a shared const and a retry would
+  // otherwise push a second set of layers onto it.
+  const s={...style,sources:{...style.sources},layers:[...style.layers]};
+  s.sources.hex={type:'geojson',data:HEX};
+  s.sources.centers={type:'geojson',data:CENTERS};
+
+  // No basemap means no coastline, and the hex layer's honest holes over the bay
+  // and Griffith Park then read as nothing at all. The county outline is a local
+  // file, so it costs nothing offline and gives the shapes something to sit in.
+  // Skipped when CARTO answered — over real streets it is just clutter.
+  if(style===FLAT_STYLE&&BOUNDARY&&BOUNDARY.features.length){
+    s.sources.boundary={type:'geojson',data:BOUNDARY};
+    s.layers.push({id:'boundary',type:'line',source:'boundary',
+      paint:{'line-color':'#b6c0cc','line-width':1.2}});
+  }
+
+  /* Choropleth goes UNDER the basemap's own labels, not on top of them. Place
+     names surviving the fill is what separates a map you can navigate from a
+     coloured blob — and doing it by splicing the style array keeps it on the
+     no-events path (fixed bug 9); map.addLayer(..., beforeId) would not.
+     No symbol layers (flat fallback) => index is the end, i.e. plain append. */
+  const firstSymbol=s.layers.findIndex(l=>l.type==='symbol');
+  const at=firstSymbol<0?s.layers.length:firstSymbol;
+  s.layers.splice(at,0,
+    {id:'fill',type:'fill',source:'hex',
+      paint:{'fill-color':fillExpr(current),'fill-opacity':0.82}},
+    {id:'line',type:'line',source:'hex',
+      paint:{'line-color':'#ffffff','line-width':0.4,'line-opacity':0.35}});
+
+  // Selection ring and centre markers stay above everything, labels included:
+  // both are things the user is actively hunting for.
+  s.layers.push(
+    {id:'sel',type:'line',source:'hex',
+      paint:{'line-color':'#0b0f14','line-width':2.6},filter:['==','id',selId??-1]},
+    {id:'centers',type:'circle',source:'centers',
+      layout:{visibility:centersOn?'visible':'none'},
+      filter:centersFilter(),
+      // 645 real OSM sites at a fixed 6px blanket the city and hide the very
+      // overlay you toggled them on to read. Scale with zoom: a dot at city
+      // view, a target you can click once you're in a neighborhood.
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],9,2.4,11,4.2,14,7.5],
+        'circle-color':['match',['get','kind'],
+          'library',KIND.library.c,'pool',KIND.pool.c,
+          'community_centre',KIND.community_centre.c,'shelter/senior',KIND['shelter/senior'].c,'#334155'],
+        'circle-stroke-width':['interpolate',['linear'],['zoom'],9,0.8,14,2],
+        'circle-stroke-color':'#ffffff','circle-opacity':0.95}});
+
+  const m=new maplibregl.Map({container:'map',style:s,
+    center:[-118.35,34.02],zoom:9.7,attributionControl:true});
+  map=m;
+  m.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+  wireHover();m.resize();fitData(m);
+}
+
+/** Frame the data, with padding the container can actually afford.
+ *  fitBounds throws "Invalid LngLat object: (Infinity, NaN)" when the padding
+ *  meets or exceeds the viewport — and since that throw happens inside boot()'s
+ *  promise chain it used to take down the entire map and report it as "could
+ *  not load la.geojson", which sends you debugging the wrong layer entirely.
+ *  A narrow window is enough to trigger it: the right pad alone is 360px. */
+function fitData(m){
+  const c=m.getContainer(),w=c.clientWidth,h=c.clientHeight;
+  // Zero-sized container: wait for the ResizeObserver's resize() instead of
+  // fitting to nothing.
+  if(!w||!h){m.once('resize',()=>fitData(m));return;}
+  const pad={top:40,bottom:40,left:40,right:360};   // right dock is 340px
+  if(pad.left+pad.right>w*0.8){pad.left=pad.right=w*0.05;}
+  if(pad.top+pad.bottom>h*0.8){pad.top=pad.bottom=h*0.05;}
+  m.fitBounds(dataBounds(),{padding:pad,duration:0});
+}
+
+boot().catch(err=>{
+  console.error(err);
+  // Distinguish the two failures. Blaming the data file when the data is
+  // already in memory and it was the map that threw wastes the one thing you
+  // don't have at a demo, which is time.
+  const gotData=HEX&&HEX.features&&HEX.features.length;
+  document.getElementById('map').innerHTML=gotData
+    ? `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
+         <b>Data loaded (${HEX.features.length} hexes) but the map failed to start</b>
+         <br>${err.message}<br><br>The panel and ranking on the left are still live.
+       </div>`
+    : `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
+         <b>Could not load ${DATA_URL}</b><br>${err.message}<br><br>
+         Serve from the repo root so <code>data/</code> resolves:<br>
+         <code>python -m http.server 8000</code> then open <code>/app/</code>
+       </div>`;
+});
+
+let pendingOps=[];
+/** Run a style mutation now, or as soon as the style can take it.
+ *
+ *  Deliberately NOT gated on map.getLayer(id): getLayer() returns undefined
+ *  until the style has parsed, even though initMap() declared the layer. So
+ *  anything toggled during the basemap fetch (up to BASEMAP_TIMEOUT_MS) used to
+ *  update the legend, the chip and the caption while the map kept showing the
+ *  previous ramp — fixed bug 12. A legend that disagrees with the map is worse
+ *  than a slow map: on stage you would narrate the wrong picture.
+ *
+ *  Generalised from the old paintFill()-only version because the same hazard
+ *  applies to the centre filter and the selection ring, and both were sitting
+ *  behind exactly the `if(map.getLayer(...))` guard the bug was about. Queued
+ *  closures must read live state at call time, never capture it, so a burst of
+ *  toggles replays as the final intent rather than the first.
+ *
+ *  Toggles from before the map exists at all are already covered: initMap()
+ *  bakes the current fill, filter and selection into the style object. */
+function styleOp(fn){
+  if(!map)return;
+  try{fn();return;}catch(e){/* style still parsing */}
+  pendingOps.push(fn);
+  if(pendingOps.length>1)return;                 // one listener serves the queue
+  const retry=()=>{
+    const q=pendingOps;pendingOps=[];
+    try{q.forEach(f=>f());map.off('styledata',retry);}
+    catch(_){pendingOps=q;}                      // styledata will fire again
+  };
+  map.on('styledata',retry);
+}
+function paintFill(){styleOp(()=>map.setPaintProperty('fill','fill-color',fillExpr(current)));}
+function paintSel(){styleOp(()=>map.setFilter('sel',['==','id',selId??-1]));}
+
+function setLayer(k){
+  current=k;
+  // May run before the map is ready (panel renders first) — legend still updates.
+  paintFill();
+  document.querySelectorAll('.layer').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
+  const L=LAYERS[k];
+  document.getElementById('legend-title').textContent=L.title;
+  document.getElementById('chip-layer').textContent=L.title;
+  const holcKey=document.getElementById('holc-key'),bar=document.getElementById('legend-bar');
+  const dir=document.getElementById('legend-dir');
+  document.getElementById('legend-cap').textContent=L.cap;
+  if(k==='holc'){holcKey.style.display='flex';bar.style.display='none';dir.style.display='none';
+    document.getElementById('legend-lo').textContent='“best”';
+    document.getElementById('legend-hi').textContent='“hazardous”';
+    return;}
+  holcKey.style.display='none';bar.style.display='block';dir.style.display='flex';
+  const g=[];for(let i=0;i<=10;i++)g.push(ramp(L.ramp,i/10));
+  bar.style.background=`linear-gradient(90deg,${g.join(',')})`;
+  document.getElementById('legend-lo').textContent=L.fmt(rng(k)[0]);
+  document.getElementById('legend-hi').textContent=L.fmt(rng(k)[1]);
+  // Point the label at whichever end of THIS ramp means trouble. Canopy and A/C
+  // are protective, so for them the needy end is the left one.
+  const hi=L.worse!=='lo';
+  dir.className='dir'+(hi?' hi':'');
+  dir.textContent=(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
+}
+
+// ---------------------------------------------------------------- intro
+/* The city list is deliberately honest about what exists.
+ *
+ * Only San Ramon has been through the pipeline on this branch. A dropdown that
+ * appeared to load Delhi and quietly showed San Ramon's numbers under a
+ * different name would be the single worst thing in this repo, and "every input is global" is a claim
+ * that has to survive someone clicking it. So the unbuilt cities say they are
+ * unbuilt, and say exactly what building one takes — which argues portability
+ * better than a fake selector does, because it is checkable.
+ *
+ * `have` is the data file each city would load, so wiring a second real city
+ * up later is one build and one line here. */
+/** Search list. Only San Ramon carries `have` — that flag is what decides
+ *  whether the button opens a dataset or explains how to build one, so a city
+ *  can never be added here in a way that fakes data it does not have.
+ *
+ *  Los Angeles is built too, on the master branch, and is listed WITHOUT `have`
+ *  because its files are not on this one. Claiming it here would be exactly the
+ *  lie this list exists to prevent. */
+const CITIES=[
+  {name:'San Ramon',cc:'United States',have:'sanramon',
+   note:'The built dataset. 419 populated hexes at H3 resolution 9, ~0.11 km² each, '
+       +'covering the city limits — 85,569 residents, within 0.2% of the ACS place '
+       +'total of 85,734. Landsat 8/9 '
+       +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
+       +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
+       +'neighborhood names.'},
+  {name:'Los Angeles',cc:'United States',
+   note:'Built on this project&rsquo;s <code>master</code> branch — 3,008 hexes at '
+       +'resolution 8 — but its data files are not on this branch, so this build '
+       +'cannot open it.'},
+  {name:'Phoenix',cc:'United States'},
+  {name:'Houston',cc:'United States'},
+  {name:'New York',cc:'United States'},
+  {name:'Chicago',cc:'United States'},
+  {name:'Miami',cc:'United States'},
+  {name:'Atlanta',cc:'United States'},
+  {name:'Sacramento',cc:'United States'},
+  {name:'Athens',cc:'Greece'},
+  {name:'Madrid',cc:'Spain'},
+  {name:'Seville',cc:'Spain'},
+  {name:'Paris',cc:'France'},
+  {name:'Delhi',cc:'India'},
+  {name:'Ahmedabad',cc:'India'},
+  {name:'Mumbai',cc:'India'},
+  {name:'Karachi',cc:'Pakistan'},
+  {name:'Lagos',cc:'Nigeria'},
+  {name:'Cairo',cc:'Egypt'},
+  {name:'São Paulo',cc:'Brazil'},
+  {name:'Sydney',cc:'Australia'},
+];
+const BUILD_NOTE=c=>
+  `<b>Not built yet — and this page will not pretend otherwise.</b><br>
+   Every input except the US redlining overlay is global, so ${c.name} takes one config change
+   and one pipeline run: set <code>CITY</code> and <code>BBOX</code> in
+   <code>pipeline/config.py</code>, then run <code>01</code>→<code>05</code>.`
+  +(c.cc==='United States'
+     ? ' Census and HOLC layers both apply here.'
+     : ` Outside the US there is no HOLC map, and <code>03_census.py</code> needs a WorldPop
+        raster in place of the ACS — the other four stages are unchanged.`);
+
+function buildIntro(){
+  const pop=HEX.features.reduce((a,f)=>a+f.properties.pop,0);
+  const hot=Math.max(...HEX.features.map(f=>f.properties.lst));
+  // Population-weighted, not a plain hex mean: the question is how much shade the
+  // average resident lives under, and hexes hold very different numbers of people.
+  const canopy=HEX.features.reduce((a,f)=>a+f.properties.green*f.properties.pop,0)/pop;
+  document.getElementById('istats').innerHTML=[
+    // Labels stay short so all five sit on one row at 760px. A fifth stat that
+    // wraps alone onto a second line reads as a mistake.
+    [HEX.features.length.toLocaleString(),'neighborhoods'],
+    // Not always millions. LA's 6.5M formatted fine as "6.5M"; San Ramon's
+    // 85,569 came out "0.1M", which reads as a rounding error rather than a
+    // population. Switch units at a million.
+    [pop>=1e6?(pop/1e6).toFixed(1)+'M':Math.round(pop).toLocaleString(),'residents'],
+    [fTemp(hot),'hottest block'],
+    [canopy.toFixed(0)+'%','avg. canopy'],
+    [CENTERS.features.length.toLocaleString(),'cooling sites'],
+  ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
+
+  buildPicker();
+
+  document.getElementById('ifine').innerHTML=
+    'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
+   +'income are real ACS figures interpolated from census block groups about nine times the '
+   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
+   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is a '
+   +'circuity-adjusted straight line, not a routed street path. '
+   +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
+
+  document.getElementById('intro-go').onclick=dismissIntro;
+  document.addEventListener('keydown',e=>{
+    // Not while the user is typing a city name — Enter there picks from the
+    // list, and Escape closes the list, neither of which should launch the map.
+    if(e.target.closest('#picker'))return;
+    if(e.key==='Escape'||e.key==='Enter'){const el=document.getElementById('intro');
+      if(el&&!el.classList.contains('gone'))dismissIntro();}
+  });
+  drawIntroMap();
+  addEventListener('resize',drawIntroMap);
+}
+
+/** Type-to-search city picker.
+ *
+ *  A combobox rather than a row of chips, because the list is now long enough
+ *  to scroll and "type your city" is the interaction a judge will reach for.
+ *  What it must never do is imply a city is available when it isn't: selecting
+ *  an unbuilt city is allowed and shows exactly what building it takes, but the
+ *  CTA still says "Explore San Ramon", because that is the only data on disk. */
+function buildPicker(){
+  const box=document.getElementById('picker'),
+        input=document.getElementById('citysearch'),
+        list=document.getElementById('cities'),
+        info=document.getElementById('cityinfo'),
+        go=document.getElementById('intro-go');
+  let sel=0, cur=0, shown=CITIES.map((_,i)=>i);
+
+  const open=v=>{box.classList.toggle('open',v);input.setAttribute('aria-expanded',v);};
+
+  function render(q=''){
+    const s=q.trim().toLowerCase();
+    shown=CITIES.map((c,i)=>i).filter(i=>!s
+      || CITIES[i].name.toLowerCase().includes(s)
+      || CITIES[i].cc.toLowerCase().includes(s));
+    if(!shown.length){
+      list.innerHTML=`<div class="cnone">No city called “${q}”. Any city on Earth can be
+        added — it is a bbox in <code>pipeline/config.py</code> and one pipeline run.</div>`;
+      return;
+    }
+    if(!shown.includes(cur))cur=shown[0];
+    list.innerHTML=shown.map(i=>{const c=CITIES[i];
+      return `<button class="city${i===sel?' on':''}${i===cur?' cur':''}" data-i="${i}"
+        type="button" role="option" aria-selected="${i===sel}">
+        <span class="cnm">${c.name}</span><span class="cco">${c.cc}</span>
+        <span class="cs${c.have?'':' soon'}">${c.have?'ready':'pipeline-ready'}</span></button>`;
+    }).join('');
+  }
+
+  function choose(i){
+    sel=i;cur=i;const c=CITIES[i];
+    input.value=c.name;
+    info.hidden=false;info.innerHTML=c.have?c.note:BUILD_NOTE(c);
+    // The CTA only ever opens what is actually loaded.
+    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore San Ramon ';
+    open(false);render();
+  }
+
+  input.addEventListener('focus',()=>{render(input.value===CITIES[sel].name?'':input.value);open(true);});
+  input.addEventListener('input',()=>{render(input.value);open(true);});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      if(!box.classList.contains('open')){render('');open(true);return;}
+      const at=shown.indexOf(cur),nx=e.key==='ArrowDown'?at+1:at-1;
+      cur=shown[(nx+shown.length)%shown.length];
+      render(input.value===CITIES[sel].name?'':input.value);
+      list.querySelector('.city.cur')?.scrollIntoView({block:'nearest'});
+    } else if(e.key==='Enter'){
+      // Enter inside the field picks a city; it must not also fall through to
+      // the global Enter handler and launch the map.
+      if(box.classList.contains('open')&&shown.length){e.preventDefault();e.stopPropagation();choose(cur);}
+    } else if(e.key==='Escape'){
+      if(box.classList.contains('open')){e.stopPropagation();open(false);input.blur();}
+    }
+  });
+  list.addEventListener('click',e=>{const b=e.target.closest('.city');if(b)choose(+b.dataset.i);});
+  document.addEventListener('click',e=>{if(!box.contains(e.target))open(false);});
+
+  render();choose(0);          // San Ramon selected on load — it is the built dataset
+}
+
+/** Backdrop is the real hex layer, drawn straight to a canvas from the same
+ *  geometry and the same live scores the map uses. Cheaper than a second
+ *  MapLibre instance, and it means the landing page cannot show a city that
+ *  isn't the one behind it. */
+function drawIntroMap(){
+  const cv=document.getElementById('intro-canvas');if(!cv||!HEX)return;
+  const dpr=Math.min(2,devicePixelRatio||1);
+  const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;
+  cv.width=w*dpr;cv.height=h*dpr;
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+  const [[x0,y0],[x1,y1]]=dataBounds();
+  // Web-mercator y so the shape matches the map the user is about to see.
+  // The 180/PI matters: x is longitude in DEGREES, and the raw log-tangent is in
+  // radians, so without it y is 57x too small and LA renders as a 60px smear.
+  const my=lat=>180/Math.PI*Math.log(Math.tan(Math.PI/4+lat*Math.PI/360));
+  const [my0,my1]=[my(y0),my(y1)];
+  // Cover, not contain, and pushed right — the card sits over the left half, so
+  // the city reads as a backdrop rather than a diagram competing with the text.
+  const s=Math.max(w/(x1-x0),h/(my1-my0))*1.15;
+  const cx=w*0.72-(x0+x1)/2*s, cy=h/2+(my0+my1)/2*s;
+  const px=x=>x*s+cx, py=lat=>cy-my(lat)*s;
+  for(const f of HEX.features){
+    const ring=f.geometry.coordinates[0];
+    g.beginPath();g.moveTo(px(ring[0][0]),py(ring[0][1]));
+    for(let i=1;i<ring.length;i++)g.lineTo(px(ring[i][0]),py(ring[i][1]));
+    g.closePath();g.fillStyle=colorFor('score',sc(f.properties));g.fill();
+  }
+}
+
+function dismissIntro(){
+  const el=document.getElementById('intro');if(!el)return;
+  el.classList.add('gone');
+  el.addEventListener('transitionend',()=>el.remove(),{once:true});
+  setTimeout(()=>{if(el.isConnected)el.remove();},900);   // transitionend can be skipped
+  // The map has been alive underneath the whole time; it just needs to be told
+  // the visible viewport is now its own.
+  if(map){map.resize();fitData(map);}
+}
+
+// ------------------------------------------------------- cooling relief sites
+/** Counts come from the file, never from a literal. The pipeline is meant to be
+ *  repointable at any city, and a hardcoded "212 libraries" would keep reading
+ *  as true in Lagos. Categories with no sites are dropped rather than shown as
+ *  an empty row. */
+function buildKinds(){
+  const n={};for(const f of CENTERS.features){const k=f.properties.kind;n[k]=(n[k]||0)+1;}
+  kindOn=new Set(KIND_KEYS.filter(k=>n[k]));
+  document.getElementById('kinds').innerHTML=KIND_KEYS.filter(k=>n[k]).map(k=>`
+    <div class="kind" data-k="${k}">
+      <span class="kdot" style="background:${KIND[k].c}"></span>
+      <div class="kb"><div class="khd"><span class="kn">${KIND[k].label}</span>
+        <span class="kc">${n[k]}</span></div>
+        <div class="kw">${KIND[k].what}</div></div>
+    </div>`).join('');
+  document.getElementById('kinds').addEventListener('click',e=>{
+    const row=e.target.closest('.kind');if(!row)return;
+    const k=row.dataset.k;
+    kindOn.has(k)?kindOn.delete(k):kindOn.add(k);
+    syncKinds();
+  });
+  const disc=document.getElementById('k-disc'),adv=document.getElementById('kadv');
+  disc.onclick=()=>{
+    const open=adv.hidden;adv.hidden=!open;disc.setAttribute('aria-expanded',open);
+    disc.childNodes[2].textContent=open?' Hide the four categories ':' Show the four categories ';
+  };
+  syncKinds();
+}
+function syncKinds(){
+  document.querySelectorAll('.kind').forEach(r=>r.classList.toggle('off',!kindOn.has(r.dataset.k)));
+  const shown=CENTERS.features.filter(f=>kindOn.has(f.properties.kind)).length;
+  document.getElementById('ct-n').textContent=
+    `${shown} of ${CENTERS.features.length} shown`;
+  // Collapsed, the summary line is the only thing saying which categories are
+  // on — so it has to name the ones that are off, not just count them.
+  const off=[...KIND_KEYS].filter(k=>!kindOn.has(k)&&document.querySelector(`.kind[data-k="${k}"]`));
+  document.getElementById('k-dnote').textContent=
+    off.length?`${off.length} hidden`:'all on';
+  styleOp(()=>{
+    map.setFilter('centers',centersFilter());
+    map.setLayoutProperty('centers','visibility',kindOn.size?'visible':'none');
+  });
+}
+
+// ---------------------------------------------------------------- weights UI
+function buildWeights(){
+  document.getElementById('w-rows').innerHTML=W_INPUTS.map(w=>`
+    <div class="wrow">
+      <div class="wtop"><span class="wsw" style="background:${w.swatch}"></span>
+        <span class="wnm">${w.label}${w.est?'<span class="est">est</span>':''}</span>
+        <span class="wval" id="wv-${w.k}" style="color:${lift(w.swatch)}">–</span></div>
+      <input type="range" id="ws-${w.k}" min="0" max="100" step="1"
+        style="--sl:${lift(w.swatch)}" aria-label="${w.label} weight"/>
+    </div>`).join('')+`
+    <div class="wrow">
+      <div class="wtop"><span class="wsw" style="background:${POPU[7]}"></span>
+        <span class="wnm">Population weighting</span>
+        <span class="wval" id="wv-pop" style="color:${lift(POPU[7])}">–</span></div>
+      <input type="range" id="ws-pop" min="0" max="100" step="1"
+        style="--sl:${lift(POPU[7])}" aria-label="Population weighting"/>
+    </div>`;
+  W_INPUTS.forEach(w=>{
+    const el=document.getElementById('ws-'+w.k);
+    el.value=Math.round(W_RAW[w.k]*100);
+    el.addEventListener('input',()=>{W_RAW[w.k]=+el.value/100;applyWeights();});
+  });
+  const pe=document.getElementById('ws-pop');
+  pe.value=Math.round(POPW*100);
+  pe.addEventListener('input',()=>{POPW=+pe.value/100;applyWeights();});
+  document.getElementById('w-reset').onclick=()=>applyPreset('default');
+
+  document.getElementById('presets').innerHTML=PRESETS.map(p=>
+    `<button class="pst" data-id="${p.id}" type="button">${p.name}</button>`).join('');
+  document.getElementById('presets').addEventListener('click',e=>{
+    const b=e.target.closest('.pst');if(b)applyPreset(b.dataset.id);
+  });
+
+  const disc=document.getElementById('w-disc'),adv=document.getElementById('wadv');
+  disc.onclick=()=>{
+    const open=adv.hidden;adv.hidden=!open;disc.setAttribute('aria-expanded',open);
+  };
+  applyWeights();
+}
+
+/** Set every weight at once and push the values back into the sliders, so the
+ *  advanced panel is never showing numbers the model isn't using. */
+function applyPreset(id){
+  const p=PRESETS.find(x=>x.id===id);if(!p)return;
+  W_RAW={...p.w};POPW=p.pop;
+  W_INPUTS.forEach(w=>{document.getElementById('ws-'+w.k).value=Math.round(W_RAW[w.k]*100);});
+  document.getElementById('ws-pop').value=Math.round(POPW*100);
+  applyWeights();
+}
+
+/** Which preset, if any, describes the weights in force. Compares the
+ *  normalised weights so "35/25/25/15" and "70/50/50/30" count as the same
+ *  model — they are. */
+function matchPreset(){
+  const W=normW();
+  return PRESETS.find(p=>{
+    const s=W_INPUTS.reduce((a,{k})=>a+(p.w[k]||0),0);
+    return Math.abs(POPW-p.pop)<5e-3 &&
+      W_INPUTS.every(({k})=>Math.abs(W[k]-p.w[k]/s)<5e-3);
+  })||null;
+}
+
+/** One entry point for "the weights changed", so the map, the ranked list, the
+ *  legend copy and any open detail panel can never show three different models.
+ *  Fixed bug 12 was exactly this class of failure at a smaller scale. */
+function applyWeights(){
+  rescore();
+  const W=normW(),def=isDefaultW();
+  W_INPUTS.forEach(w=>document.getElementById('wv-'+w.k).textContent=Math.round(W[w.k]*100)+'%');
+  document.getElementById('wv-pop').textContent=Math.round(POPW*100)+'%';
+  // The multiplier spans (1-POPW) .. 1, so the busiest hex outweighs the emptiest
+  // by 1/(1-POPW). Stated as that ratio because "0.45" means nothing to a reader.
+  document.getElementById('w-pop').textContent=
+    POPW<0.02 ? 'population ignored — every hex counts equally'
+  : POPW>0.98 ? 'the emptiest hex scores zero whatever its heat'
+  : `the most-populated hex counts ${(1/(1-POPW)).toFixed(1)}× the least`;
+  const st=document.getElementById('w-state');
+  const pre=matchPreset();
+  st.textContent=def?'pipeline defaults':pre?pre.name.toLowerCase():'your weights';
+  st.classList.toggle('custom',!def);
+  document.getElementById('w-reset').disabled=def;
+  document.querySelectorAll('.pst').forEach(b=>b.classList.toggle('on',!!pre&&b.dataset.id===pre.id));
+  document.getElementById('w-why').innerHTML=pre?pre.why
+    :'<b>Your own weighting.</b> Not one of the presets — the map, the ranked list and every '
+    +'ROI figure below are running on the numbers you set.';
+  document.getElementById('w-dnote').textContent=
+    W_INPUTS.map(w=>Math.round(W[w.k]*100)+'%').join(' · ');
+  // The caption for the priority layer is generated from the weights in force,
+  // so it can't sit there quoting 35% while the slider says 60%.
+  LAYERS.score.cap=`Composite of surface heat (${Math.round(W.heat*100)}%), missing canopy `
+    +`(${Math.round(W.green*100)}%), no A/C access (${Math.round(W.ac*100)}%), share aged 65+ `
+    +`(${Math.round(W.age65*100)}%)`
+    +(W.access>0.005?` and walk to relief (${Math.round(W.access*100)}%)`:'')
+    +`, then weighted by the population exposed. `
+    +(def?'These are the weights pipeline/config.py shipped with. ':'Re-scored live in your browser. ')
+    // The "if the whole city were freezing, everything should be low priority"
+    // objection. It is correct, and the answer is that this layer never claims
+    // otherwise: 100 means "first in line here", not "hot in absolute terms".
+    // Surface temperature is the layer that answers the absolute question.
+    +'This is a ranking within this city, not an absolute hazard level — 100 means first '
+    +'in line here, not hot by world standards. For absolute values use the Surface '
+    +'temperature layer. Deeper = greater need for cooling investment.';
+  if(current==='score')setLayer('score');     // repaints AND refreshes the caption
+  buildRank();
+  if(selId!=null)selectHex(selId,false);
+}
+
+/** Units are a rendering choice, so switching them only re-renders. Nothing is
+ *  converted in place and nothing is recomputed — the model, the ROI arithmetic
+ *  and every stored value stay metric, because that is how the WRI cooling
+ *  coefficient, the 40 m² per tree and the 4.8 km/h walk pace are all defined.
+ *  Convert on the way out or you end up with a $500 tree priced per square foot. */
+/** How big one hexagon actually is, in whichever units are showing. Read off the
+ *  per-hex area_m2 rather than assumed from the H3 resolution — the whole point
+ *  of carrying area_m2 is that hex area varies with latitude (fixed bug 11). */
+function updateScaleNote(){
+  const el=document.getElementById('foot-scale');
+  if(!el||!HEX)return;
+  const a=HEX.features.map(f=>areaOf(f.properties)).sort((x,y)=>x-y);
+  const med=a[a.length>>1];
+  el.textContent=`Each hexagon covers about ${fArea(med)}. `;
+}
+
+function setUnits(u){
+  UNITS=u;
+  try{localStorage.setItem('ce-units',u);}catch(_){}    // private mode: not worth failing over
+  document.querySelectorAll('#units button').forEach(b=>b.classList.toggle('on',b.dataset.u===u));
+  updateScaleNote();
+  setLayer(current);                                    // legend endpoints are formatted
+  buildRank();
+  if(selId!=null)selectHex(selId,false);
+}
+
+function wireUI(){
+  document.getElementById('go-home').onclick=()=>{
+    // Keep ?flat=1 (it is a rehearsal mode, not a destination) and drop ?go /
+    // ?data, both of which exist precisely to skip the screen we are going to.
+    const q=new URLSearchParams(location.search);
+    q.delete('go');q.delete('data');
+    location.href=location.pathname+(q.toString()?'?'+q:'');
+  };
+  document.getElementById('units').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(b)setUnits(b.dataset.u);
+  });
+  document.getElementById('layers').addEventListener('click',e=>{
+    const b=e.target.closest('.layer');if(!b)return;
+    holcOn=false;accessOn=false;syncToggles();setLayer(b.dataset.k);
+  });
+  document.getElementById('tg-holc').onclick=()=>{holcOn=!holcOn;if(holcOn){accessOn=false;setLayer('holc');}else setLayer('score');syncToggles();};
+  document.getElementById('tg-access').onclick=()=>{accessOn=!accessOn;if(accessOn){holcOn=false;setLayer('access');}else setLayer('score');syncToggles();};
+  document.getElementById('d-close').onclick=()=>{
+    document.getElementById('detail').classList.remove('show');
+    selId=null;paintSel();
+    document.querySelectorAll('.row').forEach(r=>r.classList.remove('sel'));
+  };
+}
+
+function syncToggles(){
+  document.getElementById('tg-holc').classList.toggle('on',holcOn);
+  document.getElementById('tg-access').classList.toggle('on',accessOn);
+}
+
+function buildRank(){
+  // LIVE.order is already sorted by the weights in force — never by the
+  // pipeline's frozen `rank`, or the list would contradict the map the moment
+  // a weight moved.
+  const top=LIVE.order.slice(0,25);
+  const el=document.getElementById('rank');el.innerHTML='';
+  top.forEach(f=>{const p=f.properties,s=sc(p);
+    const row=document.createElement('div');row.className='row';row.dataset.id=p.id;
+    if(p.id===selId)row.classList.add('sel');
+    const c=colorFor('score',s);
+    row.innerHTML=`<div class="badge" style="background:${c};color:${inkOn(c)}">${rk(p)}</div>
+      <div><div class="nm">${nameOf(p)}</div><div class="sub">${fTemp(p.lst)} · ${p.green.toFixed(0)}% canopy · ${fMin(p.access_min)} to relief</div></div>
+      <div class="sc" style="color:${lift(c)}">${s.toFixed(0)}</div>`;
+    row.onclick=()=>selectHex(p.id,true);el.appendChild(row);});
+}
+
+function selectHex(id,fly){
+  selId=id;const f=HEX.features.find(x=>x.properties.id===id);if(!f)return;const p=f.properties;
+  paintSel();
+  document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',+r.dataset.id===id));
+  const s=sc(p),r=rk(p);
+  const badge=document.getElementById('d-badge'),bc=colorFor('score',s);
+  badge.textContent=r;badge.style.background=bc;badge.style.color=inkOn(bc);
+  document.getElementById('d-name').textContent=nameOf(p);
+  document.getElementById('d-rank').textContent=
+    `Priority #${r} of ${HEX.features.length} · score ${s.toFixed(0)}`+(isDefaultW()?'':' · your weights');
+  renderBreakdown(p,s);
+  const m=[
+    ['Surface heat','lst',p.lst,LAYERS.lst.fmt(p.lst),false],
+    ['Tree canopy','green',p.green,LAYERS.green.fmt(p.green),false],
+    ['Population','pop',p.pop,Math.round(p.pop).toLocaleString(),false],
+    ['Age 65+','pct65',p.pct65,LAYERS.pct65.fmt(p.pct65),false],
+    ['A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
+    ['Walk to cooling','access',p.access_min,`${fMin(p.access_min)} · ${fDist(p.access_km)}`,true],
+  ];
+  document.getElementById('d-metrics').innerHTML=m.map(([lab,k,v,disp,est])=>{
+    const t=norm(k,v);
+    return `<div class="metric"><div class="top"><span>${lab}${est?'<span class="est">est</span>':''}</span><span>${disp}</span></div>
+      <div class="track"><div class="fill" style="width:${Math.max(2,t*100).toFixed(0)}%;background:${lift(colorFor(k,v),130)}"></div></div></div>`;
+  }).join('');
+  // ROI init
+  const slider=document.getElementById('roi-slider');
+  slider.min=Math.round(p.green);slider.max=45;
+  slider.value=Math.min(45,Math.round(p.green)+12);
+  slider.oninput=()=>updateROI(p);
+  updateROI(p);
+  document.getElementById('detail').classList.add('show');
+  if(fly&&map){const c=f.geometry.coordinates[0];let lon=0,lat=0;c.forEach(pt=>{lon+=pt[0];lat+=pt[1];});
+    lon/=c.length;lat/=c.length;map.flyTo({center:[lon,lat],zoom:12.4,duration:850,essential:true});}
+}
+
+/** Show the arithmetic, not just the answer.
+ *
+ *  For the selected hex: what each input measured, where that lands on the
+ *  city's 0–1 scale, what the weight turns it into, and how the four add up to
+ *  the risk that the population multiplier then scales. A judge asking "why is
+ *  this one first?" gets the sum, term by term, instead of an assurance. */
+function renderBreakdown(p,score){
+  const W=normW();
+  const nv=k=>{const[lo,hi]=vals[k];return Math.max(0,Math.min(1,(p[k]-lo)/(hi-lo)));};
+  const parts=W_INPUTS.map(w=>{
+    const raw=nv(w.prop), t=w.invert?1-raw:raw;
+    return {...w,t,pts:W[w.k]*t,
+      shown:w.show?w.show(p[w.prop]):w.prop==='lst'?fTemp(p.lst):p[w.prop].toFixed(0)+'%'};
+  });
+  const base=parts.reduce((a,b)=>a+b.pts,0);
+  const mult=(1-POPW)+POPW*nv('pop');
+  const tot=Math.max(1e-9,base);
+  document.getElementById('d-breakdown').innerHTML=`
+    <div class="stack">${parts.map(x=>
+      `<i style="width:${(x.pts/tot*100).toFixed(2)}%;background:${x.swatch}" title="${x.label}"></i>`).join('')}</div>
+    <table><tbody>
+      ${parts.map(x=>`<tr>
+        <td class="k"><i style="background:${x.swatch}"></i>${x.label}</td>
+        <td class="n">${x.shown}</td>
+        <td class="n">${x.t.toFixed(2)} × ${W[x.k].toFixed(2)}</td>
+        <td class="p">${x.pts.toFixed(3)}</td></tr>`).join('')}
+      <tr class="sum"><td class="k">Risk before population</td><td class="n"></td><td class="n"></td>
+        <td class="p">${base.toFixed(3)}</td></tr>
+      <tr><td class="k">× population</td><td class="n">${fInt(p.pop)}</td>
+        <td class="n">${nv('pop').toFixed(2)} of max</td><td class="p">${mult.toFixed(3)}</td></tr>
+    </tbody></table>
+    <div class="eq">priority ${(base*mult).toFixed(3)} → rescaled across all ${HEX.features.length} hexes → <b>score ${score.toFixed(1)}</b></div>`;
+}
+
+function updateROI(p){
+  const slider=document.getElementById('roi-slider');
+  const target=+slider.value, delta=Math.max(0,target-p.green);
+  const tempDrop=delta/10*0.3;                     // WRI: +10% canopy ≈ −0.3°C
+  const area=areaOf(p);
+  const trees=Math.round(delta/100*area/TREE_M2);
+  const cost=trees*COST_TREE;
+  // Nobody is cooled by an intervention you haven't made. Reading a flat
+  // "15,759 residents cooled" while the slider sits at the hex's current canopy
+  // and the cost reads $0 is the one number on this panel that looked broken —
+  // it was the only figure that never responded to the slider.
+  const acts=delta>0;
+  const people=acts?Math.round(p.pop):0;
+  const seniors=acts?Math.round(p.pop*p.pct65/100):0;
+  const perPerson=acts&&p.pop?cost/p.pop:0;
+  const money=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1000?'$'+Math.round(v/1000)+'k':'$'+Math.round(v);
+  document.getElementById('roi-target').textContent=target;
+  document.getElementById('roi-temp').textContent=acts?'−'+fTempD(tempDrop):fTempD(0);
+  document.getElementById('roi-people').textContent=fInt(people);
+  document.getElementById('roi-seniors').textContent=fInt(seniors);
+  document.getElementById('roi-cost').textContent=money(cost);
+  document.getElementById('roi-per').textContent=money(perPerson);
+  document.getElementById('roi-note').textContent=acts
+    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents, ${fInt(seniors)} of whom are aged 65 or over.`
+    : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
+  // What the city can actually do here, as opposed to what the model wants.
+  const fm=p.street_m||0;
+  const capacity=Math.floor(fm*2/TREE_SPACING_M);
+  const feas=document.getElementById('roi-feas');
+  if(!fm){
+    feas.innerHTML='<b>No mapped public street frontage in this hex.</b> Any planting here '
+      +'would be on private ground — an incentive, permission or partnership question, '
+      +'not a public-works one.';
+  }else{
+    const enough=capacity>=trees;
+    const km=(fm/1000);
+    feas.innerHTML=`<b>${(km*(isImp()?0.621371:1)).toFixed(1)} ${isImp()?'mi':'km'}</b> of city street `
+      +`frontage here — room for about <b>${fInt(capacity)}</b> street trees at `
+      +`${TREE_SPACING_M} m spacing, both sides. `
+      +(acts
+        ? (enough
+           ? `<span class="ok">The ${fInt(trees)} trees above fit within public right-of-way.</span>`
+           : `<span class="gap">Only ${fInt(capacity)} of the ${fInt(trees)} trees above fit in `
+             +`public right-of-way — the remaining ${fInt(trees-capacity)} would need private `
+             +`land.</span>`)
+        : 'Drag the slider to compare against a planting target.');
+  }
+  document.getElementById('roi-src').innerHTML=
+     '<b>Where these numbers come from</b>'
+    +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
+    +'about +10% canopy cover per −0.3 °C of afternoon air temperature.</div>'
+    +`<div><b>Tree count.</b> ${TREE_M2} m² of crown per mature street tree, applied to this `
+    +'hex&rsquo;s own measured area.</div>'
+    +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
+    +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
+    +'roughly three years of establishment care. Real unit costs vary widely with species, site '
+    +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
+    +`<div><b>Street frontage.</b> Metres of residential, tertiary and unclassified road `
+    +`centreline inside this hex, from OpenStreetMap. Capacity assumes both sides at `
+    +`${TREE_SPACING_M} m spacing and takes no account of driveways, utilities, sight lines `
+    +`or existing trees, so read it as an upper bound on what the public right-of-way could `
+    +`hold — not a planting plan.</div>`;
+}
+
+function wireHover(){
+  const pop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:8});
+  map.on('mousemove','fill',e=>{map.getCanvas().style.cursor='pointer';const p=e.features[0].properties;
+    // Live score/rank, not the frozen properties MapLibre hands back — otherwise
+    // the tooltip would quietly disagree with the hex it is pointing at.
+    const s=sc(p),r=rk(p);
+    pop.setLngLat(e.lngLat).setHTML(
+      `<b>${nameOf(p)}</b>
+       <div class="tt-row"><span>Priority</span><span>${s==null?'–':s.toFixed(0)+' · #'+r}</span></div>
+       <div class="tt-row"><span>Surface heat</span><span>${fTemp(+p.lst)}</span></div>
+       <div class="tt-row"><span>Canopy</span><span>${(+p.green).toFixed(0)}%</span></div>
+       <div class="tt-row"><span>Walk to cooling</span><span>${fMin(+p.access_min)}</span></div>`).addTo(map);});
+  map.on('mouseleave','fill',()=>{map.getCanvas().style.cursor='';pop.remove();});
+  map.on('click','fill',e=>{
+    // A centre sits on top of the hex it is in, and both layers get the click.
+    // Let the marker win — you clicked the dot, not the 0.8 km² under it.
+    if(map.queryRenderedFeatures(e.point,{layers:['centers']}).length)return;
+    selectHex(e.features[0].properties.id,false);
+  });
+
+  // "What actually IS a cooling center?" answered on the object itself, with the
+  // site's real OSM name, so it is visibly a place and not a generic dot.
+  const cpop=new maplibregl.Popup({closeButton:true,closeOnClick:true,offset:10});
+  map.on('click','centers',e=>{
+    const p=e.features[0].properties,k=KIND[p.kind]||{c:'#64748b',label:p.kind,what:''};
+    cpop.setLngLat(e.features[0].geometry.coordinates).setHTML(
+      `<b>${p.name||k.label}</b>
+       <div class="tt-kind"><i style="background:${k.c}"></i>${k.label}</div>
+       <div class="tt-what">${k.what}</div>`).addTo(map);
+  });
+  map.on('mouseenter','centers',()=>{map.getCanvas().style.cursor='pointer';});
+}
+</script>
+</body>
+</html>
