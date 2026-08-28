@@ -25,8 +25,8 @@ ACS_URL = f"https://api.census.gov/data/{C.ACS_YEAR}/acs/acs5"
 BG_ZIP = (f"https://www2.census.gov/geo/tiger/GENZ{C.ACS_YEAR}/shp/"
           f"cb_{C.ACS_YEAR}_{C.STATE_FIPS}_bg_500k.zip")
 BG_CACHE = C.CACHE / f"bg_{C.STATE_FIPS}.zip"
-ACS_CSV = C.DATA / "acs.csv"          # committed fallback
-OUT_CSV = C.DATA / "census.csv"
+ACS_CSV = C.ACS_FILE                  # committed fallback
+OUT_CSV = C.CENSUS_CSV
 
 POP = "B01001_001E"
 INCOME = "B19013_001E"
@@ -198,9 +198,13 @@ def main():
     log(f"  ac_est {out.ac_est.min():.0f}–{out.ac_est.max():.0f}% (MODELED)")
     log(f"  wrote {OUT_CSV.relative_to(C.ROOT)}")
 
-    # LA County is ~9.85M; a wild miss means the area weighting is wrong.
-    if not (5e6 < total < 12e6):
-        log(f"  WARNING: county total {total:,.0f} looks off", file=sys.stderr)
+    # A wild miss means the area weighting is wrong. The band is per-county in
+    # config — but note this total is only the part of the county the grid
+    # covers, so it is a floor check, not an equality check.
+    lo, hi = C.COUNTY_POP_RANGE
+    if total > hi:
+        log(f"  WARNING: total {total:,.0f} exceeds county upper bound {hi:,.0f} "
+            f"— area weighting is double-counting", file=sys.stderr)
 
 
 if __name__ == "__main__":

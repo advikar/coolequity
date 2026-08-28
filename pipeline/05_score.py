@@ -57,8 +57,7 @@ def load():
     props = pd.DataFrame([f["properties"] for f in grid["features"]])
 
     df = props
-    for name in ("satellite", "census", "overlays"):
-        path = C.DATA / f"{name}.csv"
+    for path in (C.SAT_CSV, C.CENSUS_CSV, C.OVERLAYS_CSV):
         if not path.exists():
             raise SystemExit(
                 f"\nMissing {path.relative_to(C.ROOT)}.\n"

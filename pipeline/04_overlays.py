@@ -28,7 +28,7 @@ import requests
 
 import config as C
 
-OUT_CSV = C.DATA / "overlays.csv"
+OUT_CSV = C.OVERLAYS_CSV
 UA = {"User-Agent": "CoolEquity/0.1 (hackathon heat-equity mapper)"}
 
 # south,west,north,east — Overpass's bbox order, not GeoJSON's.
@@ -50,11 +50,23 @@ CENTERS_OQL = f"""[out:json][timeout:{C.OVERPASS_TIMEOUT_S}];
 );
 out center;"""
 
-PLACES_OQL = f"""[out:json][timeout:{C.OVERPASS_TIMEOUT_S}];
-(
-  node["place"~"^(neighbourhood|suburb|quarter|borough|city|town|village)$"]["name"]({OQL_BBOX});
-);
-out center;"""
+_PLACE_NODES = (
+    f'  node["place"~"^(neighbourhood|suburb|quarter|borough|city|town|village)$"]'
+    f'["name"]({OQL_BBOX});\n'
+)
+# Named subdivision and park polygons. `out geom` rather than `out center`,
+# because the point of these is that a hex can fall INSIDE one — a centroid
+# would put every hex in a long canyon subdivision nearer some other centroid.
+_NAMED_AREAS = (
+    f'  way["landuse"="residential"]["name"]({OQL_BBOX});\n'
+    f'  way["leisure"="park"]["name"]({OQL_BBOX});\n'
+)
+PLACES_OQL = (
+    f"[out:json][timeout:{C.OVERPASS_TIMEOUT_S}];\n(\n"
+    + _PLACE_NODES
+    + (_NAMED_AREAS if getattr(C, "NAME_FROM_LANDUSE", False) else "")
+    + ");\nout geom;"
+)
 
 # NB: `out center`, never `out ... tags`. The `tags` verbosity prints ids and
 # tags and *drops the coordinates*, including on plain nodes — which fails
@@ -183,16 +195,40 @@ def fetch_centers():
 
 
 def fetch_places():
-    feats = []
-    for el in check_coords(overpass(PLACES_OQL, "place names"), "places"):
-        pt = osm_point(el)
+    """Place nodes, plus (optionally) named subdivision/park polygons.
+
+    Mixed geometry on purpose: a node becomes a Point and is matched by
+    proximity, a closed way becomes a Polygon and is matched by containment
+    first. Ways that are not closed rings are dropped rather than guessed at.
+    """
+    feats, pts, polys = [], 0, 0
+    for el in overpass(PLACES_OQL, "place names"):
         tags = el.get("tags", {})
-        feats.append({
-            "type": "Feature",
-            "properties": {"name": tags["name"], "place": tags.get("place", "")},
-            "geometry": {"type": "Point", "coordinates": [round(pt[0], 5),
-                                                          round(pt[1], 5)]},
-        })
+        name = tags.get("name")
+        if not name:
+            continue
+        geom = el.get("geometry")
+        if el["type"] == "way" and geom and len(geom) >= 4:
+            ring = [[round(p["lon"], 5), round(p["lat"], 5)] for p in geom]
+            if ring[0] != ring[-1]:
+                ring.append(ring[0])            # close it, or shapely refuses
+            if len(ring) < 4:
+                continue
+            g = {"type": "Polygon", "coordinates": [ring]}
+            polys += 1
+        else:
+            pt = osm_point(el)
+            if pt is None:
+                continue
+            g = {"type": "Point", "coordinates": [round(pt[0], 5), round(pt[1], 5)]}
+            pts += 1
+        feats.append({"type": "Feature", "geometry": g, "properties": {
+            "name": name,
+            "place": tags.get("place", ""),
+            "kind": "park" if tags.get("leisure") == "park" else
+                    "subdivision" if tags.get("landuse") == "residential" else "place",
+        }})
+    log(f"    places: {pts} point anchors, {polys} named areas")
     return {"type": "FeatureCollection", "features": feats}
 
 
@@ -267,34 +303,79 @@ def octant(dx, dy):
 
 
 def hex_names(hexes, places_gj):
-    """Name each hex after the nearest OSM place node.
+    """Name each hex after the place it is in, or failing that the nearest one.
 
-    Dozens of hexes fall inside one neighborhood, so the nearest hex keeps the
-    bare name and the rest get a compass suffix — "Van Nuys" vs "Van Nuys SE".
-    The ranked list is read aloud in the demo; two identical rows would be worse
-    than a slightly clumsy one.
+    Two passes, because the anchors are two different kinds of thing:
+
+      1. CONTAINMENT. If the hex centroid falls inside a named area — a
+         subdivision or a park — it takes that name. Where areas nest (a park
+         inside a subdivision) the SMALLEST containing one wins, since that is
+         the more specific answer.
+      2. PROXIMITY. Anything left over takes the nearest anchor of any kind.
+         This is the only pass LA ever used, because LA's anchors are all point
+         nodes.
+
+    Dozens of hexes still fall inside one name, so the closest hex to the
+    anchor keeps the bare name and the rest get a compass suffix — "Gale Ranch"
+    vs "Gale Ranch SE". The ranked list is read aloud in the demo; two identical
+    rows would be worse than a slightly clumsy one.
     """
     import geopandas as gpd
     from shapely.geometry import shape
 
     pl = gpd.GeoDataFrame(
-        {"pname": [f["properties"]["name"] for f in places_gj["features"]]},
+        {"pname": [f["properties"]["name"] for f in places_gj["features"]],
+         "kind": [f["properties"].get("kind", "place")
+                  for f in places_gj["features"]]},
         geometry=[shape(f["geometry"]) for f in places_gj["features"]],
         crs="EPSG:4326",
     ).to_crs(C.RASTER_CRS)
 
     cent = gpd.GeoDataFrame({"h3": hexes["h3"].values},
                             geometry=hexes.geometry.centroid, crs=hexes.crs)
-    near = gpd.sjoin_nearest(cent, pl, how="left", distance_col="m")
-    near = near.drop_duplicates("h3").reset_index(drop=True)
 
-    px = pl.geometry.x.values[near["index_right"].values]
-    py = pl.geometry.y.values[near["index_right"].values]
-    near["oct"] = [octant(x - ax, y - ay) for x, y, ax, ay
-                   in zip(near.geometry.x, near.geometry.y, px, py)]
+    areas = pl[pl.geometry.geom_type.isin(("Polygon", "MultiPolygon"))].copy()
+    assigned = {}
+    if len(areas):
+        areas["a"] = areas.geometry.area
+        hit = gpd.sjoin(cent, areas[["pname", "kind", "a", "geometry"]],
+                        how="inner", predicate="within")
+        # Smallest containing area wins — the more specific answer.
+        hit = hit.sort_values("a").drop_duplicates("h3", keep="first")
+        assigned = dict(zip(hit["h3"], hit["pname"]))
+        log(f"  names: {len(assigned)}/{len(cent)} hexes inside a named area")
+
+    # Parks are excluded from the PROXIMITY pass, though not from containment.
+    # There are 49 of them in 52 km2 and they are small, so on nearest-anchor
+    # they beat the subdivisions almost everywhere and every third hex comes out
+    # "<something> Park E 5". A hex sitting in a park may fairly be named for it;
+    # a hex of houses near one should be named for the neighbourhood.
+    left = cent[~cent["h3"].isin(assigned)]
+    if len(left):
+        prox = pl[pl["kind"] != "park"]
+        if not len(prox):
+            prox = pl
+        near = gpd.sjoin_nearest(left, prox[["pname", "geometry"]],
+                                 how="left", distance_col="m")
+        near = near.drop_duplicates("h3")
+        assigned.update(dict(zip(near["h3"], near["pname"])))
+        log(f"  names: {len(left)} more by nearest "
+            f"{'non-park ' if len(prox) < len(pl) else ''}anchor")
+
+    # Compass suffixes, computed against the anchor the hex was matched to.
+    anchor = pl.dissolve(by="pname").geometry.centroid
+    rows = []
+    for h3c, geom in zip(cent["h3"], cent.geometry):
+        nm = assigned.get(h3c)
+        if nm is None or nm not in anchor.index:
+            rows.append((h3c, nm or "Unnamed", 0.0, "N"))
+            continue
+        a = anchor.loc[nm]
+        rows.append((h3c, nm, geom.distance(a), octant(geom.x - a.x, geom.y - a.y)))
+    df = pd.DataFrame(rows, columns=["h3", "pname", "m", "oct"])
 
     labels, used = {}, set()
-    for pname, grp in near.sort_values("m").groupby("pname", sort=False):
+    for pname, grp in df.sort_values("m").groupby("pname", sort=False):
         for i, (_, row) in enumerate(grp.iterrows()):
             base = pname if i == 0 else f"{pname} {row['oct']}"
             label, n = base, 2
@@ -316,8 +397,11 @@ def main():
 
     centers = cached(C.CENTERS_FILE, fetch_centers, "centers", refresh)
     places = cached(C.PLACES_FILE, fetch_places, "places", refresh)
+    # Gated on the URL as well as the country: San Ramon is in the USA and still
+    # has no HOLC map, because HOLC surveyed built-up cities in 1935-40 and San
+    # Ramon was farmland. No URL means no layer, rather than borrowed grades.
     holc = (cached(C.HOLC_FILE, fetch_holc, "HOLC", refresh)
-            if C.COUNTRY == "USA" else None)
+            if C.COUNTRY == "USA" and C.HOLC_URL else None)
 
     if not centers or not centers["features"]:
         raise SystemExit(
@@ -340,7 +424,9 @@ def main():
         log(f"  HOLC: {got}/{len(out)} hexes graded {share}")
     else:
         out["holc"] = None
-        log(f"  HOLC: skipped (COUNTRY={C.COUNTRY} — US-only layer)")
+        why = ("no HOLC map exists for this city" if C.COUNTRY == "USA"
+               else f"COUNTRY={C.COUNTRY} — US-only layer")
+        log(f"  HOLC: skipped ({why})")
 
     mins, km = access_time(hexes, centers)
     out["access_min"] = np.round(mins, 1)

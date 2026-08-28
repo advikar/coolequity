@@ -25,9 +25,9 @@ import config as C
 warnings.filterwarnings("ignore", category=RuntimeWarning)   # all-NaN slice medians
 
 STAC_URL = "https://planetarycomputer.microsoft.com/api/stac/v1"
-LST_TIF = C.DATA / "lst.tif"
-NDVI_TIF = C.DATA / "ndvi.tif"
-OUT_CSV = C.DATA / "satellite.csv"
+LST_TIF = C.LST_TIF
+NDVI_TIF = C.NDVI_TIF
+OUT_CSV = C.SAT_CSV
 
 
 # --------------------------------------------------------------------- helpers
@@ -83,13 +83,27 @@ def zonal_mean(arr, transform, gdf):
 
 # ------------------------------------------------------------------ STAC loads
 def search(catalog, collection, extra_query=None):
+    """Scenes inside the summer window of EACH configured year.
+
+    One search per year, then concatenate — never a single continuous range
+    across years. A 2022-06-01/2024-09-15 range would happily return January
+    2023, and a thermal median containing winter scenes is not a summer surface
+    temperature. Costs two extra HTTP round trips and removes a whole class of
+    silent wrongness.
+    """
     q = {"eo:cloud_cover": {"lt": C.MAX_CLOUD_PCT}}
     if extra_query:
         q.update(extra_query)
-    items = list(catalog.search(
-        collections=[collection], bbox=C.BBOX,
-        datetime=f"{C.SUMMER_START}/{C.SUMMER_END}", query=q,
-    ).items())
+    mm_lo, mm_hi = C.SUMMER_MMDD
+    items, seen = [], set()
+    for yr in C.SUMMER_YEARS:
+        for it in catalog.search(
+            collections=[collection], bbox=C.BBOX,
+            datetime=f"{yr}-{mm_lo}/{yr}-{mm_hi}", query=q,
+        ).items():
+            if it.id not in seen:
+                seen.add(it.id)
+                items.append(it)
     # Least cloudy first, then cap — bounded runtime, best pixels.
     items.sort(key=lambda i: i.properties.get("eo:cloud_cover", 100))
     items = items[: C.MAX_SCENES]
@@ -198,7 +212,8 @@ def ndvi_to_canopy(ndvi):
 
 # ------------------------------------------------------------------------ main
 def main():
-    log(f"Phase 2 — satellite | {C.CITY} | {C.SUMMER_START}..{C.SUMMER_END}")
+    yrs = "/".join(str(y) for y in C.SUMMER_YEARS)
+    log(f"Phase 2 — satellite | {C.CITY} | {C.SUMMER_MMDD[0]}..{C.SUMMER_MMDD[1]} of {yrs}")
     gdf = read_grid()
 
     # --cached skips the network entirely: recalibrating the NDVI mapping or

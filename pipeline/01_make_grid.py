@@ -14,14 +14,11 @@ from shapely.geometry import Polygon, shape
 
 import config as C
 
-# LA County. Clipping matters: a raw bbox over the LA basin is ~20% Santa Monica
-# Bay, and ocean hexes carry no population but do drag the LST normalisation.
-TIGERWEB = (
-    "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/"
-    "MapServer/13/query?where=GEOID%3D%2706037%27&outFields=GEOID,NAME&"
-    "returnGeometry=true&outSR=4326&f=geojson"
-)
-BOUNDARY_FILE = C.DATA / "boundary.geojson"
+# Clip polygon, from config so this file holds no city of its own. It mattered
+# for LA because a raw basin bbox is ~20% Santa Monica Bay; it matters more for
+# San Ramon, whose bbox corners sit in Danville, Dublin and open ranch land.
+TIGERWEB = C.CLIP_URL
+BOUNDARY_FILE = C.BOUNDARY_FILE
 
 
 def load_boundary():

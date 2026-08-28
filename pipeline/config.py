@@ -7,24 +7,54 @@ point of the project, so nothing else in the pipeline should hardcode "Los Angel
 from pathlib import Path
 
 # ---------------------------------------------------------------- geography
-CITY = "Los Angeles"
+CITY = "San Ramon"
+SLUG = "sanramon"               # names every artefact, so two cities can coexist
 COUNTRY = "USA"                 # gates the US-only layers (HOLC, ACS)
 
-# west, south, east, north — the LA basin, trimmed to avoid mostly-ocean hexes.
-BBOX = (-118.67, 33.70, -118.15, 34.34)
+# west, south, east, north. NOT hand-drawn: this is the exact bounding box of the
+# TIGERweb incorporated-place polygon for San Ramon city (GEOID 0668378), read
+# off the geometry rather than eyeballed off a map. The polygon itself clips the
+# grid in 01, so the hexes follow the real city limits, which are ragged — San
+# Ramon annexed in pieces and has Dougherty Valley hanging off the east side.
+BBOX = (-122.0050, 37.7213, -121.8770, 37.7951)
 
-# res 8 ~0.74 km2 (city detail), res 7 ~5.16 km2 (fewer cells, smoother map).
-# Spec calls for 8; drop to 7 if the browser lags with the real cell count.
-H3_RES = 8
+# San Ramon is 52.0 km2. At res 8 (0.74 km2) that is 71 hexes — statistically
+# tidy, since the city holds ~55 census block groups, but far too coarse to look
+# like a map. Res 9 (0.105 km2, ~370 m across) gives ~490 hexes and a real
+# picture of where the heat sits.
+#
+# The trade is documented rather than hidden: Landsat and Sentinel-2 genuinely
+# resolve at this size, so heat and canopy are per-hex measurements. The census
+# fields cannot be — a res-9 hex is roughly a ninth of a block group, so
+# population, age and income are areally interpolated DOWNWARD and vary smoothly
+# across neighbours. Real data, coarser than the grid drawn over it. Said out
+# loud in the app and in the README.
+H3_RES = 9
 
 # ---------------------------------------------------------------- scoring
 # Section 7 of the build spec. Exposed here so they're tunable and defensible
 # when a judge asks "why 35%?".
+# LA weighted A/C access at 25%. San Ramon does not, and the reason is a
+# property of the data rather than a preference.
+#
+# A/C access is modelled by ranking each hex's median household income WITHIN the
+# city and mapping that percentile onto AC_PCT_MIN..AC_PCT_MAX. In LA that spans
+# a genuine spread — block-group medians run from about $20k to $250k, so the
+# percentile is carrying real signal. San Ramon's block-group medians are narrow
+# and uniformly high, so the same percentile stretch would take a city where
+# essentially everyone can afford air conditioning and paint a 35%-to-95% spread
+# across it. That is not a measurement with error bars; it is variation invented
+# by the transform, and it would then carry a quarter of the score.
+#
+# So the layer is still BUILT from real ACS income and can still be viewed, and
+# it is scored at zero. The rest is LA's ratio renormalised: 35/25/15 of 0.75
+# becomes 0.4667/0.3333/0.20, rounded to sum to exactly 1. Every input the San
+# Ramon score actually uses is therefore measured, not modelled.
 WEIGHTS = {
-    "heat":     0.35,   # heat_n
-    "green":    0.25,   # (1 - greenness_n)
-    "ac":       0.25,   # (1 - ac_access_n)
-    "age65":    0.15,   # age65_n
+    "heat":     0.45,   # heat_n
+    "green":    0.33,   # (1 - greenness_n)
+    "ac":       0.00,   # (1 - ac_access_n)  -- built, not scored; see above
+    "age65":    0.22,   # age65_n
 }
 # priority = base_risk * (POP_FLOOR + POP_WEIGHT * population_n)
 POP_FLOOR = 0.55
@@ -48,15 +78,34 @@ AGE65_SHRINK_POP = 100.0
 
 # ---------------------------------------------------------------- satellite
 # Summer window — LST is only meaningful at peak heat.
-SUMMER_START = "2023-06-01"
-SUMMER_END = "2023-09-15"
+#
+# LA composited one summer because one summer was plenty: 20 Landsat scenes
+# cleared the 20% cloud filter over the basin. Over San Ramon's much smaller
+# footprint, summer 2023 yields exactly ONE — and a single scene is not a median,
+# it is one afternoon, with whatever haze and whatever synoptic weather that day
+# happened to bring.
+#
+# So the window is three summers rather than one, at the SAME strict cloud
+# filter: 2022-2024 gives 35 Landsat and 60 Sentinel-2 scenes. Loosening the
+# cloud threshold instead (11 scenes at <50%) would have bought quantity with
+# quality, which is the wrong trade for a thermal median.
+#
+# These are summer months in each year, never a continuous 2022-2024 range —
+# 02 searches each year separately and concatenates. A straight range would pull
+# in January scenes and quietly turn "peak summer surface temperature" into an
+# annual mean.
+SUMMER_YEARS = (2022, 2023, 2024)
+SUMMER_MMDD = ("06-01", "09-15")
 MAX_CLOUD_PCT = 20
 
-# Metric CRS for raster work — UTM 11N covers LA. Retarget with the city.
+# Metric CRS for raster work — UTM 10N covers the East Bay (LA used 11N).
 # (Zonal means in a projected CRS avoid the lat/lon pixel anisotropy.)
-RASTER_CRS = "EPSG:32611"
-RASTER_RES_M = 100          # 30 m Landsat / 10 m S2 downsampled; hexes are ~900 m across
-MAX_SCENES = 20             # cap per collection so a demo build stays bounded
+RASTER_CRS = "EPSG:32610"
+# 30 m, not LA's 100 m: a res-9 hex is ~370 m across, so at 100 m it would hold
+# only ~10 pixels and the zonal mean would be noise. 30 m is Landsat thermal's
+# native grid and gives ~115 px/hex over an area this small.
+RASTER_RES_M = 30
+MAX_SCENES = 30             # cap per collection so a demo build stays bounded
 
 # NDVI -> vegetation-cover-% proxy: clamp, then scale linearly to 0..CANOPY_MAX.
 #
@@ -75,19 +124,36 @@ CANOPY_MAX_PCT = 45.0
 # ---------------------------------------------------------------- census (US)
 ACS_YEAR = 2023
 STATE_FIPS = "06"
-COUNTY_FIPS = "037"          # Los Angeles County
+COUNTY_FIPS = "013"          # Contra Costa County (LA build used 037)
+
+# Sanity band for the county-wide ACS total, checked at the end of 03. Contra
+# Costa is ~1.16M; LA County was ~9.85M, so this cannot stay hardcoded.
+COUNTY_POP_RANGE = (0.9e6, 1.4e6)
+
+# TIGERweb feature used to clip the grid to land/city in 01. LA clipped to the
+# whole county; San Ramon clips to the incorporated place, because a county-sized
+# clip here would leave the grid covering Mount Diablo and half of Danville.
+CLIP_URL = ("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/"
+            "Places_CouSub_ConCity_SubMCD/MapServer/4/query?"
+            "where=GEOID%3D%270668378%27&outFields=GEOID,NAME&"
+            "returnGeometry=true&outSR=4326&f=geojson")
 
 # A/C access is MODELED from an income percentile — there is no A/C census.
-# These bounds are the plausible spread for LA County, not measured values, and
-# the UI must keep labelling the layer "est.".
+# See AC_IN_SCORE below: for San Ramon this layer is built but NOT scored.
 AC_PCT_MIN = 35.0
 AC_PCT_MAX = 95.0
 
 # ---------------------------------------------------------------- overlays (04)
 # Mapping Inequality (Univ. of Richmond) digitised HOLC "residential security"
 # maps. US-only — COUNTRY gates this layer off everywhere else.
-HOLC_URL = ("https://dsl.richmond.edu/panorama/redlining/static/"
-            "citiesData/CALosAngeles1939/geojson.json")
+#
+# None for San Ramon, and this is a fact about history rather than a gap in the
+# build: HOLC surveyed built-up cities in 1935-1940, and San Ramon was farmland
+# then — it did not incorporate until 1983. Mapping Inequality has Oakland,
+# Berkeley, Richmond, San Francisco, San Jose and Stockton; there is no Contra
+# Costa suburb map to load. Setting this to None turns the layer off end to end
+# rather than colouring the city with somebody else's grades.
+HOLC_URL = None
 
 # A hex must be at least this covered by graded polygons before it inherits a
 # grade. The 1939 map stops at the then-built-up city, so most of the San
@@ -102,6 +168,19 @@ OVERPASS_MIRRORS = (
     "https://overpass-api.de/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
 )
+# A demo reads the ranked list aloud, so hex names have to be names a resident
+# would recognise. LA had enough OSM place nodes to do that on its own; San Ramon
+# has FIVE for 541 hexes, which produces "Windemere NE 19" and tells nobody
+# anything. It does, however, have 90 named residential subdivisions mapped as
+# landuse polygons — Canyon Lakes, Gale Ranch, Bent Creek Estates — which are
+# exactly the names people use. With this on, 04 also pulls those (and named
+# parks, which anchor the non-residential hexes) and names a hex after the
+# polygon it falls INSIDE, falling back to the nearest anchor.
+#
+# Off for LA, whose committed places.geojson is place nodes only and whose names
+# are already good.
+NAME_FROM_LANDUSE = True
+
 OVERPASS_TIMEOUT_S = 180
 OVERPASS_ROUNDS = 3          # passes over the mirror list before giving up
 OVERPASS_BACKOFF_S = 45      # pause between passes — a 504 usually means us
@@ -129,11 +208,22 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 CACHE = DATA / "_cache"          # gitignored intermediates (big rasters)
 
-GRID_FILE = DATA / "grid.geojson"        # 01 -> 02
-OUT_FILE = DATA / "la.geojson"           # 05 -> the app
-CENTERS_FILE = DATA / "centers.geojson"  # 04 -> the app (cooling-center markers)
-HOLC_FILE = DATA / "holc_la.geojson"     # 04 fallback, committed
-PLACES_FILE = DATA / "places.geojson"    # 04 fallback, committed (hex names)
+# Every artefact carries the city SLUG. LA's files are committed under their own
+# names on master, and a San Ramon run must not quietly overwrite them — the
+# branch is meant to add a city, not replace one. It also means the app's
+# ?data=<name> switch can flip between the two without a rebuild.
+GRID_FILE = DATA / f"grid_{SLUG}.geojson"        # 01 -> 02
+OUT_FILE = DATA / f"{SLUG}.geojson"              # 05 -> the app
+CENTERS_FILE = DATA / f"centers_{SLUG}.geojson"  # 04 -> the app
+HOLC_FILE = DATA / f"holc_{SLUG}.geojson"        # 04 fallback (unused: HOLC_URL is None)
+PLACES_FILE = DATA / f"places_{SLUG}.geojson"    # 04 fallback, committed (hex names)
+BOUNDARY_FILE = DATA / f"boundary_{SLUG}.geojson"  # 01 clip polygon, committed
+ACS_FILE = DATA / f"acs_{SLUG}.csv"              # 03 fallback, committed
+LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
+NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
+SAT_CSV = DATA / f"satellite_{SLUG}.csv"
+CENSUS_CSV = DATA / f"census_{SLUG}.csv"
+OVERLAYS_CSV = DATA / f"overlays_{SLUG}.csv"
 
 DATA.mkdir(exist_ok=True)
 CACHE.mkdir(exist_ok=True)
