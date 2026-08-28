@@ -23,7 +23,8 @@ import config as C
 # The front end reads exactly these. Renaming one breaks the UI silently —
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
-            "access_min", "access_km", "score", "rank", "area_m2", "street_m"]
+            "access_min", "access_km", "score", "rank", "area_m2", "street_m",
+            "canopy_m2", "row_m2", "row_canopy"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -64,6 +65,26 @@ def load():
                 f"Run the pipeline in order: 01, 02, 03, 04, then 05."
             )
         df = df.merge(pd.read_csv(path), on="h3", how="left")
+
+    # MEASURED canopy replaces the NDVI proxy at source, AFTER satellite.csv has
+    # supplied green_pct, so the score, the output and every log line downstream
+    # all read one number. `green_pct` keeps its name — it is the pipeline<->app
+    # contract — but stops meaning "greenness" and starts meaning "ground under
+    # vegetation at least 2 m tall".
+    #
+    # This is a correction, not a refinement. On San Ramon the NDVI proxy put
+    # canopy at 21.2% of the ground; the canopy-height model puts it at 11.2%.
+    # NDVI cannot tell an irrigated lawn from an oak, and in a summer-dry
+    # climate that is most of the difference.
+    if C.CANOPY_CSV.exists():
+        df = df.merge(pd.read_csv(C.CANOPY_CSV), on="h3", how="left")
+        have = df["canopy_pct"].notna()
+        log(f"  canopy: MEASURED for {int(have.sum())}/{len(df)} hexes from a "
+            f"canopy-height model; NDVI proxy retained where absent")
+        df["green_pct"] = df["canopy_pct"].where(have, df["green_pct"])
+    else:
+        log("  canopy: no canopy CSV — using the NDVI proxy, which overstates "
+            "tree cover roughly 2x. Run 02c_canopy.py.")
 
     missing = df["lst_c"].isna().sum() + df["pop"].isna().sum()
     if missing:
@@ -113,6 +134,15 @@ def main():
         "name":       df["name"].fillna("Unnamed"),
         "lst":        df["lst_c"].round(1),
         "green":      df["green_pct"].round(1),
+        "canopy_m2":  (df["canopy_m2"] if "canopy_m2" in df.columns
+                       else df["green_pct"] / 100 * df["area_m2"]).round(0),
+        # Plantable public ground: street right-of-way not already shaded. The
+        # one figure here that describes what the CITY can do, as opposed to
+        # what the block needs.
+        "row_m2":     (df["row_m2"] if "row_m2" in df.columns
+                       else pd.Series(0, index=df.index)).fillna(0).round(0),
+        "row_canopy": (df["row_canopy_pct"] if "row_canopy_pct" in df.columns
+                       else pd.Series(0.0, index=df.index)).fillna(0).round(1),
         "pop":        df["pop"].round(0).astype(int),
         "pct65":      df["pct65_s"].round(1),
         "ac":         df["ac_est"].round(1),

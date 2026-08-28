@@ -495,9 +495,9 @@
       <div class="bd" id="d-breakdown"></div>
       <div class="roi">
         <h3><svg class="ico" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.9-7-6.4C5 5.2 8.1 3 12 3s7 2.2 7 5.6c0 3.5-3.1 6.4-7 6.4z"/></svg> Intervention ROI</h3>
-        <p class="sub">Raise tree canopy in this hex and price the result. Cooling factor from WRI; every number below is an estimate, not a measurement.</p>
-        <div class="slider-row"><span>Target canopy</span><b><span id="roi-target">–</span>%</b></div>
-        <input type="range" id="roi-slider" min="0" max="45" value="0"/>
+        <p class="sub">Plant the public right-of-way in this block and price the result. Only land the city controls is counted. Every number below is an estimate, not a measurement.</p>
+        <div class="slider-row"><span>Plant this share of the public right-of-way</span><b><span id="roi-target">–</span>%</b></div>
+        <input type="range" id="roi-slider" min="0" max="100" value="0"/>
         <div class="roi-out">
           <div class="stat hero"><div class="v" id="roi-temp">–</div><div class="k">est. afternoon cooling</div></div>
           <div class="stat"><div class="v" id="roi-people">–</div><div class="k">residents cooled</div></div>
@@ -601,6 +601,10 @@ const fTemp  = c => isImp() ? (c*9/5+32).toFixed(1)+'°F' : c.toFixed(1)+'°C';
 const fTempD = d => isImp() ? (d*9/5).toFixed(2)+'°F' : d.toFixed(2)+'°C';   // a delta: no +32
 const fDist  = km => isImp() ? (km*0.621371).toFixed(2)+' mi' : km.toFixed(2)+' km';
 const fArea  = m2 => isImp() ? (m2*3.861e-7).toFixed(2)+' sq mi' : (m2/1e6).toFixed(2)+' km²';
+/* Plantable strips are hectares, not square kilometres. Rendering 22,327 m² as
+   "0.02 km²" throws away the only two digits that matter. */
+const fSmallArea = m2 => isImp() ? (m2*2.47105e-4).toFixed(1)+' acres'
+                                 : (m2/1e4).toFixed(1)+' ha';
 const fMin   = m => m.toFixed(0)+' min';   // time is time
 const fInt   = v => Math.round(v).toLocaleString();
 
@@ -644,6 +648,10 @@ const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 h
  * the figure it produces, because the whole point of the frontage panel is to
  * be checkable against the city's own standard. */
 const TREE_SPACING_M=10;
+/* Ground a mature street tree actually shades. 60 m2 is a ~9 m crown, the middle
+   of the range for the species a California city plants along a residential
+   street. The old model used 40 m2, which flattered the tree count by half. */
+const CROWN_M2=60;
 let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
 
 /* ================================================================ live model
@@ -1562,10 +1570,11 @@ function selectHex(id,fly){
     return `<div class="metric"><div class="top"><span>${lab}${est?'<span class="est">est</span>':''}</span><span>${disp}</span></div>
       <div class="track"><div class="fill" style="width:${Math.max(2,t*100).toFixed(0)}%;background:${lift(colorFor(k,v),130)}"></div></div></div>`;
   }).join('');
-  // ROI init
+  // ROI init. The slider now means "what share of this block's unshaded public
+  // right-of-way do you plant", so it always spans 0-100 and always starts at 0
+  // — nobody is cooled and nothing is spent by an intervention not yet made.
   const slider=document.getElementById('roi-slider');
-  slider.min=Math.round(p.green);slider.max=45;
-  slider.value=Math.min(45,Math.round(p.green)+12);
+  slider.min=0;slider.max=100;slider.value=0;
   slider.oninput=()=>updateROI(p);
   updateROI(p);
   document.getElementById('detail').classList.add('show');
@@ -1608,67 +1617,78 @@ function renderBreakdown(p,score){
 }
 
 function updateROI(p){
+  /* Rebuilt to run BOTTOM-UP from land the city controls, instead of top-down
+     from a canopy target.
+     The old version asked "what would it take to reach N% canopy across this
+     whole hex?" and answered with crown area / 40 m2 — a number that ignored who
+     owns the ground. Most of a hex is private, so it priced an intervention the
+     city cannot carry out. The slider now sets how much of the UNSHADED PUBLIC
+     RIGHT-OF-WAY to plant, and every figure follows from that. */
   const slider=document.getElementById('roi-slider');
-  const target=+slider.value, delta=Math.max(0,target-p.green);
-  const tempDrop=delta/10*0.3;                     // WRI: +10% canopy ≈ −0.3°C
+  const pct=+slider.value;                       // share of plantable ROW to plant
+  const rowFree=p.row_m2||0;                     // unshaded public strip, m2
   const area=areaOf(p);
-  const trees=Math.round(delta/100*area/TREE_M2);
+  const plantM2=rowFree*pct/100;
+  const trees=Math.round(plantM2/CROWN_M2);
+  const gain=area>0?plantM2/area*100:0;          // canopy points added to the hex
+  const tempDrop=gain/10*0.3;                    // WRI: +10% canopy ~ -0.3 C
   const cost=trees*COST_TREE;
-  // Nobody is cooled by an intervention you haven't made. Reading a flat
-  // "15,759 residents cooled" while the slider sits at the hex's current canopy
-  // and the cost reads $0 is the one number on this panel that looked broken —
-  // it was the only figure that never responded to the slider.
-  const acts=delta>0;
+  const acts=trees>0;
   const people=acts?Math.round(p.pop):0;
   const seniors=acts?Math.round(p.pop*p.pct65/100):0;
   const perPerson=acts&&p.pop?cost/p.pop:0;
   const money=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1000?'$'+Math.round(v/1000)+'k':'$'+Math.round(v);
-  document.getElementById('roi-target').textContent=target;
+  document.getElementById('roi-target').textContent=pct;
   document.getElementById('roi-temp').textContent=acts?'−'+fTempD(tempDrop):fTempD(0);
   document.getElementById('roi-people').textContent=fInt(people);
   document.getElementById('roi-seniors').textContent=fInt(seniors);
   document.getElementById('roi-cost').textContent=money(cost);
   document.getElementById('roi-per').textContent=money(perPerson);
-  document.getElementById('roi-note').textContent=acts
-    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents, ${fInt(seniors)} of whom are aged 65 or over.`
-    : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
-  // What the city can actually do here, as opposed to what the model wants.
-  const fm=p.street_m||0;
-  const capacity=Math.floor(fm*2/TREE_SPACING_M);
+  document.getElementById('roi-note').textContent=
+    rowFree<=0
+      ? 'No unshaded public street right-of-way was mapped in this block, so there is nowhere the city can plant without a private landowner. Treat this block as an incentive or partnership question, not a public-works one.'
+      : acts
+        ? `Planting ${pct}% of this block's unshaded public right-of-way — about ${fInt(trees)} trees at ${CROWN_M2} m² of mature crown each — would raise canopy here from ${p.green.toFixed(1)}% to about ${(p.green+gain).toFixed(1)}%, an estimated ${fTempD(tempDrop)} cooler afternoon for ${fInt(people)} residents, ${fInt(seniors)} of them aged 65 or over.`
+        : `Nothing planted yet. This block has ${fSmallArea(rowFree)} of unshaded public right-of-way — drag the slider to plant some of it.`;
+
   const feas=document.getElementById('roi-feas');
-  if(!fm){
-    feas.innerHTML='<b>No mapped public street frontage in this hex.</b> Any planting here '
-      +'would be on private ground — an incentive, permission or partnership question, '
-      +'not a public-works one.';
+  if(rowFree<=0){
+    feas.innerHTML='<b>No plantable public land mapped here.</b> Canopy in this block would '
+      +'have to come from private property.';
   }else{
-    const enough=capacity>=trees;
-    const km=(fm/1000);
-    feas.innerHTML=`<b>${(km*(isImp()?0.621371:1)).toFixed(1)} ${isImp()?'mi':'km'}</b> of city street `
-      +`frontage here — room for about <b>${fInt(capacity)}</b> street trees at `
-      +`${TREE_SPACING_M} m spacing, both sides. `
-      +(acts
-        ? (enough
-           ? `<span class="ok">The ${fInt(trees)} trees above fit within public right-of-way.</span>`
-           : `<span class="gap">Only ${fInt(capacity)} of the ${fInt(trees)} trees above fit in `
-             +`public right-of-way — the remaining ${fInt(trees-capacity)} would need private `
-             +`land.</span>`)
-        : 'Drag the slider to compare against a planting target.');
+    const maxTrees=Math.floor(rowFree/CROWN_M2);
+    const maxGain=rowFree/area*100;
+    feas.innerHTML=`<b>${fSmallArea(rowFree)}</b> of this block's street right-of-way is public and `
+      +`<b>not already shaded</b> — room for about <b>${fInt(maxTrees)}</b> mature trees `
+      +`without touching private land. Planting all of it would take canopy from `
+      +`<b>${p.green.toFixed(1)}%</b> to <b>${(p.green+maxGain).toFixed(1)}%</b>`
+      +(p.row_canopy!=null?`. ${p.row_canopy.toFixed(0)}% of the right-of-way here is shaded today.`:'.');
   }
   document.getElementById('roi-src').innerHTML=
      '<b>Where these numbers come from</b>'
     +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
     +'about +10% canopy cover per −0.3 °C of afternoon air temperature.</div>'
-    +`<div><b>Tree count.</b> ${TREE_M2} m² of crown per mature street tree, applied to this `
-    +'hex&rsquo;s own measured area.</div>'
+    +`<div><b>Trees.</b> ${CROWN_M2} m² of ground shaded per mature street tree — a ~9 m `
+    +`crown, mid-range for the species a California city plants along a residential street. `
+    +`Trees here are what the right-of-way could <i>hold</i>, not a count of what is there.</div>`
     +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
     +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
     +'roughly three years of establishment care. Real unit costs vary widely with species, site '
     +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
-    +`<div><b>Street frontage.</b> Metres of residential, tertiary and unclassified road `
-    +`centreline inside this hex, from OpenStreetMap. Capacity assumes both sides at `
-    +`${TREE_SPACING_M} m spacing and takes no account of driveways, utilities, sight lines `
-    +`or existing trees, so read it as an upper bound on what the public right-of-way could `
-    +`hold — not a planting plan.</div>`;
+    +`<div><b>Canopy.</b> Measured from a canopy-height model at ~1 m: ground under `
+    +`vegetation at least 2 m tall. Not a vegetation index — an irrigated lawn is 0.1 m `
+    +`tall and does not count. <b>It reads about 38% BELOW a professional aerial canopy `
+    +`assessment</b> (9.1% against Fresno's published 14.6% over the same boundary), so use `
+    +`it to rank blocks, not to certify an absolute canopy figure.</div>`
+    +`<div><b>Plantable public land.</b> Residential, tertiary and unclassified street `
+    +`centrelines from OpenStreetMap, buffered 7 m each side, minus whatever already has `
+    +`canopy over it. It takes no account of driveways, utilities, sight lines or `
+    +`underground services, so read it as an <i>upper bound</i> on the public right-of-way — `
+    +`not a planting plan.</div>`
+    +`<div><b>No tree count.</b> This does not count existing trees, and deliberately so: `
+    +`tested on this data, crown detection returned objects of 219–470 m², where a real `
+    +`suburban crown is 40–80 m². The height model is too smooth to separate touching `
+    +`crowns. Canopy extent it measures well; individual trees it does not.</div>`;
 }
 
 function wireHover(){

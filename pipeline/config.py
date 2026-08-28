@@ -225,6 +225,8 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 # Plantable street centrelines, committed. 04 measures frontage per hex; the app
 # turns that into how many street trees the city could actually put in.
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
+# 02c -> 03/05: measured canopy, crown counts, plantable right-of-way.
+CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
 NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
 SAT_CSV = DATA / f"satellite_{SLUG}.csv"
