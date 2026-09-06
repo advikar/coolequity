@@ -666,6 +666,7 @@ const FLAT_STYLE={version:8,sources:{},layers:[
 // ---- state populated once the data lands ----
 let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
 const vals={};
+const svals={};   // SCORING bounds: p2/p98 from the geojson `norm`, clamped [0,1]
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
 /* Street trees go on both sides of a road at roughly this spacing. The number
  * is a planning convention, not a measurement — it is stated on screen next to
@@ -802,7 +803,7 @@ function isDefaultW(){
  *  so it runs on every `input` event rather than being debounced. */
 function rescore(){
   const W=normW(), F=HEX.features, n=F.length;
-  const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  const nv=(p,k)=>{const[lo,hi]=svals[k];return Math.max(0,Math.min(1,(p[k]-lo)/(hi-lo)));};
   // Derived layers (non-tree vegetation) are computed, not stored.
   const nvd=(p,k)=>{const[lo,hi]=vals[k];return (valOf(k,p)-lo)/(hi-lo);};
   const pri=new Float64Array(n);
@@ -837,7 +838,7 @@ const rk=p=>LIVE.rank.get(p.id);
  *  It is the one place the model is duplicated, so it is generated from the same
  *  `vals` ranges and the same normW() as rescore() above; there is no third set
  *  of numbers to keep in sync. */
-function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+function nx(k){const[lo,hi]=svals[k];return ['max',0,['min',1,['/',['-',['coalesce',['get',k],lo],lo],hi-lo]]];}
 /* Same normalisation for a DERIVED layer, built from the layer's own expression
    so the map, the ranked list and the panel share one definition. */
 function nxd(k){const[lo,hi]=vals[k];return ['/',['-',LAYERS[k].expr,lo],hi-lo];}
@@ -880,6 +881,12 @@ function computeRanges(){
   // the weights are. Pinning it stops the legend's endpoints twitching every time
   // a slider moves, which would read as the scale rather than the map changing.
   vals.score=[0,100];
+  // Scoring normalises against the pipeline's p2/p98 endpoints (geojson `norm`),
+  // so one leafy or one crowded hex no longer sets the scale; the colour ramps
+  // above stay on the raw range. Falls back to the raw range when `norm` is absent.
+  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{svals[k]=vals[k];});
+  const nm=HEX&&HEX.norm;
+  if(nm) for(const k in nm){ if(Array.isArray(nm[k])&&nm[k][1]>nm[k][0]) svals[k]=nm[k]; }
 }
 function rng(k){return k==='access'?vals['access_min']:vals[k];}
 function propKey(k){return k==='access'?'access_min':k;}
