@@ -258,8 +258,42 @@ def area_weight(hexes, bgs, buildings=None, city_buildings=None):
                    if d["wt"].sum() > 0 else np.nan, include_groups=False)
     out["income"] = num
 
+    # Measured A/C: every block group in a tract shares its tract LACE rate;
+    # a hex gets the population-weighted average of the tract rates it overlaps.
+    lace = load_lace()
+    if lace:
+        inter["lace_ac"] = inter["GEOID"].str[:11].map(lace)
+        wa = inter.dropna(subset=["lace_ac"]).copy()
+        wa["wt"] = wa["pop_s"]
+        out["ac_meas"] = wa.groupby("h3").apply(
+            lambda d: np.average(d["lace_ac"], weights=d["wt"])
+            if d["wt"].sum() > 0 else np.nan, include_groups=False)
+    else:
+        out["ac_meas"] = np.nan
+
     out["pct65"] = np.where(out["pop"] > 0, out["pop65"] / out["pop"] * 100, 0.0)
     return out.reset_index()
+
+
+LACE_TRACT = C.CACHE / "ac_src" / "LACE_23_Tract.csv"
+
+
+def load_lace():
+    """Measured A/C prevalence per census tract from the US Census Bureau's LACE
+    (Local Air Conditioning Estimates, 2023) — % of occupied homes with any air
+    conditioning, modelled by Census from the AHS+ACS. Replaces the income proxy:
+    real, official, and it captures the climate/housing signal the income rank
+    could not (Bakersfield ~99% everywhere; Contra Costa 68-93%). Returns
+    {11-digit tract GEOID: ac_percent}; suppressed tracts fall back to the model.
+    Download LACE_23_Tract.csv into data/_cache/ac_src/ (see DATA_QUALITY.md AC-1).
+    """
+    if not LACE_TRACT.exists():
+        return {}
+    df = pd.read_csv(LACE_TRACT, dtype={"STATE": str, "COUNTY": str, "TRACT": str})
+    df["AC_PE"] = pd.to_numeric(df["AC_PE"], errors="coerce")
+    df = df[df["AC_PE"].between(0, 100)]
+    tract = df["STATE"] + df["COUNTY"] + df["TRACT"]
+    return dict(zip(tract, df["AC_PE"]))
 
 
 def model_ac_access(income):
@@ -322,9 +356,19 @@ def main():
     out = hexes[["h3"]].merge(per_hex, on="h3", how="left")
     out[["pop", "pop65"]] = out[["pop", "pop65"]].fillna(0)
     out["pct65"] = out["pct65"].fillna(0)
-    out["ac_est"] = model_ac_access(out["income"])
+    # Prefer measured LACE A/C; fall back to the income model only where LACE
+    # has no tract estimate. Column keeps its contract name `ac_est`.
+    modelled = model_ac_access(out["income"])
+    if "ac_meas" in out.columns and out["ac_meas"].notna().any():
+        out["ac_est"] = out["ac_meas"].where(out["ac_meas"].notna(), modelled)
+        out["ac_src"] = np.where(out["ac_meas"].notna(), "measured", "income-model")
+        meas_share = 100.0 * (out["ac_src"] == "measured").mean()
+    else:
+        out["ac_est"] = modelled
+        out["ac_src"] = "income-model"
+        meas_share = 0.0
 
-    out = out[["h3", "pop", "pct65", "income", "ac_est"]]
+    out = out[["h3", "pop", "pct65", "income", "ac_est", "ac_src"]]
     out["pop"] = out["pop"].round(0)
     out[["pct65", "ac_est"]] = out[["pct65", "ac_est"]].round(2)
     out.to_csv(OUT_CSV, index=False)
@@ -335,7 +379,8 @@ def main():
     log(f"  pct65  {out.pct65.min():.1f}–{out.pct65.max():.1f}% "
         f"(median {out.pct65.median():.1f})")
     log(f"  income ${out.income.min():,.0f}–${out.income.max():,.0f}")
-    log(f"  ac_est {out.ac_est.min():.0f}–{out.ac_est.max():.0f}% (MODELED)")
+    log(f"  ac_est {out.ac_est.min():.0f}–{out.ac_est.max():.0f}% "
+        f"({meas_share:.0f}% of hexes MEASURED from LACE, rest income-model)")
     log(f"  wrote {OUT_CSV.relative_to(C.ROOT)}")
 
     # A wild miss means the area weighting is wrong. The band is per-county in

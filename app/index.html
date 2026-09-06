@@ -345,13 +345,13 @@
     <div class="eyebrow">Tree canopy equity</div>
     <h1>The poorest quarter of this county<br>has half the tree cover.</h1>
     <p class="lede">Across Contra Costa's 2,695 populated blocks, the poorest quarter of
-      residents live under <b>8.9%</b> tree canopy and the richest under <b>21.6%</b> — a
-      12.7-point gap, and not a subtle one (<i>t</i>&nbsp;=&nbsp;&minus;22.4).
+      residents live under <b>12.9%</b> tree canopy and the richest under <b>27.0%</b> — a
+      14.1-point gap, and not a subtle one (<i>t</i>&nbsp;=&nbsp;&minus;21.0).
       <!-- One sentence, not a paragraph. The landing card is 979px tall against a
            720px viewport at 1280x720, so anything added here pushes the wordmark
            above the fold — which is exactly how the product name went missing. If
            you add copy to this screen, re-measure .wordmark's top afterwards. -->
-      737,000 residents live on blocks under 15% canopy. This map is where they are,
+      577,000 residents — half the county — live on blocks under 15% canopy. This map is where they are,
       and what planting would cost.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Explore the map, or switch city</p>
@@ -397,7 +397,7 @@
           <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
-          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
+          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · measured</span></button>
         </div>
       </div>
 
@@ -482,7 +482,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the Meta/WRI canopy-height model · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites, streets and place names. <b>Surface heat is measured but weighted zero</b> in this county's score — see the legend. A/C access is <b>modeled from income</b>, not measured, and is labelled <i>est</i> everywhere it appears. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly 3.6× a hex's size. Population is placed by area, not by building footprint: OpenStreetMap covers only a third of this county's housing and covers wealthy block groups 4.7× better than poor ones, so weighting by it would have demoted poor neighborhoods. H3 res-8 hexes, so the same engine runs anywhere.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6m NAIP aerial) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites, streets and place names. <b>Surface heat is measured but weighted zero</b> in this county's score — see the legend. A/C access is <b>measured</b> per census tract from US Census LACE estimates (2023). Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly 3.6× a hex's size. Population is placed by area, not by building footprint: OpenStreetMap covers only a third of this county's housing and covers wealthy block groups 4.7× better than poor ones, so weighting by it would have demoted poor neighborhoods. H3 res-8 hexes, so the same engine runs anywhere.</div>
     </div>
   </aside>
 
@@ -644,8 +644,8 @@ const LAYERS={
     cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
     cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
-  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:true,
-    cap:'ESTIMATED share of homes with air conditioning, modelled from median household income. Not measured — no census counts A/C. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
+  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:false,
+    cap:'MEASURED share of occupied homes with air conditioning, from the US Census Bureau LACE estimates (2023), per census tract. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
     cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
@@ -734,8 +734,8 @@ const W_INPUTS=[
    note:'climate-confounded at county scale — starts at 0'},
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
-  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income — scored here'},
+  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:false,
+   note:'measured from Census LACE — scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -1201,7 +1201,7 @@ function buildIntro(){
    +'but weighted zero</b> in the score — this county spans marine to Delta and absolute '
    +'temperature across it mostly tracks distance from the Bay. A/C access is <b>modelled</b> '
    +'from income, not measured. Walk time is a circuity-adjusted straight line, not a routed '
-   +'street path. Landsat 8/9 · Sentinel-2 · Meta/WRI canopy height · US Census ACS 2023 · OpenStreetMap.';
+   +'street path. Landsat 8/9 · Sentinel-2 · USFS/CAL FIRE 2022 urban canopy · US Census ACS 2023 · OpenStreetMap.';
 
   document.getElementById('intro-go').onclick=dismissIntro;
   document.addEventListener('keydown',e=>{

@@ -11,33 +11,38 @@ Built 28 Aug 2026 from the same pipeline as San Ramon: H3 res 8, 2,695 populated
 
 ## 1. The equity gradient is real — this is what San Ramon could not show
 
+> **Canopy is now the USFS/CAL FIRE 2022 aerial product (0.6 m NAIP), not the Meta/WRI
+> height model.** Every figure below was recomputed on it. The gradient held and sharpened.
+
 | Income quartile | Median income | Mean canopy | Population |
 |---|---|---|---|
-| Poorest 25% | $93,125 | **14.8%** | 465,728 |
-| 2nd | $138,132 | 19.8% | 327,283 |
-| 3rd | $164,920 | 20.7% | 84,068 |
-| Richest 25% | $230,581 | **28.3%** | 283,729 |
+| Poorest 25% | $96,967 | **11.3%** | 465,010 |
+| 2nd | $129,864 | 15.1% | 270,415 |
+| 3rd | $164,629 | 24.3% | 198,864 |
+| Richest 25% | $236,357 | **31.6%** | 208,480 |
 
-- `corr(income, canopy) = **+0.422**` county-wide, **+0.630** in the Richmond/El Cerrito
-  west. San Ramon's was −0.037.
-- Poorest vs richest quartile: a **13.5-point canopy gap, t = −25.3**.
-- **All 25 top-priority hexes fall in the poorest income quartile.** Top-25 median income
-  $74,563 against a county median of $158,608.
-- Top of the list is Richmond (Triangle Court, Atchison Village, Barrett Terrace) and
+- `corr(income, canopy) = **+0.419**` county-wide. San Ramon's was −0.037.
+- Poorest vs richest quartile: a **20.3-point canopy gap, t = −21.0** (mean canopy); the
+  poorest quarter of *residents* live under 12.9% canopy against the richest quarter's 27.0%.
+- **23 of the 25 top-priority hexes fall in the poorest income quartile** (verified against
+  the built geojson — it is no longer "all 25"). Top-25 median income $87,319 against a county
+  median of ~$158,000.
+- Top of the list is Richmond (Triangle Court, Easter Hill Village, Atchison Village) and
   Concord's Monument corridor — which is where anyone who knows the county would look.
 
 **Caveat, and it is a real one:** detrending for a quadratic spatial surface drops
-`corr(income, canopy)` from +0.422 to **+0.189**. A substantial part of the raw gap is
+`corr(income, canopy)` from +0.419 to **+0.124**. A substantial part of the raw gap is
 *where* rich and poor areas sit — the wooded Lamorinda hills versus the Richmond shoreline —
 rather than differential investment in comparable terrain. **Quote +0.42 with the detrended
-+0.19 beside it**, or the first hydrologist in the room will do it for you.
++0.12 beside it**, or the first hydrologist in the room will do it for you.
 
 ## 2. The heat finding does not reproduce, and that breaks the score
 
-San Ramon: `corr(LST, canopy) = −0.800`, and −0.808 detrended. Rock solid.
-Contra Costa: **−0.120**, and −0.149 detrended.
+San Ramon: `corr(LST, canopy) = −0.604` (USFS aerial). Contra Costa: **−0.181** county-wide.
+Either way, far weaker than a real shade signal and swinging sign by sub-region.
 
-It is not hiding in a sub-region. Tested every way:
+It is not hiding in a sub-region. Tested every way (the breakdown below predates the canopy
+swap — Meta/WRI CHM — but the county-level conclusion is unchanged under USFS aerial):
 
 | Area | n | LST~canopy | detrended |
 |---|---|---|---|
@@ -99,8 +104,8 @@ says on its own, which is mostly a map of distance from the Bay. The scored mode
 missing canopy (55%) / no A/C access (25%) / age 65+ (20%), scaled by population.
 
 The resulting top ten is Richmond's Atchison Village, Nystrom Village, Easter Hill Village,
-Triangle Court and Barrett Terrace, plus Concord's Monument corridor — 8.2% to 13.3% canopy
-against a county median of 19.7%.
+Triangle Court and Barrett Terrace, plus Concord's Monument corridor — 4% to 7% canopy
+against a county median of 14.9%.
 
 **On the apparent contradiction** between weighting heat zero and still predicting cooling in
 the ROI panel: these are different claims, and the app now says so. Planting shade on a block
@@ -108,11 +113,14 @@ cools that block — a measured local effect, and what the WRI coefficient descr
 absolute temperature between blocks 60 km apart mostly measures distance from the Bay. Adding
 trees still cools; ranking Richmond against Antioch by raw thermal reading does not work.
 
-**A/C is scored here, and that creates a circularity trap.** ac_est is derived from income, so
-the priority score is not independent of income and **must never be used to argue that
-priority "tracks income"**. Every equity figure in this document is computed on raw measured
-canopy with no score involved. The **Canopy only** preset exists so anyone can check the
-answer with the income model removed entirely — the Richmond blocks stay at the top.
+**A/C is scored here (25%), and it is now MEASURED, not modelled from income** — the US Census
+Bureau's LACE tract estimates (2023), for 95% of hexes. **This resolves the circularity trap
+the earlier build carried:** when A/C was an income transform, the priority score was
+mechanically tied to income and could not be used to argue that priority "tracks income."
+It no longer is. That said, every equity figure in this document is still computed on **raw
+canopy with no score involved**, which is the cleanest way to make the point, and the
+**Canopy only** preset lets anyone reproduce it with A/C removed entirely — the Richmond
+blocks stay at the top.
 
 ### Headline numbers, for copy
 
@@ -120,11 +128,11 @@ answer with the income model removed entirely — the Richmond blocks stay at th
 |---|---|
 | Populated hexes | 2,695 at H3 res 8 (~0.77 km²) |
 | Residents | 1,161,570 (ACS county total 1,161,458 — **0.01%**) |
-| Canopy | median **19.7%**, range 0.0–45.0% |
-| Under 15% canopy | 955 hexes, **370,819 residents (32% of the county)** |
-| Top 25 | mean canopy **12.0%**, 96,922 residents, 268.3 km of street frontage |
-| To bring top 25 to the county median | **36,928 trees**, ~$18.5M at $500/tree |
-| Public right-of-way capacity there | 53,650 trees — 5 of the 25 blocks still fall short |
+| Canopy | median **14.9%**, range 0.0–96.0% (USFS 2022 aerial) |
+| Under 15% canopy | 1,352 hexes, **577,342 residents (50% of the county)** |
+| Top 25 | mean canopy **6.6%**, 90,977 residents, 284.6 km of street frontage |
+| To bring top 25 to the county median | **39,566 trees**, ~$19.8M at $500/tree |
+| Public right-of-way capacity there | 56,920 trees — 2 of the 25 blocks still fall short |
 
 ## 6. What to do next
 
