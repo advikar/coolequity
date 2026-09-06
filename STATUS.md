@@ -1,5 +1,35 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-05b — UI overhaul + accuracy review
+
+**UI (done, deployed):** every app now has a real four-city switcher on the
+landing screen (replaces the search-over-20-fake-cities combobox, which never
+navigated) and an "All cities" link in the map header → the site chooser.
+Bakersfield's San Ramon leaks fixed (panel description, HOLC note). Nav path is
+derived by stripping each city's own suffix off the URL (`SITE_ROOT`), verified
+live = `/coolequity/`. Applied via scratchpad `patch_ui.py` for consistency.
+
+**Accuracy review — findings (NOT yet acted on; the first needs a decision):**
+1. **Non-robust min-max normalisation (`05_score.py minmax()`).** No outlier
+   clipping. Canopy is the heaviest weight yet one leafy hex (CC max 92% vs
+   median 13%) compresses the "missing canopy" term for everyone; population is
+   so skewed (CC max 5,595 vs median 98) the pop multiplier is ~flat for 98% of
+   hexes. Clipping inputs to p2–p98 changes **9 of CC's top-25**. Fix =
+   percentile-clip or rank-normalise the skewed inputs, in pipeline AND app, then
+   re-derive the brief. Re-ranks every city — needs sign-off.
+2. **`row_m2` (02c) computed in EPSG:3857**, so it's mercator-area, inflated
+   ~1.5× at 37°N. NOT user-facing (app/brief use `street_m`, real UTM metres) —
+   latent bad column only. `canopy_pct`/`canopy_m2` are correct (ratio cancels;
+   area from `h3.cell_area`).
+3. **CHM canopy vintage 2009–2020** vs 2023 heat/census — stale in fast-growth
+   areas (Dougherty Valley, new Bakersfield tracts). Disclosed in the brief's
+   sources; not yet on the app footers.
+4. **A/C = f(income) is 25% of CC's score** → the priority ranking is not
+   income-independent (circularity). Headline equity stat is clean (raw canopy),
+   and no copy claims "priority tracks income" — keep it that way.
+5. Minor: "blocks/census blocks" for H3 hexes; LST is Landsat ~10:30 daytime,
+   not afternoon (ROI "afternoon cooling" is WRI air-temp, a different quantity).
+
 ## Session 2026-09-05 — measured canopy live on all four cities
 
 The site now serves **four** cities: LA `/app/` (still NDVI), San Ramon
