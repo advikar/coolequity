@@ -252,6 +252,8 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 # Plantable street centrelines, committed. 04 measures frontage per hex; the app
 # turns that into how many street trees the city could actually put in.
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
+# 02c -> 05: measured canopy, plantable right-of-way.
+CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 
 # How far outside BBOX 02b pulls buildings. 03 divides a block group's residents
 # by that block group's TOTAL housing, so any block group straddling the bbox

@@ -22,6 +22,11 @@ data/buildings_contracosta.geojson
 #   python pipeline/04_overlays.py --refresh   (streets_*.geojson)
 # The committed outputs -- contracosta.geojson and the CSVs -- are what the app
 # and every figure actually read.
-data/streets_contracosta.geojson
 data/lst_contracosta.tif
 data/ndvi_contracosta.tif
+
+# streets_*.geojson is NOT ignored on purpose. It is an input to 02c's
+# right-of-way calculation, it is only a few MB gzipped, and when it was
+# ignored a branch switch silently removed it -- 02c then ran to completion
+# and reported 0.00 km2 of plantable public land, which looks like a finding
+# rather than a missing file.
