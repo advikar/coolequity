@@ -9,14 +9,22 @@ Bakersfield's San Ramon leaks fixed (panel description, HOLC note). Nav path is
 derived by stripping each city's own suffix off the URL (`SITE_ROOT`), verified
 live = `/coolequity/`. Applied via scratchpad `patch_ui.py` for consistency.
 
-**Accuracy review — findings (NOT yet acted on; the first needs a decision):**
-1. **Non-robust min-max normalisation (`05_score.py minmax()`).** No outlier
-   clipping. Canopy is the heaviest weight yet one leafy hex (CC max 92% vs
-   median 13%) compresses the "missing canopy" term for everyone; population is
-   so skewed (CC max 5,595 vs median 98) the pop multiplier is ~flat for 98% of
-   hexes. Clipping inputs to p2–p98 changes **9 of CC's top-25**. Fix =
-   percentile-clip or rank-normalise the skewed inputs, in pipeline AND app, then
-   re-derive the brief. Re-ranks every city — needs sign-off.
+**Accuracy review — findings:**
+1. **Non-robust min-max normalisation — FIXED & deployed (all four cities).**
+   `05_score.py` now normalises each scoring input against a ONE-SIDED p2/p98
+   clip, written into the geojson as `norm`; the app reads it into `svals` (used
+   only for scoring, clamped [0,1]; colour ramps keep raw `vals`). One-sided on
+   purpose: clip only the least-need tail (a single leafy/empty-cool block stops
+   setting the scale) and never blunt the hottest/oldest/barest blocks — a
+   two-sided clip flattened Rossmoor's 84%-elderly and broke Protect-seniors.
+   Protective inputs (green, ac) + population clip the HIGH tail; heat/age clip
+   the LOW tail. lst/green stored at 2dp so live parity holds (<0.13 all cities,
+   top-10 exact). New top-3s: CC State Court Park/Nystrom Village/Atchison
+   Village; SR Mosaic Park/Valencia S/Carmelita S; Bak Bakersfield S 5/S 3/
+   Coventry; LA Skid Row/Little Armenia/Huntington Park. SR brief re-derived;
+   CC seniors + LA Holmby-Hills preset copy re-checked live. Patchers in
+   scratchpad: patch_score.py, patch_svals.py. Population is still skew-limited
+   at the bulk (clip helps the top; rank/log would be the stronger fix if wanted).
 2. **`row_m2` (02c) computed in EPSG:3857**, so it's mercator-area, inflated
    ~1.5× at 37°N. NOT user-facing (app/brief use `street_m`, real UTM metres) —
    latent bad column only. `canopy_pct`/`canopy_m2` are correct (ratio cancels;
