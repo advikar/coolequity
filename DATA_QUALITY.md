@@ -16,6 +16,31 @@ full at the bottom, with sources.
 
 ---
 
+## ✅ Status — September 2026: the two headline fixes shipped
+
+Both P1 items are **done and deployed** (verified live at advikar.github.io/coolequity):
+
+- **C-1/C-2/C-3 — canopy → USFS/CAL FIRE 2022 aerial (0.6 m NAIP), live for Bakersfield, San
+  Ramon and Contra Costa.** New `pipeline/02d_canopy_usfs.py` reads the aerial rasters in
+  **EPSG:3310 (equal-area)** with per-hex windowed reads and the urban-boundary polygon as the
+  denominator — which also fixes **C-4 (Mercator area)** and **C-5 (nodata)** for free. Rural
+  fringe outside the census urban areas falls back to the older CHM (still measured). This
+  corrected San Ramon from a false ~11% (CHM read ~35% low) to a true **17.7%**, and sharpened
+  Contra Costa's equity gradient. **LA is the one city still on NDVI — see follow-up 1.**
+- **AC-1/AC-2 — A/C → measured US Census LACE (2023), live for all four cities.**
+  `03_census.py` joins tract-level LACE prevalence population-weighted (income model kept only
+  as a per-tract fallback; new `ac_src` column records which). In Contra Costa and LA, where
+  A/C is scored, this **breaks the income-circularity trap** the earlier build carried.
+- Quick fixes **C-4/C-5** landed with the canopy module. **D-2, W-3** remain open (low priority).
+
+**Staged, with recipes at the very bottom of this file:** follow-up 1 (LA canopy), follow-up 2
+(CalEPA UHI air-temp layer — data downloaded, integration pending), follow-up 3 (routed walk
+time). Routing was staged deliberately: accurate pedestrian routing needs an engine + OSM graph
+this environment can't run reliably at ~thousands of hexes/city, and a half-accurate route is
+worse than an honest straight-line estimate that's already labelled as one.
+
+---
+
 ## A. Canopy — the headline metric
 
 | # | Issue | Impact | In-app now | Fix |
@@ -138,3 +163,48 @@ Sources:
 5. **C-4 / C-5 — canopy in UTM + nodata mask** (quick correctness fixes).
 
 Items 1 and 2 change published figures, so they need a decision before they run — they are not silent refactors.
+
+---
+
+## Staged follow-ups — exact recipes
+
+### Follow-up 1 — Los Angeles canopy → USFS 2022 aerial
+LA is still on the Sentinel-2 NDVI proxy (which counts irrigated lawn as canopy and overstates
+it). The other three cities are on USFS aerial; LA was deferred because `master`'s pipeline
+predates the measured-canopy contract and swapping it safely is more than a data drop:
+
+1. `curl -sL "https://usfs-public.box.com/shared/static/dbfv5dtrvm7zn7820ak2vssxczbwm43t.zip"`
+   (Los Angeles--Long Beach--Anaheim, ~623 MB) → unzip into `data/_cache/canopy_src/`.
+2. `master/pipeline/05_score.py` predates the canopy merge (it reads **unslugged** `census.csv`
+   etc. and its CONTRACT lacks `canopy_m2/veg/row_m2`). Port the canopy-merge block from
+   `san-ramon:pipeline/05_score.py` (the `if C.CANOPY_CSV.exists(): … green_pct = canopy_pct`
+   stanza + the `canopy_m2/veg/row_m2/row_canopy` output rows), keeping master's file names.
+   Add `CANOPY_CSV = DATA / "canopy_la.csv"` to `master/pipeline/config.py`.
+3. `git checkout san-ramon -- pipeline/02d_canopy_usfs.py`; run `02d` then `05`.
+4. Reframe the LA app copy: it frames `green` as NDVI "vegetation/greenery" throughout — the
+   landing lede, the green-layer caption, the ROI. Rewrite to "measured canopy (USFS 2022)".
+5. Verify live-score parity < 0.2 and redeploy.
+
+### Follow-up 2 — CalEPA Urban Heat Island Index (air-temperature layer)
+The data is already downloaded to `/tmp/uhi` (`Data_13-001/`, 496 per-city shapefiles). It is
+census-tract **air** temperature (degree-hours/day, 2 m, urban-minus-upwind-rural), modelled
+2006 & 2013 — so it is the *urban heat increment*, which removes the distance-from-Bay confound
+that forced heat to weight 0 in Contra Costa.
+
+1. Re-download if needed with a cookie jar (the CalEPA WordPress WAF redirect-loops otherwise):
+   `curl -sL -c jar -b jar -A "Mozilla/5.0 …" -e "https://calepa.ca.gov/climate/urban-heat-island-index-for-california/" "https://calepa.ca.gov/wp-content/uploads/2020/06/Data_30-001_files_all.zip"`
+2. Decode the per-city shapefile schema (the degree-hours field), union the tracts covering each
+   study area, join to hexes area/pop-weighted → new `uhi` column written by `05_score.py`.
+3. Add a display layer to each app (ramp + caption + toggle), labelled "air-temp UHI, CalEPA
+   2006/2013". Optionally give it a non-zero weight in Contra Costa, where it is a defensible
+   heat signal in a way absolute LST is not — but that re-opens the ranking, so make it a
+   deliberate, verified change, not a default.
+
+### Follow-up 3 — routed walk time (replace the circuity straight-line, W-1)
+1. Run OSRM (foot profile) on a California OSM extract (Geofabrik NorCal + SoCal), or Valhalla.
+2. For each hex centroid, request the walking duration to the nearest N cooling sites and take
+   the minimum; write `access_min`/`access_km` in `04_overlays.py` from that instead of
+   `dist × CIRCUITY ÷ speed`.
+3. **Validate against a sample of hand-checked routes before shipping** — the whole reason this
+   is staged is that an inaccurate route is worse than an honest estimate. Until it is
+   validated, the app must keep labelling walk time "estimated, not routed."
