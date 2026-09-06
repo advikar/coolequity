@@ -629,6 +629,7 @@ const FLAT_STYLE={version:8,sources:{},layers:[
 // ---- state populated once the data lands ----
 let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
 const vals={};
+const svals={};   // SCORING bounds: p2/p98 from the geojson `norm`, clamped [0,1]
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
 let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
 
@@ -699,7 +700,7 @@ const PRESETS=[
       +'the input a city can actually change.'},
   {id:'seniors',name:'Protect seniors',w:{heat:.20,green:.05,ac:.15,age65:.60,access:0},pop:.45,
    why:'<b>Who is most likely to die of it?</b> Heat kills the old first. Watch Holmby Hills — one '
-      +'of the wealthiest zip codes in America — climb from roughly 2,100th to the high 20s. '
+      +'of the wealthiest zip codes in America — climb from roughly 2,100th to about 60th. '
       +'The answer depends on the question you asked.'},
   {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05,access:0},pop:.45,
    why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
@@ -737,7 +738,7 @@ function isDefaultW(){
  *  so it runs on every `input` event rather than being debounced. */
 function rescore(){
   const W=normW(), F=HEX.features, n=F.length;
-  const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  const nv=(p,k)=>{const[lo,hi]=svals[k];return Math.max(0,Math.min(1,(p[k]-lo)/(hi-lo)));};
   const pri=new Float64Array(n);
   for(let i=0;i<n;i++){
     const p=F[i].properties;
@@ -769,7 +770,7 @@ const rk=p=>LIVE.rank.get(p.id);
  *  It is the one place the model is duplicated, so it is generated from the same
  *  `vals` ranges and the same normW() as rescore() above; there is no third set
  *  of numbers to keep in sync. */
-function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+function nx(k){const[lo,hi]=svals[k];return ['max',0,['min',1,['/',['-',['coalesce',['get',k],lo],lo],hi-lo]]];}
 function liveScoreExpr(){
   const W=normW();
   const base=['+',
@@ -792,6 +793,12 @@ function computeRanges(){
   // the weights are. Pinning it stops the legend's endpoints twitching every time
   // a slider moves, which would read as the scale rather than the map changing.
   vals.score=[0,100];
+  // Scoring normalises against the pipeline's p2/p98 endpoints (geojson `norm`),
+  // so one leafy or one crowded hex no longer sets the scale; the colour ramps
+  // above stay on the raw range. Falls back to the raw range when `norm` is absent.
+  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{svals[k]=vals[k];});
+  const nm=HEX&&HEX.norm;
+  if(nm) for(const k in nm){ if(Array.isArray(nm[k])&&nm[k][1]>nm[k][0]) svals[k]=nm[k]; }
 }
 function rng(k){return k==='access'?vals['access_min']:vals[k];}
 function propKey(k){return k==='access'?'access_min':k;}

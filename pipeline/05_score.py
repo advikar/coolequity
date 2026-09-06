@@ -39,6 +39,35 @@ def minmax(s):
     return (s - lo) / (hi - lo)
 
 
+# One-sided percentile clip for the SCORING inputs. Raw min-max lets a single
+# benign outlier set the scale (one 92%-canopy hex flattens the "missing canopy"
+# term; a few huge-population hexes pin the multiplier near its floor). We pull in
+# only the LEAST-need tail so it stops setting the scale, and never blunt the
+# most-in-need tail — the hottest, oldest and barest blocks are what the tool must
+# rank. Which end is benign is read off the score formula: protective inputs enter
+# as (1-n) so their HIGH end is low-need; risk inputs enter as n so their LOW end
+# is. Population is a saturating multiplier and is clipped at the crowded end.
+# Endpoints go into the geojson so the front end normalises against them exactly.
+CLIP_LO_Q, CLIP_HI_Q = 2.0, 98.0
+
+
+def clip_bounds(s, clip_high):
+    if clip_high:
+        lo, hi = float(s.min()), float(np.percentile(s, CLIP_HI_Q))
+    else:
+        lo, hi = float(np.percentile(s, CLIP_LO_Q)), float(s.max())
+    if not np.isfinite(lo) or hi <= lo:
+        lo, hi = float(s.min()), float(s.max())
+    return lo, hi
+
+
+def clip_minmax(s, bounds):
+    lo, hi = bounds
+    if hi <= lo:
+        return pd.Series(np.zeros(len(s)), index=s.index)
+    return ((s - lo) / (hi - lo)).clip(0.0, 1.0)
+
+
 def shrink_age65(pop, pct65):
     """Empirical-Bayes smoothing of the 65+ share toward the citywide rate."""
     pop65 = pop * pct65 / 100.0
@@ -86,12 +115,24 @@ def main():
     log(f"  pct65: raw max {df.pct65.max():.1f}% -> smoothed "
         f"{df.pct65_s.max():.1f}% (median {df.pct65_s.median():.1f}%)")
 
+    # p2/p98 endpoints per scoring input, reused by the app (keyed by the
+    # property the front end reads). clip_high on the protective inputs and on
+    # population; heat and age keep their true maximum.
+    bounds = {
+        "lst":   clip_bounds(df["lst_c"],     clip_high=False),
+        "green": clip_bounds(df["green_pct"], clip_high=True),
+        "ac":    clip_bounds(df["ac_est"],    clip_high=True),
+        "pct65": clip_bounds(df["pct65_s"],   clip_high=False),
+        "pop":   clip_bounds(df["pop"],       clip_high=True),
+    }
+    log("  score inputs clipped to p2/p98: " + ", ".join(
+        f"{k} {lo:.1f}-{hi:.1f}" for k, (lo, hi) in bounds.items()))
     n = pd.DataFrame({
-        "heat":  minmax(df["lst_c"]),
-        "green": minmax(df["green_pct"]),
-        "ac":    minmax(df["ac_est"]),
-        "age65": minmax(df["pct65_s"]),
-        "pop":   minmax(df["pop"]),
+        "heat":  clip_minmax(df["lst_c"], bounds["lst"]),
+        "green": clip_minmax(df["green_pct"], bounds["green"]),
+        "ac":    clip_minmax(df["ac_est"], bounds["ac"]),
+        "age65": clip_minmax(df["pct65_s"], bounds["pct65"]),
+        "pop":   clip_minmax(df["pop"], bounds["pop"]),
     })
 
     W = C.WEIGHTS
@@ -112,8 +153,8 @@ def main():
     out = pd.DataFrame({
         "id":         df["id"].astype(int),
         "name":       df["name"].fillna("Unnamed"),
-        "lst":        df["lst_c"].round(1),
-        "green":      df["green_pct"].round(1),
+        "lst":        df["lst_c"].round(2),
+        "green":      df["green_pct"].round(2),
         "pop":        df["pop"].round(0).astype(int),
         "pct65":      df["pct65_s"].round(1),
         "ac":         df["ac_est"].round(1),
@@ -138,8 +179,10 @@ def main():
                       "geometry": {"type": "Polygon",
                                    "coordinates": round_coords(f["geometry"])}})
 
+    # p2/p98 endpoints the front end normalises against to reproduce this rank.
+    norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
     C.OUT_FILE.write_text(json.dumps({"type": "FeatureCollection",
-                                      "features": feats}))
+                                      "norm": norm, "features": feats}))
 
     log(f"  score: {out.score.min():.1f}–{out.score.max():.1f} "
         f"(median {out.score.median():.1f})")
