@@ -40,8 +40,8 @@ figure is reproducible from public data and open source code.
 
 **Across San Ramon's 419 populated blocks, summer surface temperature tracks measured tree
 canopy closely — `r = −0.64`, and −0.65 after removing a spatial trend — and the 25
-highest-priority blocks average 5.1% canopy against a citywide median of 10.1% (about 11% over
-the typical resident). Those 25 blocks hold 12,421 residents.**
+highest-priority blocks average 3.6% canopy against a citywide median of 10.1% (about 11% over
+the typical resident). Those 25 blocks hold 11,506 residents.**
 
 Canopy here is measured from the Meta/WRI canopy-height model — ground under vegetation at
 least 2 m tall — not from an NDVI greenness proxy, so an irrigated lawn does not count as
@@ -49,40 +49,41 @@ shade. The model reads roughly a third below professional aerial assessments (se
 so these percentages **rank** blocks against one another; they are not certified absolute
 canopy figures.
 
-The gap is closable with street trees alone. Those 25 blocks contain **36.5 km of residential
-street frontage**; bringing them to the citywide median needs about **3,900 trees**, and the
-public right-of-way could hold roughly **7,290** at 10 m spacing on both sides — so **in
+The gap is closable with street trees alone. Those 25 blocks contain **33.6 km of residential
+street frontage**; bringing them to the citywide median needs about **4,500 trees**, and the
+public right-of-way could hold roughly **6,700** at 10 m spacing on both sides — so **in
 aggregate the gap closes without private land.**
 
-Block by block it is less tidy: **6 of the 25 need more trees than their own frontage holds**,
-Carmelita S and Capella worst among them at roughly 165–180 trees short each. Those blocks need
-either planting on adjacent public land or an agreement with the property owner. The other 19
-fit entirely in the right-of-way.
+Block by block it is less tidy: **8 of the 25 need more trees than their own frontage holds**,
+Carmelita S, Serena & Cordova NE and Capella worst among them at roughly 165–180 trees short
+each. Those blocks need either planting on adjacent public land or an agreement with the
+property owner. The other 17 fit entirely in the right-of-way.
 
 At a nominal $500 per planted tree including three years of establishment care, that is about
-**$1.95 million** spread over whatever period the City chooses — a capital line item, not a
+**$2.24 million** spread over whatever period the City chooses — a capital line item, not a
 bond measure.
 
 ### The ten thinnest blocks
 
 | # | Area | Surface temp | Canopy | Residents | 65+ | Street frontage |
 |---|---|---|---|---|---|---|
-| 1 | Valencia S | 46.9 °C | 3.2% | 925 | 8.6% | 1,279 m |
-| 2 | Mosaic Park | 46.8 °C | 1.7% | 887 | 8.0% | 1,447 m |
-| 3 | Amador Lakes Apartments N | 47.7 °C | 7.3% | 210 | **47.6%** | 1,301 m |
-| 4 | Canyon Woods SW | 47.3 °C | 9.7% | 716 | 5.7% | 1,985 m |
-| 5 | Fairway Village Apartments SE | 47.2 °C | 7.6% | 480 | 18.5% | 1,121 m |
-| 6 | Carmelita S | **51.1 °C** | **0.0%** | 178 | 10.6% | 493 m |
-| 7 | Solaire & Belvedere SE | 45.7 °C | 1.5% | 710 | 5.1% | 1,149 m |
-| 8 | Valencia | 46.9 °C | 3.2% | 542 | 8.8% | 1,896 m |
-| 9 | Seville | 47.0 °C | 2.7% | 525 | 8.1% | 1,619 m |
+| 1 | Mosaic Park | 46.8 °C | 1.7% | 887 | 8.0% | 1,447 m |
+| 2 | Valencia S | 46.9 °C | 3.2% | 925 | 8.6% | 1,279 m |
+| 3 | Carmelita S | **51.1 °C** | **0.0%** | 178 | 10.6% | 493 m |
+| 4 | Amador Lakes Apartments N | 47.7 °C | 7.3% | 210 | **47.6%** | 1,301 m |
+| 5 | Carmelita | 49.3 °C | **0.0%** | 265 | 10.4% | 1,365 m |
+| 6 | Valencia | 46.9 °C | 3.2% | 542 | 8.8% | 1,896 m |
+| 7 | Seville | 47.0 °C | 2.7% | 525 | 8.1% | 1,619 m |
+| 8 | Capella ⚠ | 49.3 °C | **0.0%** | 263 | 9.7% | 559 m |
+| 9 | Fairway Village Apartments SE | 47.2 °C | 7.6% | 480 | 18.5% | 1,121 m |
 | 10 | Valencia SW | 46.7 °C | 3.6% | 552 | 8.8% | 1,588 m |
 
-A canopy reading of **0.0%** (Carmelita S) means the height model found no vegetation over 2 m
-across the block — consistent with a bare apartment-and-parking block, but exactly the kind of
-value worth confirming on the ground. Five of the top 25 read under 1%.
+A canopy reading of **0.0%** (Carmelita S, Carmelita and Capella above) means the height model
+found no vegetation over 2 m across the block — consistent with a bare apartment-and-parking
+block, but exactly the kind of value worth confirming on the ground. Eight of the top 25 read
+under 1%, five of them at 0.0%.
 
-⚠ **Capella (rank 13) is flagged, not asserted.** It runs 3.8 °C hotter than its neighbouring
+⚠ **Capella (rank 8) is flagged, not asserted.** It runs 3.8 °C hotter than its neighbouring
 blocks — above the 95th percentile of local anomalies citywide — carries 6.0 residents per
 mapped building against a city median of 3.7, and now reads 0.0% canopy. That combination is
 consistent with either a genuine hot spot or a mapping error. **It should be checked on the
@@ -153,11 +154,11 @@ canopy it should see and the ranking needs adjusting where it disagrees with you
 worth finding out cheaply.
 
 If they show these streets are *not* planted, then CS-1b has a ranked, costed starting list —
-25 blocks, 12,421 residents, ~3,900 trees, 36.5 km of City right-of-way — and CS-1d has a
+25 blocks, 11,506 residents, ~4,500 trees, 33.6 km of City right-of-way — and CS-1d has a
 quantified need to put in a grant application.
 
 Either outcome is useful to you. No software to adopt, no procurement, no commitment: one
 cross-check against data the City already owns.
 
-**Also worth knowing before you act on it:** one block near the top (Capella, rank 13) is
+**Also worth knowing before you act on it:** one block in the top ten (Capella, rank 8) is
 flagged above as possibly a data artifact, and should be looked at before it appears on any list.
