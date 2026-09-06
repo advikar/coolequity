@@ -397,7 +397,7 @@
           <button class="layer" data-k="veg"><b>Lawn, no shade</b><span>non-tree vegetation</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
-          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
+          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · measured</span></button>
         </div>
       </div>
 
@@ -483,7 +483,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6&nbsp;m, 2022 NAIP aerial) · US Census ACS 2023 5-yr, Bakersfield · OpenStreetMap cooling sites and neighborhood names. A/C access is <b>modeled from income</b>, not measured. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6&nbsp;m, 2022 NAIP aerial) · US Census ACS 2023 5-yr, Bakersfield · OpenStreetMap cooling sites and neighborhood names. A/C access is <b>measured</b> per census tract from the US Census LACE estimates (2023). Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -645,8 +645,8 @@ const LAYERS={
     cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
     cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
-  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:true,
-    cap:'ESTIMATED share of homes with air conditioning, modelled from median household income. Not measured — no census counts A/C. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
+  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:false,
+    cap:'MEASURED share of occupied homes with air conditioning, from the US Census Bureau’s LACE estimates (2023), per census tract. Deep navy = fewest homes with A/C, i.e. the end that needs help. Note: LACE counts any A/C including evaporative (“swamp”) coolers, which give far less protection in extreme heat — a real caveat in the Central Valley.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
     cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
@@ -730,7 +730,7 @@ const W_INPUTS=[
    note:'hotter hex → higher risk'},
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
-  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
+  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:false,
    note:'modelled from income — scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},

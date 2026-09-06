@@ -197,7 +197,9 @@ def main():
                        else pd.Series(0.0, index=df.index)).fillna(0).round(1),
         "pop":        df["pop"].round(0).astype(int),
         "pct65":      df["pct65_s"].round(1),
-        "ac":         df["ac_est"].round(1),
+        # 2dp, not 1: measured A/C is nearly uniform in hot cities, so its clip
+        # range is narrow and 1dp rounding blows up the app's live-score parity.
+        "ac":         df["ac_est"].round(2),
         "holc":       df["holc"],
         "access_min": df["access_min"].round(1),
         "access_km":  df["access_km"].round(2),
