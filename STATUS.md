@@ -1,5 +1,44 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-05 — measured canopy live on all four cities
+
+The site now serves **four** cities: LA `/app/` (still NDVI), San Ramon
+`/sanramon/`, Contra Costa `/contracosta/` and Bakersfield `/bakersfield/`.
+Deployed and verified over the wire (all 9 URLs 200, right content at each).
+
+Done this session:
+- **contra-costa**: committed the measured-canopy rescore (02c_canopy.py +
+  05_score.py `veg`/`canopy_m2`/`row_*`); app copy corrected (canopy median 12.6%,
+  63% of residents under 15%, income gap 8.9% vs 21.6% popwt, corr(heat,canopy)
+  county −0.24).
+- **four-city chooser** in `site/index.html` + `deploy.sh` (both live on the
+  contra-costa branch — deploy from there).
+- **san-ramon BRIEF.md** fully recomputed on measured canopy (median 10.1% ≈ 11%
+  over the typical resident; the old −0.80 was corr with NDVI vegetation, canopy
+  is −0.64; top-10 regenerated; Capella now rank 13). App lede/footer/captions
+  fixed too.
+- **bakersfield** app footer said "Contra Costa County" (copy-paste leak) and its
+  veg caption carried San Ramon's correlations — both corrected (Bakersfield
+  canopy~heat is only −0.24; irrigation, r=−0.82, carries the cooling).
+
+**Outstanding (flagged, not done):**
+1. `README.md` / `DEMO.md` on **san-ramon** still carry NDVI-era numbers
+   (−0.80, 20.9%, 21%, the flat income quartile table). Not deployed, but redo
+   before showing anyone.
+2. `FINDINGS_CONTRACOSTA.md` §1 equity table and §5 headline numbers are still
+   NDVI-era (median 19.7%, 32%/370k under 15%, top-25 12.0%, 36,928 trees/$18.5M).
+   The app is corrected; this source doc is not.
+3. The **bakersfield branch carries a stale copy of the San Ramon BRIEF.md** —
+   wrong-branch leftover; give Bakersfield its own brief or delete it.
+4. **Analytical note for review:** on measured canopy, in the dry-summer cities
+   canopy's *partial* corr with heat (controlling for total NDVI greenness) is
+   weak — San Ramon −0.21, Bakersfield −0.05 — i.e. irrigation/total vegetation
+   carries most of the measured cooling. Raw canopy~heat is still negative
+   (SR −0.64, Bak −0.24). This supports REDTEAM objection 1 and bounds how hard
+   "trees cool" can be stated. Contra Costa's within-zone (detrended) heat~canopy
+   is −0.44, *stronger* than the NDVI −0.15 that justified heat=0 — worth
+   revisiting whether heat deserves some weight in the CC score (not changed).
+
 > ## Branch: `san-ramon`
 >
 > This branch retargets the whole engine at **San Ramon, California** — 419 populated hexes
