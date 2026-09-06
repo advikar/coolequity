@@ -195,8 +195,8 @@ def main():
     out = pd.DataFrame({
         "id":         df["id"].astype(int),
         "name":       df["name"].fillna("Unnamed"),
-        "lst":        df["lst_c"].round(1),
-        "green":      df["green_pct"].round(1),
+        "lst":        df["lst_c"].round(2),
+        "green":      df["green_pct"].round(2),
         # Total vegetation from NDVI. `veg` minus `green` is non-tree ground.
         "veg":        (df["veg_pct"] if "veg_pct" in df.columns
                        else df["green_pct"]).round(1),
