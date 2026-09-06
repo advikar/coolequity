@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CoolEquity — Heat &amp; Canopy Mapping</title>
-<meta name="description" content="Which neighborhoods should a city cool first? Satellite heat and tree canopy scored per block, priced per intervention. Built for Los Angeles and San Ramon, California.">
+<meta name="description" content="Which neighborhoods should a city cool first? Satellite heat and tree canopy scored per block, priced per intervention. Built for Los Angeles, Contra Costa County, Bakersfield and San Ramon, California.">
 <style>
   @font-face{font-family:Inter;src:url(app/vendor/inter-latin.woff2) format('woff2');
     font-weight:100 900;font-display:swap}
@@ -55,7 +55,7 @@
   <h1>Where should a city<br>cool down first?</h1>
   <p class="lede">Satellite surface heat and tree canopy, measured for every block of a city,
     scored against who lives there, and priced per intervention — how many trees, at what cost,
-    cooling how many people. Three areas are built. Pick one.</p>
+    cooling how many people. Four areas are built. Pick one.</p>
 
   <div class="cards">
     <a class="card" href="app/">
@@ -74,26 +74,40 @@
     <a class="card" href="contracosta/app/">
       <div class="city">Contra Costa County</div>
       <div class="sub">California · H3 res 8</div>
-      <p>1.16 million residents, and the clearest result in the project: the lowest-income
-        quarter of the county has <b>14.8%</b> tree canopy against <b>28.3%</b> in the
-        highest.</p>
+      <p>1.16 million residents, and the clearest result in the project: the poorest quarter
+        of residents live under <b>8.9%</b> measured tree canopy against <b>21.6%</b> for the
+        richest.</p>
       <div class="figs">
         <div><b>2,695</b><span>blocks</span></div>
         <div><b>1.16M</b><span>residents</span></div>
-        <div><b>+0.42</b><span>income ↔ canopy</span></div>
+        <div><b>+0.40</b><span>income ↔ canopy</span></div>
       </div>
       <div class="go">Open Contra Costa →</div>
+    </a>
+
+    <a class="card" href="bakersfield/app/">
+      <div class="city">Bakersfield</div>
+      <div class="sub">California · H3 res 9</div>
+      <p>The severity case, not a gradient. Half its blocks have under <b>2.4%</b> tree canopy
+        and <b>95%</b> of residents live below 15% — a citywide shade deficit under some of the
+        state's hottest summer ground.</p>
+      <div class="figs">
+        <div><b>3,777</b><span>blocks</span></div>
+        <div><b>409k</b><span>residents</span></div>
+        <div><b>49.8&nbsp;°C</b><span>median summer heat</span></div>
+      </div>
+      <div class="go">Open Bakersfield →</div>
     </a>
 
     <a class="card" href="sanramon/app/">
       <div class="city">San Ramon</div>
       <div class="sub">California · H3 res 9</div>
-      <p>One city inside that county at seven times the resolution. Canopy and heat couple
-        tightly here (<b>r = −0.80</b>) — and canopy tracks neither income nor housing type.</p>
+      <p>One city inside Contra Costa at seven times the resolution. Canopy and heat couple
+        tightly here (<b>r = −0.64</b>) — and canopy tracks neither income nor housing type.</p>
       <div class="figs">
         <div><b>419</b><span>blocks</span></div>
         <div><b>85,569</b><span>residents</span></div>
-        <div><b>−0.80</b><span>heat ↔ canopy</span></div>
+        <div><b>−0.64</b><span>heat ↔ canopy</span></div>
       </div>
       <div class="go">Open San Ramon →</div>
     </a>
@@ -101,14 +115,21 @@
 
   <div class="note">
     <b>What is estimated, and what is measured.</b> Surface temperature (Landsat 8/9 thermal)
-    and vegetation cover (Sentinel-2 NDVI) are measured per block. Population comes from the
-    US Census ACS. <b>Air-conditioning access is modelled from income, not measured.</b> In
-    San Ramon it is weighted zero, because that city's income range is too narrow for the model
-    to say anything real. In Contra Costa County it is scored — but <b>surface heat</b> is
-    weighted zero there instead, because the county spans marine to Delta and 38% of all
-    variance in its surface temperature is explained by position alone. Walking time to a cooling site is a circuity-adjusted straight line,
-    not a routed street path. Vegetation cover is an NDVI proxy — it cannot tell a mature tree
-    from an irrigated lawn. Tree costs are planning assumptions, not quotes.
+    is measured per block. Tree canopy in San Ramon, Contra Costa and Bakersfield is measured
+    from the <b>Meta/WRI canopy-height model</b> — ground under vegetation at least 2 m tall,
+    so an irrigated lawn does not count as shade; Los Angeles still uses the older Sentinel-2
+    NDVI proxy, which does. The canopy-height model reads roughly a third below professional
+    aerial assessments, so it <b>ranks</b> blocks rather than certifying an absolute canopy
+    percentage. Population comes from the US Census ACS.
+    <b>Air-conditioning access is modelled from income, not measured</b>, and is weighted zero
+    in San Ramon and Bakersfield, where it is either too uniform or overwhelmed by heat.
+    In Contra Costa County A/C is scored, but <b>surface heat</b> is weighted zero there
+    instead: the county spans marine to Delta and 39% of all variance in its surface
+    temperature is explained by position alone, so the income–canopy gap there (raw
+    <b>+0.40</b>, and <b>+0.10</b> after removing where rich and poor neighbourhoods sit) is
+    the honest headline, not the heat map. Walking time to a cooling site is a
+    circuity-adjusted straight line, not a routed street path. Tree costs are planning
+    assumptions, not quotes.
     <br><br>
     Source, pipeline and the full write-up:
     <a href="https://github.com/advikar/coolequity">github.com/advikar/coolequity</a>.
