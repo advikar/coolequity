@@ -390,7 +390,7 @@
           <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
-          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · est.</span></button>
+          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · measured</span></button>
         </div>
       </div>
 
@@ -467,7 +467,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is modeled from income, not measured. Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (summer 2023 medians, Planetary Computer) · US Census ACS 2023 5-yr · OpenStreetMap cooling sites · HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>. A/C access is measured per census tract from US Census LACE estimates (2023). Aggregated to H3 res-8 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -608,8 +608,8 @@ const LAYERS={
     cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
     cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
-  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:true,
-    cap:'ESTIMATED share of homes with air conditioning, modelled from median household income. Not measured — no census counts A/C. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
+  ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:false,
+    cap:'MEASURED share of occupied homes with air conditioning, from the US Census Bureau LACE estimates (2023), per census tract. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
     cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
@@ -675,8 +675,8 @@ const W_INPUTS=[
    note:'hotter hex → higher risk'},
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
-  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income'},
+  {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:false,
+   note:'measured from Census LACE',
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -704,7 +704,7 @@ const PRESETS=[
       +'The answer depends on the question you asked.'},
   {id:'ac',name:'A/C poverty',w:{heat:.25,green:.10,ac:.60,age65:.05,access:0},pop:.45,
    why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
-      +'<i>modelled</i> from income rather than measured — worth naming out loud.'},
+      +'now <i>measured</i> from US Census LACE (2023) rather than modelled from income.'},
   {id:'stranded',name:'No relief nearby',w:{heat:.30,green:.20,ac:.20,age65:.10,access:.20},pop:.45,
    why:'<b>Who has nowhere to go today?</b> The only preset that uses the fifth input, walking '
       +'time to a cooling site, and it is deliberately a minority share. Distance is the one '
@@ -1109,7 +1109,7 @@ function buildIntro(){
   buildSwitch();
 
   document.getElementById('ifine').innerHTML=
-    'Real measurements throughout, except where labelled: A/C access is <b>modelled</b> from '
+    'Real measurements throughout, except where labelled: A/C access is now <b>measured</b> (US Census LACE 2023), not '
    +'median household income, and walk time is a circuity-adjusted straight line, not a routed '
    +'street path. Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap · '
    +'HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>.';
