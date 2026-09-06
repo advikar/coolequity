@@ -112,6 +112,22 @@
     border:0;border-radius:11px;padding:13px 22px;cursor:pointer;
     box-shadow:0 8px 26px rgba(255,122,69,.28);transition:transform .16s,box-shadow .16s}
   .cta:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(255,122,69,.36)}
+  /* Real cross-city switcher — replaces the old search-over-fake-cities combobox.
+     Current city is a static chip; the others are links to their deployed apps. */
+  .switch{display:flex;flex-wrap:wrap;gap:8px;max-width:460px}
+  .sw{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:10px;
+    border:1px solid var(--edge);background:#0e141c;color:var(--txt);text-decoration:none;
+    font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
+  a.sw:hover{border-color:var(--accent);background:#12161d;transform:translateY(-1px)}
+  .sw em{font-style:normal;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted2)}
+  .sw.here{border-color:var(--accent);background:#1a1310;cursor:default}
+  .sw.here em{color:var(--accent)}
+  .sw-hint{max-width:460px;margin:12px 0 0;font-size:11.5px;color:var(--muted2);line-height:1.55}
+  .allcities{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    color:var(--muted);text-decoration:none;border:1px solid var(--edge);border-radius:8px;
+    padding:5px 9px;transition:.15s;white-space:nowrap}
+  .allcities svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+  .allcities:hover{color:var(--txt);border-color:var(--accent)}
   .cta .ico{opacity:1;stroke-width:2}
   .fine{margin:20px 0 0;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:62ch}
   @media (prefers-reduced-motion:reduce){#intro{transition:opacity .01s}#intro.gone{transform:none}}
@@ -338,18 +354,10 @@
       So this is not a map of who is rich and who is poor. It is a map of where the
       shade is missing, what that costs in degrees, and what it would take to fix.</p>
     <div class="istats" id="istats"></div>
-    <p class="ilbl">Choose a city</p>
-    <div class="picker" id="picker">
-      <div class="cinput">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="citysearch" type="text" autocomplete="off" spellcheck="false"
-          placeholder="Search a city — San Ramon, Phoenix, Delhi…"
-          role="combobox" aria-expanded="false" aria-controls="cities" aria-autocomplete="list"/>
-        <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-      <div class="cities" id="cities" role="listbox" aria-label="Cities"></div>
-    </div>
-    <div class="cityinfo" id="cityinfo" hidden></div>
+    <p class="ilbl">Explore the map, or switch city</p>
+    <div class="switch" id="switch"></div>
+    <p class="sw-hint">Four California places are built. Any city on Earth can be added —
+      it is a bounding box in <code>pipeline/config.py</code> and one pipeline run.</p>
     <button class="cta" id="intro-go">Explore San Ramon
       <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     <p class="fine" id="ifine"></p>
@@ -365,11 +373,14 @@
              overlay: the intro is built once from HEX/CENTERS during boot, so
              rebuilding it live would mean a second construction path to keep
              correct. Everything is local, so the reload is instant. -->
-        <button class="home" id="go-home" type="button" title="Back to the start screen"
-          aria-label="Back to the start screen">
+        <button class="home" id="go-home" type="button" title="This city's start screen"
+          aria-label="This city's start screen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         </button>
+        <a class="allcities" id="all-cities" href="../../" title="Choose a different city">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+          All cities</a>
         <div class="seg" id="units" role="group" aria-label="Units">
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
@@ -1165,55 +1176,6 @@ function setLayer(k){
  *
  * `have` is the data file each city would load, so wiring a second real city
  * up later is one build and one line here. */
-/** Search list. Only San Ramon carries `have` — that flag is what decides
- *  whether the button opens a dataset or explains how to build one, so a city
- *  can never be added here in a way that fakes data it does not have.
- *
- *  Los Angeles is built too, on the master branch, and is listed WITHOUT `have`
- *  because its files are not on this one. Claiming it here would be exactly the
- *  lie this list exists to prevent. */
-const CITIES=[
-  {name:'San Ramon',cc:'United States',have:'sanramon',
-   note:'The built dataset. 419 populated hexes at H3 resolution 9, ~0.11 km² each, '
-       +'covering the city limits — 85,569 residents, within 0.2% of the ACS place '
-       +'total of 85,734. Landsat 8/9 '
-       +'thermal and Sentinel-2 NDVI composited over the summers of 2022–2024, '
-       +'ACS 2023 for Contra Costa County, and OpenStreetMap for cooling sites and '
-       +'neighborhood names.'},
-  {name:'Los Angeles',cc:'United States',
-   note:'Built on this project&rsquo;s <code>master</code> branch — 3,008 hexes at '
-       +'resolution 8 — but its data files are not on this branch, so this build '
-       +'cannot open it.'},
-  {name:'Phoenix',cc:'United States'},
-  {name:'Houston',cc:'United States'},
-  {name:'New York',cc:'United States'},
-  {name:'Chicago',cc:'United States'},
-  {name:'Miami',cc:'United States'},
-  {name:'Atlanta',cc:'United States'},
-  {name:'Sacramento',cc:'United States'},
-  {name:'Athens',cc:'Greece'},
-  {name:'Madrid',cc:'Spain'},
-  {name:'Seville',cc:'Spain'},
-  {name:'Paris',cc:'France'},
-  {name:'Delhi',cc:'India'},
-  {name:'Ahmedabad',cc:'India'},
-  {name:'Mumbai',cc:'India'},
-  {name:'Karachi',cc:'Pakistan'},
-  {name:'Lagos',cc:'Nigeria'},
-  {name:'Cairo',cc:'Egypt'},
-  {name:'São Paulo',cc:'Brazil'},
-  {name:'Sydney',cc:'Australia'},
-];
-const BUILD_NOTE=c=>
-  `<b>Not built yet — and this page will not pretend otherwise.</b><br>
-   Every input except the US redlining overlay is global, so ${c.name} takes one config change
-   and one pipeline run: set <code>CITY</code> and <code>BBOX</code> in
-   <code>pipeline/config.py</code>, then run <code>01</code>→<code>05</code>.`
-  +(c.cc==='United States'
-     ? ' Census and HOLC layers both apply here.'
-     : ` Outside the US there is no HOLC map, and <code>03_census.py</code> needs a WorldPop
-        raster in place of the ACS — the other four stages are unchanged.`);
-
 function buildIntro(){
   const pop=HEX.features.reduce((a,f)=>a+f.properties.pop,0);
   const hot=Math.max(...HEX.features.map(f=>f.properties.lst));
@@ -1233,7 +1195,7 @@ function buildIntro(){
     [CENTERS.features.length.toLocaleString(),'cooling sites'],
   ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
 
-  buildPicker();
+  buildSwitch();
 
   document.getElementById('ifine').innerHTML=
     'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
@@ -1262,66 +1224,29 @@ function buildIntro(){
  *  What it must never do is imply a city is available when it isn't: selecting
  *  an unbuilt city is allowed and shows exactly what building it takes, but the
  *  CTA still says "Explore San Ramon", because that is the only data on disk. */
-function buildPicker(){
-  const box=document.getElementById('picker'),
-        input=document.getElementById('citysearch'),
-        list=document.getElementById('cities'),
-        info=document.getElementById('cityinfo'),
-        go=document.getElementById('intro-go');
-  let sel=0, cur=0, shown=CITIES.map((_,i)=>i);
+const CITY_NAV=[
+  {slug:'la',          name:'Los Angeles',         sub:'app/'},
+  {slug:'contracosta', name:'Contra Costa County', sub:'contracosta/app/'},
+  {slug:'bakersfield', name:'Bakersfield',         sub:'bakersfield/app/'},
+  {slug:'sanramon',    name:'San Ramon',           sub:'sanramon/app/'},
+];
+const THIS_CITY='sanramon';
+const _selfSub=(CITY_NAV.find(c=>c.slug===THIS_CITY)||{}).sub||'';
+const SITE_ROOT=(_selfSub && location.pathname.endsWith(_selfSub))
+  ? location.pathname.slice(0,-_selfSub.length) : '/';
 
-  const open=v=>{box.classList.toggle('open',v);input.setAttribute('aria-expanded',v);};
-
-  function render(q=''){
-    const s=q.trim().toLowerCase();
-    shown=CITIES.map((c,i)=>i).filter(i=>!s
-      || CITIES[i].name.toLowerCase().includes(s)
-      || CITIES[i].cc.toLowerCase().includes(s));
-    if(!shown.length){
-      list.innerHTML=`<div class="cnone">No city called “${q}”. Any city on Earth can be
-        added — it is a bbox in <code>pipeline/config.py</code> and one pipeline run.</div>`;
-      return;
-    }
-    if(!shown.includes(cur))cur=shown[0];
-    list.innerHTML=shown.map(i=>{const c=CITIES[i];
-      return `<button class="city${i===sel?' on':''}${i===cur?' cur':''}" data-i="${i}"
-        type="button" role="option" aria-selected="${i===sel}">
-        <span class="cnm">${c.name}</span><span class="cco">${c.cc}</span>
-        <span class="cs${c.have?'':' soon'}">${c.have?'ready':'pipeline-ready'}</span></button>`;
-    }).join('');
-  }
-
-  function choose(i){
-    sel=i;cur=i;const c=CITIES[i];
-    input.value=c.name;
-    info.hidden=false;info.innerHTML=c.have?c.note:BUILD_NOTE(c);
-    // The CTA only ever opens what is actually loaded.
-    go.firstChild.textContent=c.have?`Explore ${c.name} `:'Explore San Ramon ';
-    open(false);render();
-  }
-
-  input.addEventListener('focus',()=>{render(input.value===CITIES[sel].name?'':input.value);open(true);});
-  input.addEventListener('input',()=>{render(input.value);open(true);});
-  input.addEventListener('keydown',e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
-      e.preventDefault();
-      if(!box.classList.contains('open')){render('');open(true);return;}
-      const at=shown.indexOf(cur),nx=e.key==='ArrowDown'?at+1:at-1;
-      cur=shown[(nx+shown.length)%shown.length];
-      render(input.value===CITIES[sel].name?'':input.value);
-      list.querySelector('.city.cur')?.scrollIntoView({block:'nearest'});
-    } else if(e.key==='Enter'){
-      // Enter inside the field picks a city; it must not also fall through to
-      // the global Enter handler and launch the map.
-      if(box.classList.contains('open')&&shown.length){e.preventDefault();e.stopPropagation();choose(cur);}
-    } else if(e.key==='Escape'){
-      if(box.classList.contains('open')){e.stopPropagation();open(false);input.blur();}
-    }
-  });
-  list.addEventListener('click',e=>{const b=e.target.closest('.city');if(b)choose(+b.dataset.i);});
-  document.addEventListener('click',e=>{if(!box.contains(e.target))open(false);});
-
-  render();choose(0);          // San Ramon selected on load — it is the built dataset
+/** Cross-city switcher on the landing screen. Replaces a search over twenty
+ *  cities where only one had data, so nineteen of twenty results did nothing.
+ *  Every entry here is a built city: the one you are on is a static chip, the
+ *  others are links to their deployed apps; the header "All cities" link and the
+ *  site chooser cover the same set. */
+function buildSwitch(){
+  const el=document.getElementById('switch');
+  if(el) el.innerHTML=CITY_NAV.map(c=>c.slug===THIS_CITY
+    ? `<span class="sw here" aria-current="true">${c.name}<em>viewing</em></span>`
+    : `<a class="sw" href="${SITE_ROOT+c.sub}">${c.name}<em>open →</em></a>`).join('');
+  const ac=document.getElementById('all-cities');
+  if(ac) ac.href=SITE_ROOT;
 }
 
 /** Backdrop is the real hex layer, drawn straight to a canvas from the same
