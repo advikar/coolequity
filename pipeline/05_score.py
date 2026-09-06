@@ -40,6 +40,48 @@ def minmax(s):
     return (s - lo) / (hi - lo)
 
 
+# Percentile-clipped normalisation for the SCORING inputs. Plain min-max lets a
+# single outlier set the scale: one 92%-canopy hex compresses the "missing
+# canopy" term across every other block, and a handful of very crowded hexes pin
+# ~98% of the population multiplier near its floor.
+#
+# The clip is ONE-SIDED, and on purpose. We only pull in the tail that represents
+# the LEAST need — a single fully-canopied block, a single empty-cool one — so it
+# stops setting the scale. We never touch the most-in-need tail, because the
+# hottest, oldest and barest blocks are exactly what the tool exists to rank, and
+# clipping them would blunt it (a two-sided clip flattened Rossmoor's 84%-elderly
+# down to an ordinary block and broke the "Protect seniors" view). Population is
+# a saturating multiplier — 2,500 people and 5,600 are both "a lot" — so it is
+# clipped at the crowded end.
+#
+# Which end is benign is read off the score formula: protective inputs enter as
+# (1-n) so their HIGH end is low-need; risk inputs enter as n so their LOW end is.
+# Display values and colour ramps still use the raw range (this is score-only),
+# and these endpoints are written into the geojson so the front end normalises
+# against the identical bounds rather than recomputing percentiles a different way.
+CLIP_LO_Q, CLIP_HI_Q = 2.0, 98.0
+
+
+def clip_bounds(s, clip_high):
+    """One-sided percentile clip. clip_high pulls the top tail in to p98 (the
+    benign end for protective inputs and the saturating end for population);
+    otherwise the bottom tail comes in to p2 and the true maximum is kept."""
+    if clip_high:
+        lo, hi = float(s.min()), float(np.percentile(s, CLIP_HI_Q))
+    else:
+        lo, hi = float(np.percentile(s, CLIP_LO_Q)), float(s.max())
+    if not np.isfinite(lo) or hi <= lo:            # degenerate: fall back to range
+        lo, hi = float(s.min()), float(s.max())
+    return lo, hi
+
+
+def clip_minmax(s, bounds):
+    lo, hi = bounds
+    if hi <= lo:
+        return pd.Series(np.zeros(len(s)), index=s.index)
+    return ((s - lo) / (hi - lo)).clip(0.0, 1.0)
+
+
 def shrink_age65(pop, pct65):
     """Empirical-Bayes smoothing of the 65+ share toward the citywide rate."""
     pop65 = pop * pct65 / 100.0
@@ -114,12 +156,25 @@ def main():
     log(f"  pct65: raw max {df.pct65.max():.1f}% -> smoothed "
         f"{df.pct65_s.max():.1f}% (median {df.pct65_s.median():.1f}%)")
 
+    # p2/p98 endpoints per scoring input, computed once and reused by the app.
+    # Keyed by the PROPERTY NAME the front end reads, so it can look them up.
+    # clip_high=True on the protective inputs (green, ac) and on population; the
+    # risk inputs (heat, age) keep their true maximum and clip the cool/young tail.
+    bounds = {
+        "lst":   clip_bounds(df["lst_c"],    clip_high=False),
+        "green": clip_bounds(df["green_pct"], clip_high=True),
+        "ac":    clip_bounds(df["ac_est"],    clip_high=True),
+        "pct65": clip_bounds(df["pct65_s"],  clip_high=False),
+        "pop":   clip_bounds(df["pop"],       clip_high=True),
+    }
+    log("  score inputs clipped to p2/p98: " + ", ".join(
+        f"{k} {lo:.1f}–{hi:.1f}" for k, (lo, hi) in bounds.items()))
     n = pd.DataFrame({
-        "heat":  minmax(df["lst_c"]),
-        "green": minmax(df["green_pct"]),
-        "ac":    minmax(df["ac_est"]),
-        "age65": minmax(df["pct65_s"]),
-        "pop":   minmax(df["pop"]),
+        "heat":  clip_minmax(df["lst_c"], bounds["lst"]),
+        "green": clip_minmax(df["green_pct"], bounds["green"]),
+        "ac":    clip_minmax(df["ac_est"], bounds["ac"]),
+        "age65": clip_minmax(df["pct65_s"], bounds["pct65"]),
+        "pop":   clip_minmax(df["pop"], bounds["pop"]),
     })
 
     W = C.WEIGHTS
@@ -183,8 +238,11 @@ def main():
                       "geometry": {"type": "Polygon",
                                    "coordinates": round_coords(f["geometry"])}})
 
+    # p2/p98 endpoints the front end must normalise against to reproduce this
+    # ranking exactly. Keyed by the property each input is read from.
+    norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
     C.OUT_FILE.write_text(json.dumps({"type": "FeatureCollection",
-                                      "features": feats}))
+                                      "norm": norm, "features": feats}))
 
     log(f"  score: {out.score.min():.1f}–{out.score.max():.1f} "
         f"(median {out.score.median():.1f})")

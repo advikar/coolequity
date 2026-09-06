@@ -664,7 +664,8 @@ const FLAT_STYLE={version:8,sources:{},layers:[
 
 // ---- state populated once the data lands ----
 let HEX=null, CENTERS=null, BOUNDARY=null, map=null;
-const vals={};
+const vals={};    // raw min/max per property — drives the colour ramps and legend
+const svals={};   // SCORING bounds: p2/p98 from the geojson's `norm`, clamped [0,1]
 const AREA_M2_FALLBACK=5160000, TREE_M2=40, COST_TREE=500;  // ~5.16 km2 res-7 hex
 /* Street trees go on both sides of a road at roughly this spacing. The number
  * is a planning convention, not a measurement — it is stated on screen next to
@@ -769,7 +770,7 @@ const PRESETS=[
       +'blocks. The answer moves south of Walnut Creek to <b>Saranap and Rossmoor</b> — '
       +'Rossmoor is the county\'s large retirement community, 84% aged 65+ — though note these '
       +'blocks already carry 24–33% canopy, well above the 13% county median. '
-      +'The Richmond blocks that lead by default are young: under 15% aged 65+.'},
+      +'The Richmond blocks that lead by default are young: 6–17% aged 65+.'},
   {id:'ac',name:'A/C poverty',w:{heat:0,green:.30,ac:.60,age65:.10,access:0},pop:.45,
    why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
       +'<i>modelled</i> from income rather than measured. Worth naming out loud — and worth '
@@ -804,7 +805,7 @@ function isDefaultW(){
  *  so it runs on every `input` event rather than being debounced. */
 function rescore(){
   const W=normW(), F=HEX.features, n=F.length;
-  const nv=(p,k)=>{const[lo,hi]=vals[k];return (p[k]-lo)/(hi-lo);};
+  const nv=(p,k)=>{const[lo,hi]=svals[k];return Math.max(0,Math.min(1,(p[k]-lo)/(hi-lo)));};
   const pri=new Float64Array(n);
   for(let i=0;i<n;i++){
     const p=F[i].properties;
@@ -836,7 +837,7 @@ const rk=p=>LIVE.rank.get(p.id);
  *  It is the one place the model is duplicated, so it is generated from the same
  *  `vals` ranges and the same normW() as rescore() above; there is no third set
  *  of numbers to keep in sync. */
-function nx(k){const[lo,hi]=vals[k];return ['/',['-',['coalesce',['get',k],lo],lo],hi-lo];}
+function nx(k){const[lo,hi]=svals[k];return ['max',0,['min',1,['/',['-',['coalesce',['get',k],lo],lo],hi-lo]]];}
 function liveScoreExpr(){
   const W=normW();
   const base=['+',
@@ -872,6 +873,13 @@ function computeRanges(){
   // the weights are. Pinning it stops the legend's endpoints twitching every time
   // a slider moves, which would read as the scale rather than the map changing.
   vals.score=[0,100];
+  // Scoring normalises against the pipeline's p2/p98 endpoints (geojson `norm`),
+  // so one leafy or one crowded hex no longer sets the scale for the score; the
+  // colour ramps above stay on the raw range so the map still spans real values.
+  // Falls back to the raw range when `norm` is absent (older data files).
+  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{svals[k]=vals[k];});
+  const nm=HEX&&HEX.norm;
+  if(nm) for(const k in nm){ if(Array.isArray(nm[k])&&nm[k][1]>nm[k][0]) svals[k]=nm[k]; }
 }
 function rng(k){return k==='access'?vals['access_min']:vals[k];}
 function propKey(k){return k==='access'?'access_min':k;}
