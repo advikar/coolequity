@@ -1,5 +1,40 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-06 — canopy + A/C data upgrades (DEPLOYED)
+
+Two headline accuracy fixes from the review shipped and are **live**:
+
+- **Canopy → USFS/CAL FIRE 2022 aerial (0.6 m NAIP)** for **Bakersfield, San Ramon,
+  Contra Costa** via new `pipeline/02d_canopy_usfs.py` (EPSG:3310 equal-area,
+  per-hex windowed reads, urban-boundary denominator; CHM fallback for rural
+  fringe outside census urban areas). Replaces the 2009–2020 Meta/WRI height
+  model that read ~35% low. **San Ramon's real canopy is 17.7% over the average
+  resident (was a false ~11%) — it is slightly ABOVE the CA urban average, so its
+  brief was reframed from "thin canopy" to "uneven canopy."** **LA is still on
+  NDVI** — its `master` pipeline predates the canopy contract; swap recipe is in
+  `DATA_QUALITY.md` follow-up 1.
+- **A/C → measured US Census LACE 2023 (tract)** for **all four cities** via a
+  LACE join in `03_census.py` (income model kept only as a per-tract fallback;
+  new `ac_src` column). Breaks the income-circularity in CC and LA (where A/C is
+  scored). Bakersfield A/C is ~99% uniform (correctly stops skewing its ranking).
+
+Source rasters/CSVs live in `data/_cache/` (gitignored): `canopy_src/` (USFS zips
+per urban area) and `ac_src/LACE_23_Tract.csv`. `05_score.py` now stores `ac` at
+2dp (measured A/C's clip range is narrow, so 1dp broke live-score parity).
+All four re-verified: live-score parity < 0.1, ranks stable; populations intact.
+
+**Non-negotiables that held:** checked every ranking/quartile claim against the
+built geojson — corrected "all 25 top CC hexes poorest quartile" → 23/25, and SR's
+"6 of 10 blocks east of Dougherty Rd" → 0 of 10 (thinnest are apartment complexes
+central/west). `FINDINGS_CONTRACOSTA.md` + SR `BRIEF.md` + all app copy + the root
+chooser updated and redeployed via `./deploy.sh`.
+
+**Staged (recipes in `DATA_QUALITY.md`):** LA canopy swap, CalEPA UHI air-temp
+layer (data downloaded to `/tmp/uhi`), routed walk time (deliberately not shipped —
+can't guarantee accuracy at scale here; straight-line estimate stays labelled).
+
+`DATA_QUALITY.md` (new, contra-costa branch) is the full caveat audit with fixes.
+
 ## Session 2026-09-05b — UI overhaul + accuracy review
 
 **UI (done, deployed):** every app now has a real four-city switcher on the
