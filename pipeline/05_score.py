@@ -24,7 +24,7 @@ import config as C
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
-            "canopy_m2", "row_m2", "row_canopy", "veg"]
+            "canopy_m2", "row_m2", "row_canopy", "veg", "place"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -134,10 +134,20 @@ def main():
     grid, df = load()
     log(f"  merged: {len(df)} hexes x {len(df.columns)} fields")
 
-    keep = df["pop"] >= C.MIN_POP
-    log(f"  dropping {(~keep).sum()} uninhabited hexes (pop < {C.MIN_POP:g}) "
-        f"— ocean and forest, see config.MIN_POP")
-    df = df[keep].reset_index(drop=True)
+    # Three classes, not a binary drop: res (ranked), activity (developed but
+    # unpopulated — commercial/industrial with real streets: shown, not ranked),
+    # empty (no residents, no streets: water/field/ridge — dropped, framed by
+    # the always-on boundary outline). See DATA_QUALITY.md.
+    STREET_MIN_M = 120.0
+    street = (df["street_m"].fillna(0) if "street_m" in df.columns
+              else pd.Series(0.0, index=df.index))
+    df["place"] = np.where(df["pop"] >= C.MIN_POP, "res",
+                           np.where(street >= STREET_MIN_M, "activity", "empty"))
+    nres, nact, nemp = [(df["place"] == v).sum() for v in ("res", "activity", "empty")]
+    log(f"  {nres} residential (ranked) + {nact} developed-but-unpopulated "
+        f"(shown, not ranked); dropped {nemp} empty hexes (no residents, no streets)")
+    df = df[df["place"] != "empty"].reset_index(drop=True)
+    res = (df["place"] == "res").values
 
     df["pct65_s"] = shrink_age65(df["pop"], df["pct65"])
     log(f"  pct65: raw max {df.pct65.max():.1f}% -> smoothed "
@@ -146,12 +156,13 @@ def main():
     # p2/p98 endpoints per scoring input, reused by the app (keyed by the
     # property the front end reads). clip_high on the protective inputs and on
     # population; heat and age keep their true maximum.
+    R = df.loc[res]
     bounds = {
-        "lst":   clip_bounds(df["lst_c"],     clip_high=False),
-        "green": clip_bounds(df["green_pct"], clip_high=True),
-        "ac":    clip_bounds(df["ac_est"],    clip_high=True),
-        "pct65": clip_bounds(df["pct65_s"],   clip_high=False),
-        "pop":   clip_bounds(df["pop"],       clip_high=True),
+        "lst":   clip_bounds(R["lst_c"],     clip_high=False),
+        "green": clip_bounds(R["green_pct"], clip_high=True),
+        "ac":    clip_bounds(R["ac_est"],    clip_high=True),
+        "pct65": clip_bounds(R["pct65_s"],   clip_high=False),
+        "pop":   clip_bounds(R["pop"],       clip_high=True),
     }
     log("  score inputs clipped to p2/p98: " + ", ".join(
         f"{k} {lo:.1f}-{hi:.1f}" for k, (lo, hi) in bounds.items()))
@@ -170,10 +181,12 @@ def main():
             + W["age65"] * n["age65"])
     priority = base * (C.POP_FLOOR + C.POP_WEIGHT * n["pop"])
 
-    df["score"] = 100 * minmax(priority)
-    # Rank the unrounded priority: rounding score to 1dp first would manufacture
-    # ties and hand the demo two hexes both labelled #1.
-    df["rank"] = priority.rank(method="dense", ascending=False).astype(int)
+    # Score/rank residential hexes only; activity hexes get null score/rank.
+    df["score"] = np.nan
+    df["rank"] = np.nan
+    pr = priority[res]
+    df.loc[res, "score"] = (100 * minmax(pr)).values
+    df.loc[res, "rank"] = pr.rank(method="dense", ascending=False).values
 
     df["access_min"] = df["access_min"].fillna(df["access_min"].median())
     df["access_km"] = df["access_km"].fillna(df["access_km"].median())
@@ -205,6 +218,7 @@ def main():
         "access_km":  df["access_km"].round(2),
         "score":      df["score"].round(1),
         "rank":       df["rank"],
+        "place":      df["place"],
         "area_m2":    df["area_m2"].round(0).astype(int),
         # Metres of city-plantable street centreline. Not scored — it answers
         # "can the city act here?", which is a different question from
