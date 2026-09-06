@@ -648,7 +648,7 @@ const LAYERS={
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
     cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
   ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:true,
-    cap:'MEASURED share of occupied homes with air conditioning, from US Census LACE (2023), per tract. Weighted zero in San Ramon's score (see the footer). Deep navy = fewest homes with A/C.'},
+    cap:'MEASURED share of occupied homes with air conditioning, from US Census LACE (2023), per tract. Weighted zero in this city\'s score (see the footer). Deep navy = fewest homes with A/C.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
     cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
