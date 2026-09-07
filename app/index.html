@@ -653,7 +653,7 @@ const LAYERS={
   ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:false,
     cap:'MEASURED share of occupied homes with air conditioning, from the US Census Bureau’s LACE estimates (2023), per census tract. Deep navy = fewest homes with A/C, i.e. the end that needs help. Note: LACE counts any A/C including evaporative (“swamp”) coolers, which give far less protection in extreme heat — a real caveat in the Central Valley.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
-    cap:'ESTIMATED walking minutes to the nearest cooling site. Straight-line distance × 1.273 at 4.8 km/h — not a routed street path. Deeper = further from relief.'},
+    cap:'Walking minutes to the nearest cooling site, routed on the OpenStreetMap pedestrian network at 4.8 km/h — a freeway or canal with no walkable crossing is a real detour, not a straight line. Deeper = further from relief.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
   // uniformly; the legend swaps to the A–D swatch key instead of a gradient bar.
   holc:{title:'Redlining grade (HOLC)',ramp:null,fmt:v=>v,
@@ -784,7 +784,7 @@ const PRESETS=[
   {id:'stranded',name:'No relief nearby',w:{heat:.30,green:.20,ac:.20,age65:.10,access:.20,turf:0},pop:.45,
    why:'<b>Who has nowhere to go today?</b> Brings in walking time to a mapped cooling site. '
       +'Distance is what a city can fix this week by opening a building, rather than in '
-      +'twenty years by planting a tree. Estimated, not routed; the shipped model omits it.'},
+      +'twenty years by planting a tree. Routed on the OSM pedestrian network; the shipped default weights it zero.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
    why:'<b>Reach over severity.</b> Same weights, density dominates.'},
 ];
@@ -1222,8 +1222,8 @@ function buildIntro(){
     'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
    +'income are real ACS figures interpolated from census block groups about nine times the '
    +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
-   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is a '
-   +'circuity-adjusted straight line, not a routed street path. '
+   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is '
+   +'<b>routed on the OpenStreetMap pedestrian network</b>, not a straight-line estimate. '
    +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
 
   document.getElementById('intro-go').onclick=dismissIntro;
