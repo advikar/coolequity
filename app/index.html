@@ -649,7 +649,7 @@ const LAYERS={
   lst:{title:'Surface temperature',ramp:HEAT,worse:'hi',fmt:v=>fTemp(v),
     cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
   green:{title:'Tree canopy',ramp:CANOPY,worse:'lo',fmt:v=>v.toFixed(0)+'%',
-    cap:'Share of ground shaded by tree canopy at least 2 m tall, measured from a satellite canopy-height model — not greenness, so an irrigated lawn does not count. Shade is the cheapest durable cooling there is, so here the brown end is the end that needs help.'},
+    cap:'Share of ground under tree canopy, measured from the USFS/CAL FIRE 2022 aerial map (0.6m NAIP) — canopy, not greenness, so an irrigated lawn does not count. Shade is the cheapest durable cooling there is, so here the brown end is the end that needs help.'},
   pop:{title:'Population exposed',ramp:POPU,worse:'hi',fmt:v=>v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0),
     cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
@@ -723,17 +723,18 @@ let current='score', selId=null, holcOn=false, accessOn=false, centersOn=true;
  * all measured, all real — and carries no weight. The "Heat first" preset shows
  * what it says on its own, which is mostly a map of distance from the Bay.
  *
- * A/C IS scored here, unlike on the San Ramon branch. It is modelled by ranking
- * each hex's median household income within the study area, so it only means
- * anything where income varies. San Ramon's block groups ran $101k–$250k and it
- * was zeroed there. This county's 674 with income run $18,071–$250,001, p10
- * $69,526, median $128,142 — 30% of them below San Ramon's poorest. Real signal.
+ * A/C IS scored here (weight 0.25), unlike on the San Ramon branch. It is now
+ * MEASURED — US Census LACE 2023 A/C-prevalence per tract (ac_src="measured" for
+ * every residential hex; the income model survives only as a per-tract fallback,
+ * used on 0 res hexes here). It has real spread: 46–100%, median 93%, std 13.
  *
- * CIRCULARITY WARNING: because ac_est derives from income, the score is not
- * independent of income, and must never be used to argue that priority "tracks
- * income". The canopy-equity finding on this branch is computed on raw measured
- * canopy against income with no score involved. The "Canopy only" preset exists
- * so anyone can check the answer without the income model in it at all.
+ * The old CIRCULARITY WARNING is retired: A/C no longer derives from income, so
+ * the score is NOT income by construction. Measured A/C prevalence does still
+ * correlate with income in reality (corr(ac,income)=0.30 over res hexes), so the
+ * canopy-equity finding is still computed on raw measured canopy against income
+ * with no score involved, and the "Canopy only" preset still exists so anyone can
+ * check the answer with A/C removed entirely. Do NOT reintroduce "A/C is modelled
+ * from income" into the copy — it was true pre-LACE and is now wrong.
  *
  * `access` also ships at 0 — present, movable, off — so "Canopy deficit" names
  * exactly what config.py weights. Mirrors pipeline/config.py WEIGHTS. */
@@ -764,9 +765,9 @@ const PRESETS=[
       +'deliberately weighted zero</b> — open the sliders below for why, it is the most '
       +'important decision in this build.'},
   {id:'canopy',name:'Canopy only',w:{heat:0,green:1,ac:0,age65:0,access:0},pop:.45,
-   why:'<b>Just the shade gap.</b> Nothing but measured tree canopy and population — no '
-      +'income model, no age. If you distrust the A/C estimate, this is the view that removes '
-      +'it entirely. The Richmond blocks stay at the top.'},
+   why:'<b>Just the shade gap.</b> Nothing but measured tree canopy and population — no A/C, '
+      +'no age. The purest view of where shade is missing, with no other input in it. '
+      +'The Richmond blocks stay at the top.'},
   {id:'heat',name:'Heat first',w:{heat:1,green:0,ac:0,age65:0,access:0},pop:.45,
    why:'<b>What the heat layer alone says — and why it is not scored.</b> The answer moves '
       +'inland, to Concord and Antioch, and off the Richmond shoreline almost entirely: '
@@ -782,9 +783,10 @@ const PRESETS=[
       +'blocks already carry 24–33% canopy, well above the 13% county median. '
       +'The Richmond blocks that lead by default are young: 6–17% aged 65+.'},
   {id:'ac',name:'A/C poverty',w:{heat:0,green:.30,ac:.60,age65:.10,access:0},pop:.45,
-   why:'<b>Who cannot cool their own home?</b> Leans hardest on the one input that is '
-      +'<i>modelled</i> from income rather than measured. Worth naming out loud — and worth '
-      +'comparing against <b>Canopy only</b>, which uses no income data at all.'},
+   why:'<b>Who cannot cool their own home?</b> Leans hardest on <b>measured</b> A/C access '
+      +'(US Census LACE 2023). Homes without A/C are the ones that cannot self-cool in a heat '
+      +'wave. Measured A/C prevalence still tracks income here (r&nbsp;=&nbsp;0.30), so compare '
+      +'against <b>Canopy only</b>, which uses no A/C at all.'},
   {id:'stranded',name:'No relief nearby',w:{heat:0,green:.40,ac:.20,age65:.15,access:.25},pop:.45,
    why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 488 mapped '
       +'cooling sites. Distance is what a county can fix this week by opening a building, '
@@ -1219,8 +1221,8 @@ function buildIntro(){
    +'income are real ACS figures interpolated from census block groups about 3.6&times; the '
    +'size of one hex, so they vary smoothly rather than per block. <b>Surface heat is measured '
    +'but weighted zero</b> in the score — this county spans marine to Delta and absolute '
-   +'temperature across it mostly tracks distance from the Bay. A/C access is <b>modelled</b> '
-   +'from income, not measured. Walk time is <b>routed on the OpenStreetMap pedestrian network</b>, '
+   +'temperature across it mostly tracks distance from the Bay. A/C access is <b>measured</b> '
+   +'(US Census LACE 2023), not modelled from income. Walk time is <b>routed on the OpenStreetMap pedestrian network</b>, '
    +'not a straight-line estimate. Landsat 8/9 · Sentinel-2 · USFS/CAL FIRE 2022 urban canopy · US Census ACS 2023 · OpenStreetMap.';
 
   document.getElementById('intro-go').onclick=dismissIntro;
