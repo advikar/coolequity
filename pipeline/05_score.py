@@ -164,6 +164,19 @@ def load():
         log("  canopy: no canopy CSV — using the NDVI proxy, which overstates "
             "tree cover roughly 2x. Run 02c_canopy.py.")
 
+    # Authoritative land cover (ESA WorldCover 2021) for the empty-hex `land`
+    # label. Merged under `wc_land` so it does not collide with the `land` column
+    # main() builds; applied to empty hexes there, heuristic kept as a fallback.
+    if C.WORLDCOVER_CSV.exists():
+        wc = pd.read_csv(C.WORLDCOVER_CSV)[["h3", "land"]].rename(
+            columns={"land": "wc_land"})
+        df = df.merge(wc, on="h3", how="left")
+        log(f"  land cover: ESA WorldCover 2021 for "
+            f"{int(df['wc_land'].notna().sum())}/{len(df)} hexes")
+    else:
+        log("  land cover: no WorldCover CSV — empty hexes fall back to the "
+            "lst/veg heuristic. Run 02e_worldcover.py for authoritative labels.")
+
     missing = df["lst_c"].isna().sum() + df["pop"].isna().sum()
     if missing:
         raise SystemExit(f"\n{missing} hexes missing inputs — rerun 02/03/04.")
@@ -188,7 +201,11 @@ def main():
                  | ((street >= 40.0) & (df["bldg_n"] >= 1)))
     df["place"] = np.where(df["pop"] >= C.MIN_POP, "res",
                            np.where(developed, "activity", "empty"))
+    # Land label for empty hexes: authoritative ESA WorldCover 2021 where present,
+    # the lst/veg heuristic only as a fallback for any hex WorldCover misses.
     df["land"] = classify_land(df)
+    if "wc_land" in df.columns:
+        df["land"] = df["wc_land"].where(df["wc_land"].notna(), df["land"])
     df.loc[df["place"] != "empty", "land"] = None
     nres, nact, nemp = [(df["place"] == v).sum() for v in ("res", "activity", "empty")]
     log(f"  {nres} residential (ranked) + {nact} developed-unpopulated (shown, not "
@@ -308,9 +325,9 @@ def main():
     log("\n  Top 10 priority hexes")
     top = out.nsmallest(10, "rank")
     for _, r in top.iterrows():
-        log(f"    #{r['rank']:<3d} {r['score']:5.1f}  {r['name'][:34]:<34s} "
+        log(f"    #{int(r['rank']):<3d} {r['score']:5.1f}  {r['name'][:34]:<34s} "
             f"{r['lst']:.1f}C  {r['green']:4.1f}% green  "
-            f"{r['pop']:6,d} people  {r['access_min']:5.1f} min  "
+            f"{int(r['pop']):6,d} people  {r['access_min']:5.1f} min  "
             f"HOLC {r['holc'] or '-'}")
 
     # The redlining claim in the demo script is a factual assertion about this
