@@ -24,7 +24,7 @@ import config as C
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
-            "canopy_m2", "row_m2", "row_canopy", "veg", "place"]
+            "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -90,6 +90,34 @@ def shrink_age65(pop, pct65):
     return (pop65 + k * city) / (pop + k) * 100.0
 
 
+def building_counts(h3_series):
+    """Buildings per hex from the 02b footprints, by centroid. A hex with no
+    residents but several buildings is developed, which street length can miss."""
+    if not C.BUILDINGS_FILE.exists():
+        return {}
+    import geopandas as gpd
+    b = gpd.read_file(C.BUILDINGS_FILE).to_crs(C.RASTER_CRS)
+    b = b.set_geometry(b.geometry.centroid)
+    grid = gpd.read_file(C.GRID_FILE).to_crs(C.RASTER_CRS)[["h3", "geometry"]]
+    hit = gpd.sjoin(b[["geometry"]], grid, how="inner", predicate="within")
+    return hit.groupby("h3").size().to_dict()
+
+
+def classify_land(df):
+    """Best-effort land-type label for EMPTY hexes from the satellite layers we
+    already have: water reads cool+unvegetated, woodland high-canopy, open green
+    ground high-NDVI/low-canopy, the rest bare/dry hillside. Approximate by design."""
+    lst = df["lst_c"]
+    veg = df["veg_pct"] if "veg_pct" in df.columns else df["green_pct"]
+    can = (df["canopy_pct"] if "canopy_pct" in df.columns
+           else pd.Series(0.0, index=df.index)).fillna(0)
+    cool = lst.quantile(0.10)
+    return np.where((lst <= cool) & (veg < 12), "open water",
+           np.where(can > 25, "woodland",
+           np.where(veg >= 35, "open land",
+                    "bare / hillside")))
+
+
 def round_coords(geom):
     return [[[round(x, COORD_DP), round(y, COORD_DP)] for x, y in ring]
             for ring in geom["coordinates"]]
@@ -147,24 +175,24 @@ def main():
     grid, df = load()
     log(f"  merged: {len(df)} hexes x {len(df.columns)} fields")
 
-    # Three classes, not a binary drop:
-    #   res      — has residents: scored and ranked as before.
-    #   activity — no residents but real street frontage: a developed commercial or
-    #              industrial block that people use all day. Its canopy and heat
-    #              still matter to a city landscaper, so it STAYS on the map (shown
-    #              on the canopy/heat layers) but is not ranked by residential need.
-    #   empty    — no residents and no streets: open water, field, ridgeline.
-    #              Dropped; the always-on boundary outline shows it is inside the
-    #              study area, not missing data.
-    STREET_MIN_M = 120.0
+    # Three classes, and NOTHING is dropped — every hex stays on the map:
+    #   res      — has residents: scored and ranked.
+    #   activity — developed but unpopulated (street frontage OR buildings): a
+    #              commercial/industrial block people use all day. Shown with real
+    #              canopy/heat, greyed on Priority, not ranked by residential need.
+    #   empty    — undeveloped: shown muted, with a best-effort land label.
+    df["bldg_n"] = df["h3"].map(building_counts(df["h3"])).fillna(0).astype(int)
     street = (df["street_m"].fillna(0) if "street_m" in df.columns
               else pd.Series(0.0, index=df.index))
+    developed = ((street >= 120.0) | (df["bldg_n"] >= 3)
+                 | ((street >= 40.0) & (df["bldg_n"] >= 1)))
     df["place"] = np.where(df["pop"] >= C.MIN_POP, "res",
-                           np.where(street >= STREET_MIN_M, "activity", "empty"))
+                           np.where(developed, "activity", "empty"))
+    df["land"] = classify_land(df)
+    df.loc[df["place"] != "empty", "land"] = None
     nres, nact, nemp = [(df["place"] == v).sum() for v in ("res", "activity", "empty")]
-    log(f"  {nres} residential (ranked) + {nact} developed-but-unpopulated "
-        f"(shown, not ranked); dropped {nemp} empty hexes (no residents, no streets)")
-    df = df[df["place"] != "empty"].reset_index(drop=True)
+    log(f"  {nres} residential (ranked) + {nact} developed-unpopulated (shown, not "
+        f"ranked) + {nemp} empty (shown muted + labelled); all kept on the map")
     res = (df["place"] == "res").values
 
     df["pct65_s"] = shrink_age65(df["pop"], df["pct65"])
@@ -240,6 +268,7 @@ def main():
         "score":      df["score"].round(1),
         "rank":       df["rank"],
         "place":      df["place"],
+        "land":       df["land"],
         "area_m2":    df["area_m2"].round(0).astype(int),
         # Metres of city-plantable street centreline. Not scored — it answers
         # "can the city act here?", which is a different question from
