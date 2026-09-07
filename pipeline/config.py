@@ -232,6 +232,9 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
 # 02c -> 03/05: measured canopy, crown counts, plantable right-of-way.
 CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
+# 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the
+# undeveloped/empty hexes, replacing the lst/veg/canopy heuristic in classify_land.
+WORLDCOVER_CSV = DATA / f"worldcover_{SLUG}.csv"
 
 # --- when dasymetric placement is allowed at all -------------------------------
 # Splitting a block group's residents by building floor area only beats splitting
