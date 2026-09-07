@@ -7,6 +7,12 @@ __pycache__/
 # Large intermediate rasters — the committed fallbacks are the small derived files.
 data/_cache/
 
+# osmnx HTTP cache (Overpass response tiles) + the cached walk graph. Written by
+# 04b_routed_access.py; ~150 MB per city and re-downloadable. The committed
+# result is the routed access_min/access_km already baked into the geojson/CSV.
+cache/
+pipeline/cache/
+
 # Building footprints are DERIVED data: regenerate with
 #   python pipeline/02b_buildings.py --refresh
 # San Ramon's (16 MB) is committed because that build's population placement
