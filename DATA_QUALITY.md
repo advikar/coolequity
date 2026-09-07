@@ -32,6 +32,15 @@ Both P1 items are **done and deployed** (verified live at advikar.github.io/cool
   as a per-tract fallback; new `ac_src` column records which). In Contra Costa and LA, where
   A/C is scored, this **breaks the income-circularity trap** the earlier build carried.
 - Quick fixes **C-4/C-5** landed with the canopy module. **D-2, W-3** remain open (low priority).
+- **Map completeness (G-1/G-4) — done.** No hex in the study area is dropped any more. Three
+  classes by a new `place` property: residential (scored/ranked), developed-but-unpopulated
+  (commercial/industrial — shown with real canopy/heat, greyed on Priority, not ranked, caught
+  by a buildings-aware classifier), and empty/undeveloped (shown muted + bordered, with a
+  best-effort `land` label — water/woodland/open/bare — inferred from the satellite layers).
+  The study-area outline is now always drawn. Live on SR/CC/Bakersfield; LA still on the old
+  binary drop (with its NDVI canopy) per instruction — folds in with follow-up 1.
+- **UHI (follow-up 2): decided AGAINST** — its 2006/2013 vintage would confuse the current heat
+  reading. See the follow-up section.
 
 **Staged, with recipes at the very bottom of this file:** follow-up 1 (LA canopy), follow-up 2
 (CalEPA UHI air-temp layer — data downloaded, integration pending), follow-up 3 (routed walk
@@ -185,11 +194,17 @@ predates the measured-canopy contract and swapping it safely is more than a data
    landing lede, the green-layer caption, the ROI. Rewrite to "measured canopy (USFS 2022)".
 5. Verify live-score parity < 0.2 and redeploy.
 
-### Follow-up 2 — CalEPA Urban Heat Island Index (air-temperature layer)
+### Follow-up 2 — CalEPA Urban Heat Island Index (air-temperature layer) — NOT RECOMMENDED
+**Decision (Sep 2026): do not integrate.** The index models **2006 & 2013 only**. Placed next
+to the 2022–24 Landsat surface temperature and 2022 aerial canopy this tool now uses, an
+outdated layer would undercut the "current and accurate" credibility and confuse which heat
+reading is authoritative — the opposite of what an official tool needs. Its one real advantage
+(air-temp, confound-free urban increment) does not outweigh the vintage problem. Documented here
+in case a refreshed version is ever published; the mechanics below still apply if so.
+
 The data is already downloaded to `/tmp/uhi` (`Data_13-001/`, 496 per-city shapefiles). It is
 census-tract **air** temperature (degree-hours/day, 2 m, urban-minus-upwind-rural), modelled
-2006 & 2013 — so it is the *urban heat increment*, which removes the distance-from-Bay confound
-that forced heat to weight 0 in Contra Costa.
+2006 & 2013 — the *urban heat increment*, which removes the distance-from-Bay confound.
 
 1. Re-download if needed with a cookie jar (the CalEPA WordPress WAF redirect-loops otherwise):
    `curl -sL -c jar -b jar -A "Mozilla/5.0 …" -e "https://calepa.ca.gov/climate/urban-heat-island-index-for-california/" "https://calepa.ca.gov/wp-content/uploads/2020/06/Data_30-001_files_all.zip"`

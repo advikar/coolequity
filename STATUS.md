@@ -1,5 +1,26 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-06b — full-coverage map + two shipped-bug fixes (DEPLOYED)
+
+- **No more mystery holes. Every hex in the study area is now shown**, in three
+  classes (`place` property): `res` (residents — scored/ranked), `activity`
+  (developed but unpopulated — commercial/industrial, shown with real canopy/heat,
+  greyed on Priority, NOT ranked), `empty` (undeveloped — shown muted, with a
+  best-effort `land` label: open water / woodland / open land / bare hillside,
+  inferred from the satellite layers). Classifier is buildings-aware (`02b`
+  footprints), not street-only, so malls/schools/business parks are caught. The
+  study-area boundary outline is now drawn ALWAYS. Live on SR/CC/Bakersfield.
+  **LA left as-is** (still NDVI + old binary drop) per instruction.
+- **Two of my own earlier edits had shipped BROKEN apps** — an unescaped
+  apostrophe ("San Ramon's") killed the SR app JS, and a missing `}` killed the LA
+  app JS. Both were blank/dead live until caught here. Fixed. **`node --check` on
+  every app's inline script is now mandatory before deploy** (a data/parity check
+  is not enough — the front end must be syntax-checked too).
+- **UHI: decided AGAINST integrating.** The CalEPA index models 2006 & 2013, and
+  sitting it beside the 2022–24 Landsat + 2022 aerial canopy would undercut the
+  "current and accurate" credibility and confuse which heat reading is
+  authoritative. Left documented-but-not-built in DATA_QUALITY.md.
+
 ## Session 2026-09-06 — canopy + A/C data upgrades (DEPLOYED)
 
 Two headline accuracy fixes from the review shipped and are **live**:
