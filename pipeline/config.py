@@ -227,6 +227,9 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
 # 02c -> 03/05: measured canopy, crown counts, plantable right-of-way.
 CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
+# 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the
+# undeveloped/empty hexes, replacing the lst/veg/canopy heuristic in classify_land.
+WORLDCOVER_CSV = DATA / f"worldcover_{SLUG}.csv"
 LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
 NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
 SAT_CSV = DATA / f"satellite_{SLUG}.csv"

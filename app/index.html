@@ -483,7 +483,7 @@
         <div id="rank"></div>
       </div>
 
-      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6m NAIP aerial) · US Census ACS 2023 5-yr, San Ramon · OpenStreetMap cooling sites and neighborhood names. A/C access is <b>measured</b> per census tract from US Census LACE (2023) and is <b>weighted zero</b> in this city's score. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
+      <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6m NAIP aerial) · US Census ACS 2023 5-yr, San Ramon · OpenStreetMap cooling sites and neighborhood names · undeveloped-hex land cover from ESA WorldCover 2021 (10m Sentinel). A/C access is <b>measured</b> per census tract from US Census LACE (2023) and is <b>weighted zero</b> in this city's score. Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly nine times a hex's size, so they vary smoothly. H3 res-9 hexes, so the same engine runs on any city worldwide.</div>
     </div>
   </aside>
 
@@ -1551,8 +1551,8 @@ function selectHex(id,fly){
     : `Priority #${r} of ${LIVE.order.length} · score ${s.toFixed(0)}`+(isDefaultW()?'':' · your weights');
   const bd=document.getElementById('d-breakdown');
   if(empty){ if(bd) bd.innerHTML='<p class="hint" style="margin:10px 0 0">Undeveloped land — no '
-    +'residents, streets or buildings — so it is shown muted and not part of the ranking. The '
-    +'land type is inferred from satellite (likely '+(p.land||'open land')+').</p>'; }
+    +'residents, streets or buildings — so it is shown muted and not part of the ranking. Land '
+    +'cover here is <b>'+(p.land||'undeveloped')+'</b> (ESA WorldCover 2021, 10 m).</p>'; }
   else if(activity){ if(bd) bd.innerHTML='<p class="hint" style="margin:10px 0 0">This block has no '
     +'residents, so it carries no resident-priority score — but its measured tree canopy and '
     +'heat are shown below, because shade still matters where people work, shop and walk.</p>'; }
