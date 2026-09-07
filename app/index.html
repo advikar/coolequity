@@ -587,6 +587,8 @@ function ramp(cols,t){t=Math.max(0,Math.min(1,t));const x=t*(cols.length-1),i=Ma
 const HOLC={A:'#6ea966',B:'#6a9fb5',C:'#c9b458',D:'#c0603f'};
 // Developed-but-unpopulated hexes on the priority layer: a flat neutral grey.
 const ACTIVITY_FILL='#c2c8d0';
+// EMPTY (undeveloped) hexes: a lighter neutral, so they read as background land.
+const EMPTY_FILL='#e0e4ea';
 
 /* ------------------------------------------------- what a "cooling center" is
  * Not a guess and not a category we invented: these are the four OpenStreetMap
@@ -818,7 +820,7 @@ function rescore(){
     pri[i]=base*((1-POPW)+POPW*nv(p,'pop'));
   }
   // Activity hexes are not ranked by resident need: excluded from scale + list.
-  const ranked=i=>F[i].properties.place!=='activity';
+  const ranked=i=>F[i].properties.place==='res';
   let lo=Infinity,hi=-Infinity;
   for(let i=0;i<n;i++){if(!ranked(i))continue;if(pri[i]<lo)lo=pri[i];if(pri[i]>hi)hi=pri[i];}
   LIVE.lo=lo;LIVE.hi=hi;
@@ -946,20 +948,23 @@ function rampStops(k,lo,hi){
   return out;
 }
 function fillExpr(k){
-  // Ungraded hexes are legitimately outside whatever 1930s map exists (all of
-  // them, in San Ramon, which has no map at all) —
-  // a neutral light grey on the light basemap, not a dark blob that reads as
-  // a fifth grade.
-  if(k==='holc') return ['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#d6dbe1'];
+  // EMPTY (undeveloped) hexes are muted on EVERY layer — they carry no residents
+  // and no development, so a light neutral fill + the hex border marks them as
+  // "inside the study area, nothing to plant" rather than leaving a hole. ACTIVITY
+  // (developed, unpopulated) hexes are muted on the PRIORITY layer only; on the
+  // canopy/heat layers they show their real measured values, because shade there
+  // still matters to a landscaper.
+  const w=e=>['case',['==',['get','place'],'empty'],EMPTY_FILL, e];
+  // Ungraded hexes are legitimately outside whatever 1930s map exists — a neutral
+  // light grey, not a dark blob that reads as a fifth grade.
+  if(k==='holc') return w(['match',['get','holc'],'A',HOLC.A,'B',HOLC.B,'C',HOLC.C,'D',HOLC.D,'#d6dbe1']);
   // Priority is recomputed from the live weights, in-expression. See liveScoreExpr().
-  // Developed-but-unpopulated hexes (place='activity') are painted neutral grey on
-  // the PRIORITY layer only; on canopy/heat layers they show real measured values.
-  if(k==='score') return ['case',['==',['get','place'],'activity'],ACTIVITY_FILL,
-    ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)]];
+  if(k==='score') return w(['case',['==',['get','place'],'activity'],ACTIVITY_FILL,
+    ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)]]);
   const pk=propKey(k),[lo,hi]=rng(k);
   // coalesce: real pipelines leave no-data hexes null; without this they'd break the ramp
   const src=LAYERS[k].expr||['coalesce',['get',pk],lo];
-  return ['interpolate',['linear'],src,...rampStops(k,lo,hi)];
+  return w(['interpolate',['linear'],src,...rampStops(k,lo,hi)]);
 }
 
 const EMPTY={type:'FeatureCollection',features:[]};
@@ -974,7 +979,7 @@ async function boot(){
   ]);
   HEX=h;CENTERS=c;BOUNDARY=b;
   computeRanges();
-  document.getElementById('chip-n').textContent=`${HEX.features.filter(f=>f.properties.place!=='activity').length} hexes`;
+  document.getElementById('chip-n').textContent=`${HEX.features.filter(f=>f.properties.place==='res').length} hexes`;
   syncHolcAvailable();
 
   // Panel UI is data-only. Render it BEFORE the map so a slow or blocked basemap
@@ -1202,7 +1207,7 @@ function buildIntro(){
   document.getElementById('istats').innerHTML=[
     // Labels stay short so all five sit on one row at 760px. A fifth stat that
     // wraps alone onto a second line reads as a mistake.
-    [HEX.features.filter(f=>f.properties.place!=='activity').length.toLocaleString(),'neighborhoods'],
+    [HEX.features.filter(f=>f.properties.place==='res').length.toLocaleString(),'neighborhoods'],
     // Not always millions. LA's 6.5M formatted fine as "6.5M"; San Ramon's
     // 85,569 came out "0.1M", which reads as a rounding error rather than a
     // population. Switch units at a million.
@@ -1292,7 +1297,7 @@ function drawIntroMap(){
     g.beginPath();g.moveTo(px(ring[0][0]),py(ring[0][1]));
     for(let i=1;i<ring.length;i++)g.lineTo(px(ring[i][0]),py(ring[i][1]));
     g.closePath();const _s=sc(f.properties);
-    g.fillStyle=(_s===undefined)?ACTIVITY_FILL:colorFor('score',_s);g.fill();
+    g.fillStyle=f.properties.place==='empty'?EMPTY_FILL:(_s===undefined?ACTIVITY_FILL:colorFor('score',_s));g.fill();
   }
 }
 
@@ -1533,15 +1538,22 @@ function selectHex(id,fly){
   paintSel();
   document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',+r.dataset.id===id));
   const s=sc(p),r=rk(p);
-  const activity=p.place==='activity'||s===undefined;
-  const badge=document.getElementById('d-badge'),bc=activity?ACTIVITY_FILL:colorFor('score',s);
-  badge.textContent=activity?'—':r;badge.style.background=bc;badge.style.color=inkOn(bc);
+  const empty=p.place==='empty';
+  const activity=p.place==='activity'||(s===undefined&&!empty);
+  const unranked=empty||activity;
+  const badge=document.getElementById('d-badge'),bc=unranked?(empty?EMPTY_FILL:ACTIVITY_FILL):colorFor('score',s);
+  badge.textContent=unranked?'—':r;badge.style.background=bc;badge.style.color=inkOn(bc);
   document.getElementById('d-name').textContent=nameOf(p);
-  document.getElementById('d-rank').textContent=activity
+  document.getElementById('d-rank').textContent=empty
+    ? `Undeveloped · ${p.land||'no development'} · not ranked`
+    : activity
     ? 'Developed area · no residents · not ranked'
     : `Priority #${r} of ${LIVE.order.length} · score ${s.toFixed(0)}`+(isDefaultW()?'':' · your weights');
   const bd=document.getElementById('d-breakdown');
-  if(activity){ if(bd) bd.innerHTML='<p class="hint" style="margin:10px 0 0">This block has no '
+  if(empty){ if(bd) bd.innerHTML='<p class="hint" style="margin:10px 0 0">Undeveloped land — no '
+    +'residents, streets or buildings — so it is shown muted and not part of the ranking. The '
+    +'land type is inferred from satellite (likely '+(p.land||'open land')+').</p>'; }
+  else if(activity){ if(bd) bd.innerHTML='<p class="hint" style="margin:10px 0 0">This block has no '
     +'residents, so it carries no resident-priority score — but its measured tree canopy and '
     +'heat are shown below, because shade still matters where people work, shop and walk.</p>'; }
   else renderBreakdown(p,s);
@@ -1701,7 +1713,7 @@ function wireHover(){
     const s=sc(p),r=rk(p);
     pop.setLngLat(e.lngLat).setHTML(
       `<b>${nameOf(p)}</b>
-       <div class="tt-row"><span>Priority</span><span>${p.place==='activity'?'developed · not ranked':s==null?'–':s.toFixed(0)+' · #'+r}</span></div>
+       <div class="tt-row"><span>Priority</span><span>${p.place==='empty'?((p.land||'undeveloped')+' · no residents'):p.place==='activity'?'developed · not ranked':s==null?'–':s.toFixed(0)+' · #'+r}</span></div>
        <div class="tt-row"><span>Surface heat</span><span>${fTemp(+p.lst)}</span></div>
        <div class="tt-row"><span>Canopy</span><span>${(+p.green).toFixed(0)}%</span></div>
        <div class="tt-row"><span>Walk to cooling</span><span>${fMin(+p.access_min)}</span></div>`).addTo(map);});
