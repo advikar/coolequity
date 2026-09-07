@@ -1693,20 +1693,19 @@ function updateROI(p){
     +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
     +'roughly three years of establishment care. Real unit costs vary widely with species, site '
     +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
-    +`<div><b>Canopy.</b> Measured from a canopy-height model at ~1 m: ground under `
-    +`vegetation at least 2 m tall. Not a vegetation index — an irrigated lawn is 0.1 m `
-    +`tall and does not count. <b>It reads about 38% BELOW a professional aerial canopy `
-    +`assessment</b> (9.1% against Fresno's published 14.6% over the same boundary), so use `
-    +`it to rank blocks, not to certify an absolute canopy figure.</div>`
+    +`<div><b>Canopy.</b> Measured from the USFS/CAL FIRE 2022 aerial map (0.6 m NAIP `
+    +`classification): ground under tree canopy, not a vegetation index — an irrigated lawn `
+    +`does not count. Being an aerial-grade classification, the percentages are citable in `
+    +`absolute terms, not just for ranking blocks.</div>`
     +`<div><b>Plantable public land.</b> Residential, tertiary and unclassified street `
     +`centrelines from OpenStreetMap, buffered 7 m each side, minus whatever already has `
     +`canopy over it. It takes no account of driveways, utilities, sight lines or `
     +`underground services, so read it as an <i>upper bound</i> on the public right-of-way — `
     +`not a planting plan.</div>`
     +`<div><b>No tree count.</b> This does not count existing trees, and deliberately so: `
-    +`tested on this data, crown detection returned objects of 219–470 m², where a real `
-    +`suburban crown is 40–80 m². The height model is too smooth to separate touching `
-    +`crowns. Canopy extent it measures well; individual trees it does not.</div>`;
+    +`the canopy layer is a canopy / no-canopy classification, so it measures canopy extent `
+    +`well but cannot split touching crowns into individual, countable trees. Canopy area it `
+    +`gives; a tree inventory it does not.</div>`;
 }
 
 function wireHover(){
