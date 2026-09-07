@@ -152,7 +152,11 @@
   .brand h1{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:-.01em;line-height:1;display:flex;align-items:baseline;gap:9px}
   .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(255,122,69,.75);align-self:center}
   .brand p{margin:8px 0 0;color:var(--muted);font-size:11.5px;line-height:1.5;letter-spacing:.005em}
-  .brandtop{display:flex;align-items:center;gap:10px}
+  /* Wrap so the units control drops to its own line rather than being clipped by
+     the fixed-width panel: title + home + All cities never quite leave room for
+     °C·km / °F·mi at 366px, and the °F·mi button was getting cut off. */
+  .brandtop{display:flex;align-items:center;flex-wrap:wrap;gap:10px;row-gap:9px}
+  .brandtop #units{margin-left:auto}
   .home{margin-left:auto;display:flex;align-items:center;justify-content:center;width:28px;height:26px;
     background:#0c1219;border:1px solid var(--edge);border-radius:8px;color:var(--muted2);
     cursor:pointer;padding:0;transition:.14s;flex:none}
