@@ -53,11 +53,21 @@ Both P1 items are **done and deployed** (verified live at advikar.github.io/cool
 - **UHI (follow-up 2): decided AGAINST** — its 2006/2013 vintage would confuse the current heat
   reading. See the follow-up section.
 
+- **Routed walk time (W-1) → done, live on SR/CC/Bakersfield.** The straight-line
+  estimate is replaced by real routing on the OSM pedestrian network via new
+  `pipeline/04b_routed_access.py` (osmnx graph + one multi-source Dijkstra from the
+  cooling sites; door-to-door with endpoint snap distances, floored at crow-fly).
+  Validated before shipping (the condition follow-up 3 set): each graph is a single
+  connected component, all hexes reachable, routed/crow-fly ratio ≥ ~1.0 everywhere.
+  `access` is unweighted in the score, so rankings are unchanged; only the displayed
+  walk time and the access preset improve. LA stays on the straight line (its
+  basin-scale graph is infeasible here — see follow-up 3). Details in STATUS.md.
+
 **Staged, with recipes at the very bottom of this file:** follow-up 1 (LA canopy), follow-up 2
-(CalEPA UHI air-temp layer — data downloaded, integration pending), follow-up 3 (routed walk
-time). Routing was staged deliberately: accurate pedestrian routing needs an engine + OSM graph
-this environment can't run reliably at ~thousands of hexes/city, and a half-accurate route is
-worse than an honest straight-line estimate that's already labelled as one.
+(CalEPA UHI air-temp layer — data downloaded, integration pending). Follow-up 3 (routed walk
+time) is now DONE for SR/CC/Bakersfield (see above); it remained staged only for LA, whose
+~3,400 km² bbox is a millions-of-nodes walk graph this environment can't build on a demo's
+critical path.
 
 ---
 
@@ -101,7 +111,7 @@ worse than an honest straight-line estimate that's already labelled as one.
 
 | # | Issue | Impact | In-app now | Fix |
 |---|---|---|---|---|
-| **W-1** | **Not routed.** Walk time is a straight line from the hex centroid to the nearest cooling site × 1.273 circuity ÷ 4.8 km/h. It ignores freeways, rivers, rail, walls and actual sidewalks. | **P2.** A hex one freeway away from a site reads "close." | Labelled "estimated walking minutes, not a routed path." | Route on the OSM pedestrian network (**OSRM** or **Valhalla** foot profile) — accurate door-to-door minutes, and it respects barriers. Heavier but well within reach for four cities. |
+| **W-1** | ~~**Not routed.**~~ **FIXED (SR/CC/Bakersfield).** Was a straight line × 1.273 circuity ÷ 4.8 km/h, ignoring freeways, rivers, rail and walls. | **P2 → resolved** where routed; LA (master) still straight-line. | **Routed on the OSM pedestrian network** (osmnx + multi-source Dijkstra, `04b_routed_access.py`), door-to-door, barrier-aware. LA unchanged. | Done via osmnx rather than a standalone OSRM/Valhalla server (neither is available here); validated single-component + ratio ≥ crow-fly before shipping. |
 | **W-2** | **Cooling sites from OSM tags.** Completeness varies, and an OSM "community centre" or "library" is **not** necessarily a designated, open, air-conditioned cooling centre during a heat event. | **P2.** The denominator of "relief nearby" may be wrong in both directions. | Sites are classified and counted from the file; designation is not claimed. | Use the **county/city official cooling-centre list** (and its hours) as the authoritative layer; keep OSM as a fallback. |
 | **W-3** | **`access_min` filled with the median** for hexes with no reachable site — masks true isolation as "average." | **P3.** Under-flags genuinely stranded blocks. | Not surfaced. | Represent "no site within N minutes" explicitly rather than imputing the median. |
 

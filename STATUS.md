@@ -1,5 +1,39 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-06d — routed walk time + F-bar UI fix (DEPLOYED)
+
+- **Routed pedestrian walk time replaces the straight-line estimate** (DATA_QUALITY
+  W-1) on SR/CC/Bakersfield. New `pipeline/04b_routed_access.py`: builds the OSM
+  walk graph with osmnx, runs ONE multi-source Dijkstra from all cooling sites,
+  writes door-to-door `access_min`/`access_km` into `overlays_<slug>.csv`, then
+  re-run 05. Door-to-door = network distance + the point→graph-node snap at BOTH
+  ends, floored at the straight-line distance (so snapping can never make a walk
+  shorter than crow-fly). Graph cached to `data/_cache/walkgraph_<slug>.graphml`
+  (gitignored, ~1–266 MB); computed once offline, nothing routes at demo time.
+- **Validated before shipping** (the reason it was staged): each city's walk graph
+  is a SINGLE connected component (lcc=1.000), every hex reachable, routed/crow-fly
+  ratio ≥ ~1.0 everywhere. Ratios reflect real geography — SR 1.67 (winding
+  cul-de-sacs), CC 1.60, Bakersfield 1.42 (flat grid). The old ×1.273 circuity was
+  systematically optimistic; barrier cases (a site across the freeway) now read true.
+- **`access` is unweighted in every city's score, so score/rank are unchanged**
+  (verified: max |score change| = 0, max |rank change| = 0 on all three). Only the
+  displayed walk time, the ROI panel and the "No relief nearby" preset change.
+  App copy updated from "estimated, not routed" to routed-on-OSM everywhere.
+- Honest note: for the big-bbox cities the all-hex median walk is high (CC res 61
+  min, Bakersfield res 68 min) — that is county sprawl + sparse OSM cooling-site
+  coverage (Bakersfield has only 39 mapped sites), present in the straight-line
+  method too; the priority hexes read 5–22 min. Routing makes the far ones more
+  honest, not artefactual.
+- **LA (master) NOT routed** — its ~3,400 km² basin bbox is a millions-of-nodes
+  walk graph and tens of minutes of Overpass; deliberately out of scope, same as
+  its canopy/WorldCover deferral.
+- **UI fix (all four cities incl. LA):** the panel header (`.brandtop`) overflowed
+  the fixed 366px panel by ~37px and clipped the **°F·mi units toggle**. Now the row
+  wraps and the units control sits right-aligned on its own line — verified
+  in-browser (units right edge 345 < panel 366). Pure CSS.
+- `.gitignore` now excludes the osmnx HTTP cache (`cache/`, `pipeline/cache/`).
+  Committed on all relevant branches, pushed to origin, published via `./deploy.sh`.
+
 ## Session 2026-09-06c — empty-hex land labels → ESA WorldCover (DEPLOYED)
 
 - **The undeveloped ("empty") hexes now carry an authoritative land-cover label
