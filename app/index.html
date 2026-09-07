@@ -739,7 +739,7 @@ const W_INPUTS=[
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:true,
-   note:'modelled from income — not scored here'},
+   note:'measured (LACE) — not scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -1226,8 +1226,8 @@ function buildIntro(){
   document.getElementById('ifine').innerHTML=
     'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
    +'income are real ACS figures interpolated from census block groups about nine times the '
-   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
-   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is '
+   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>measured</b> '
+   +'(US Census LACE 2023) and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is '
    +'<b>routed on the OpenStreetMap pedestrian network</b>, not a straight-line estimate. '
    +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
 
@@ -1693,20 +1693,19 @@ function updateROI(p){
     +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
     +'roughly three years of establishment care. Real unit costs vary widely with species, site '
     +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
-    +`<div><b>Canopy.</b> Measured from a canopy-height model at ~1 m: ground under `
-    +`vegetation at least 2 m tall. Not a vegetation index — an irrigated lawn is 0.1 m `
-    +`tall and does not count. <b>It reads about 38% BELOW a professional aerial canopy `
-    +`assessment</b> (9.1% against Fresno's published 14.6% over the same boundary), so use `
-    +`it to rank blocks, not to certify an absolute canopy figure.</div>`
+    +`<div><b>Canopy.</b> Measured from the USFS/CAL FIRE 2022 aerial map (0.6 m NAIP `
+    +`classification): ground under tree canopy, not a vegetation index — an irrigated lawn `
+    +`does not count. Being an aerial-grade classification, the percentages are citable in `
+    +`absolute terms, not just for ranking blocks.</div>`
     +`<div><b>Plantable public land.</b> Residential, tertiary and unclassified street `
     +`centrelines from OpenStreetMap, buffered 7 m each side, minus whatever already has `
     +`canopy over it. It takes no account of driveways, utilities, sight lines or `
     +`underground services, so read it as an <i>upper bound</i> on the public right-of-way — `
     +`not a planting plan.</div>`
     +`<div><b>No tree count.</b> This does not count existing trees, and deliberately so: `
-    +`tested on this data, crown detection returned objects of 219–470 m², where a real `
-    +`suburban crown is 40–80 m². The height model is too smooth to separate touching `
-    +`crowns. Canopy extent it measures well; individual trees it does not.</div>`;
+    +`the canopy layer is a canopy / no-canopy classification, so it measures canopy extent `
+    +`well but cannot split touching crowns into individual, countable trees. Canopy area it `
+    +`gives; a tree inventory it does not.</div>`;
 }
 
 function wireHover(){
