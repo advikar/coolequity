@@ -642,7 +642,7 @@ const LAYERS={
   lst:{title:'Surface temperature',ramp:HEAT,worse:'hi',fmt:v=>fTemp(v),
     cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
   green:{title:'Tree canopy',ramp:CANOPY,worse:'lo',fmt:v=>v.toFixed(0)+'%',
-    cap:'Share of ground shaded by tree canopy at least 2 m tall, measured from a satellite canopy-height model — not greenness, so an irrigated lawn does not count. Shade is the cheapest durable cooling there is, so here the brown end is the end that needs help.'},
+    cap:'Share of ground under tree canopy, measured from the USFS/CAL FIRE 2022 aerial map (0.6 m NAIP) — canopy, not greenness, so an irrigated lawn does not count. Shade is the cheapest durable cooling there is, so here the brown end is the end that needs help.'},
   veg:{title:'Non-tree vegetation',ramp:TURF,worse:'lo',fmt:v=>v.toFixed(0)+'%',
     // DERIVED, not stored: total vegetation minus measured canopy. `get` reads it
     // in JS, `expr` is the same arithmetic as a MapLibre expression so the map and
@@ -740,7 +740,7 @@ const W_INPUTS=[
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:false,
-   note:'modelled from income — scored here'},
+   note:'measured (LACE) — ~uniform here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
    note:'older residents die first'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
@@ -1225,8 +1225,9 @@ function buildIntro(){
   document.getElementById('ifine').innerHTML=
     'Surface heat and tree canopy are measured per hex, from satellite. Population, age and '
    +'income are real ACS figures interpolated from census block groups about nine times the '
-   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>modelled</b> '
-   +'from income and carries <b>zero weight</b> in this city&rsquo;s score. Walk time is '
+   +'size of one hex, so they vary smoothly rather than per block. A/C access is <b>measured</b> '
+   +'(US Census LACE 2023) and carries a quarter of the score, but it is ~99% uniform across '
+   +'Bakersfield, so it barely moves the ranking. Walk time is '
    +'<b>routed on the OpenStreetMap pedestrian network</b>, not a straight-line estimate. '
    +'Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap.';
 
