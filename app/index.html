@@ -1104,7 +1104,7 @@ function buildIntro(){
     // Labels stay short so all five sit on one row at 760px. A fifth stat that
     // wraps alone onto a second line reads as a mistake.
     [HEX.features.length.toLocaleString(),'neighborhoods'],
-    [(pop/1e6).toFixed(1)+'M','residents'],
+    [(pop/1e6).toFixed(1)+'M','residents in view'],
     [fTemp(hot),'hottest block'],
     [canopy.toFixed(0)+'%','avg. canopy'],
     [CENTERS.features.length.toLocaleString(),'cooling sites'],
@@ -1113,7 +1113,9 @@ function buildIntro(){
   buildSwitch();
 
   document.getElementById('ifine').innerHTML=
-    'Real measurements throughout, except where labelled: A/C access is now <b>measured</b> (US Census LACE 2023), not '
+    'Coverage is the Los Angeles <b>basin</b> — this bounding box spans the City of LA and its neighbouring cities '
+   +'(the ~6.5M residents in view), not the City of LA alone (3.9M) or the whole County (9.85M). '
+   +'Real measurements throughout, except where labelled: A/C access is now <b>measured</b> (US Census LACE 2023), not '
    +'median household income, and walk time is a circuity-adjusted straight line, not a routed '
    +'street path. Landsat 8/9 · Sentinel-2 · US Census ACS 2023 · OpenStreetMap · '
    +'HOLC grades from Univ. of Richmond <i>Mapping Inequality</i>.';
