@@ -1,5 +1,33 @@
 # CoolEquity — build status & handoff
 
+## Session 2026-09-06c — empty-hex land labels → ESA WorldCover (DEPLOYED)
+
+- **The undeveloped ("empty") hexes now carry an authoritative land-cover label
+  from ESA WorldCover 2021 v200** (10 m, Sentinel, CC-BY 4.0, via Planetary
+  Computer), replacing the old lst/veg/canopy heuristic. New
+  `pipeline/02e_worldcover.py` (single windowed read per WorldCover tile → majority
+  class per hex → `worldcover_<slug>.csv`); `05_score.py` merges it and applies the
+  label to empty hexes only, keeping `classify_land()` as an offline fallback.
+- **Descriptive label only — scoring/ranking untouched.** Verified on all three:
+  max |score change| = 0, max |rank change| = 0. Empty hexes are not scored, so
+  this cannot move a ranking or a headline number. Live on SR/CC/Bakersfield;
+  **LA left as-is** (still NDVI + old binary drop) per the standing instruction.
+- **Why it's better, concretely:** the heuristic was right on water but lumped
+  everything non-water as "bare / hillside." WorldCover corrects — CC: 12 hexes →
+  Delta cropland (4) / grassland (7) / wetland (1); SR: 76 → golden grassland (80
+  after reclass) / woodland (4), not bare; BK (San Joaquin Valley, where it matters
+  most): the undifferentiated bare/hillside splits into cropland (42) / grassland
+  (90) / genuinely bare ground (31) / woodland (9). Two BK empty hexes read
+  "developed" — WorldCover sees paving OSM has no footprint for; left as an honest
+  disclosure (muted, unranked).
+- App: empty-hex detail now states "Land cover here is <X> (ESA WorldCover 2021,
+  10 m)" instead of "inferred from satellite (likely …)"; footer credits WorldCover.
+- Also fixed a **latent crash in 05's top-10 summary print** (`:d`/`:,d` format on
+  the now-float rank/pop columns), exposed by the first full 05 re-run since the
+  three-class model landed. Output format unchanged.
+- **node --check passed on all three apps before deploy** (non-negotiable rule 2).
+- Committed on all three source branches, then published with `./deploy.sh`.
+
 ## Session 2026-09-06b — full-coverage map + two shipped-bug fixes (DEPLOYED)
 
 - **No more mystery holes. Every hex in the study area is now shown**, in three

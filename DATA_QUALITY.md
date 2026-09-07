@@ -36,9 +36,20 @@ Both P1 items are **done and deployed** (verified live at advikar.github.io/cool
   classes by a new `place` property: residential (scored/ranked), developed-but-unpopulated
   (commercial/industrial — shown with real canopy/heat, greyed on Priority, not ranked, caught
   by a buildings-aware classifier), and empty/undeveloped (shown muted + bordered, with a
-  best-effort `land` label — water/woodland/open/bare — inferred from the satellite layers).
+  land cover label from **ESA WorldCover 2021** — see below).
   The study-area outline is now always drawn. Live on SR/CC/Bakersfield; LA still on the old
   binary drop (with its NDVI canopy) per instruction — folds in with follow-up 1.
+- **Empty-hex land labels → ESA WorldCover 2021 (10 m) — done, live on SR/CC/Bakersfield.**
+  The old `land` label was a lst/veg/canopy heuristic (water/woodland/open/bare); it was right
+  on water but had no way to tell cropland from grassland from tidal wetland, and mislabelled
+  both as "bare / hillside." New `pipeline/02e_worldcover.py` reads the authoritative, citable
+  ESA WorldCover 2021 v200 map (Sentinel, CC-BY 4.0, Planetary Computer) as the majority class
+  per hex; `05_score.py` applies it to empty hexes (heuristic kept only as a fallback).
+  **Touches the descriptive label only — no scoring input, no ranking, no headline number
+  (verified: max |score change| = 0, max |rank change| = 0 on all three).** Corrections: CC's
+  12 "bare / hillside" hexes are Delta cropland/grass/wetland; SR's 76 are golden grassland, not
+  bare; BK's undifferentiated bare/hillside separates into cropland, grassland, genuinely bare
+  ground and woodland. The heuristic `classify_land()` stays as the offline fallback.
 - **UHI (follow-up 2): decided AGAINST** — its 2006/2013 vintage would confuse the current heat
   reading. See the follow-up section.
 
