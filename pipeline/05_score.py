@@ -24,7 +24,8 @@ import config as C
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
-            "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land"]
+            "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land", "green_src", "canopy_source", "canopy_year", "assessed_m2",
+            "coverage_frac", "canopy_quality", "scenario_ok", "canopy_baseline_ok", "ac_src", "ac_coverage", "acs_year", "access_snap_m", "access_quality"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -136,28 +137,14 @@ def load():
             )
         df = df.merge(pd.read_csv(path), on="h3", how="left")
 
-    # MEASURED canopy replaces the NDVI proxy at source, AFTER satellite.csv has
-    # supplied green_pct, so the score, the output and every log line downstream
-    # all read one number. `green_pct` keeps its name — it is the pipeline<->app
-    # contract — but stops meaning "greenness" and starts meaning "ground under
-    # vegetation at least 2 m tall".
-    #
-    # This is a correction, not a refinement. On San Ramon the NDVI proxy put
-    # canopy at 21.2% of the ground; the canopy-height model puts it at 11.2%.
-    # NDVI cannot tell an irrigated lawn from an oak, and in a summer-dry
-    # climate that is most of the difference.
+    df["green_src"] = "ndvi"
+
+    # Preserve the satellite proxy separately and attach explicit canopy provenance.
     if C.CANOPY_CSV.exists():
         df = df.merge(pd.read_csv(C.CANOPY_CSV), on="h3", how="left")
         have = df["canopy_pct"].notna()
-        log(f"  canopy: MEASURED for {int(have.sum())}/{len(df)} hexes from a "
-            f"canopy-height model; NDVI proxy retained where absent")
-        # Keep the NDVI figure as `veg`. It is not a worse canopy measure — it
-        # is a measure of something else: TOTAL photosynthesising ground, trees
-        # plus lawn plus shrub. Both cool, and independently: holding the other
-        # constant, canopy correlates with surface heat at -0.807 and non-tree
-        # vegetation at -0.649. The difference between the two is the useful
-        # part, because "already irrigated, no shade" is where a tree is
-        # cheapest to plant and likeliest to survive.
+        df.loc[have, "green_src"] = "canopy"
+        log(f"  canopy-source values for {int(have.sum())}/{len(df)} cells; NDVI elsewhere")
         df["veg_pct"] = df["green_pct"]
         df["green_pct"] = df["canopy_pct"].where(have, df["green_pct"])
     else:
@@ -254,7 +241,7 @@ def main():
     df["rank"] = np.nan
     pr = priority[res]
     df.loc[res, "score"] = (100 * minmax(pr)).values
-    df.loc[res, "rank"] = pr.rank(method="dense", ascending=False).values
+    df.loc[res, "rank"] = pr.rank(method="first", ascending=False).values
 
     df["access_min"] = df["access_min"].fillna(df["access_min"].median())
     df["access_km"] = df["access_km"].fillna(df["access_km"].median())
@@ -264,7 +251,20 @@ def main():
         "name":       df["name"].fillna("Unnamed"),
         "lst":        df["lst_c"].round(2),
         "green":      df["green_pct"].round(2),
-        # Total vegetation from NDVI. `veg` minus `green` is non-tree ground.
+        "green_src":  df["green_src"],
+        "canopy_source": df.get("canopy_source", pd.Series("unknown", index=df.index)).fillna("unknown"),
+        "canopy_year": df.get("canopy_year", pd.Series(None, index=df.index)),
+        "assessed_m2": df.get("assessed_m2", pd.Series(np.nan, index=df.index)),
+        "coverage_frac": df.get("coverage_frac", pd.Series(np.nan, index=df.index)),
+        "canopy_quality": df.get("canopy_quality", pd.Series("unknown", index=df.index)),
+        # 99% is an explicit operational coverage threshold, not a validation claim.
+        "scenario_ok": (df["street_m"].fillna(0) > 0) & (df["area_m2"] > 0),
+        "canopy_baseline_ok": ((df.get("canopy_source", pd.Series("", index=df.index)) == "usfs-2022") &
+                        (df.get("coverage_frac", pd.Series(0., index=df.index)) >= .99)),
+        "ac_src": df.get("ac_src", pd.Series("unknown", index=df.index)),
+        "ac_coverage": df.get("ac_coverage", pd.Series(np.nan, index=df.index)),
+        "acs_year": df.get("acs_year", pd.Series(C.ACS_YEAR, index=df.index)),
+        # Legacy scaled NDVI proxy. Subtracting canopy does not identify non-tree cover.
         "veg":        (df["veg_pct"] if "veg_pct" in df.columns
                        else df["green_pct"]).round(1),
         "canopy_m2":  (df["canopy_m2"] if "canopy_m2" in df.columns
@@ -282,6 +282,8 @@ def main():
         "holc":       df["holc"],
         "access_min": df["access_min"].round(1),
         "access_km":  df["access_km"].round(2),
+        "access_snap_m": df.get("access_snap_m", pd.Series(np.nan,index=df.index)),
+        "access_quality": df.get("access_quality", pd.Series("unknown",index=df.index)),
         "score":      df["score"].round(1),
         "rank":       df["rank"],
         "place":      df["place"],
@@ -293,6 +295,16 @@ def main():
         # real need.
         "street_m":   df["street_m"].fillna(0).round(0).astype(int),
     })[CONTRACT]
+
+    # Rank exactly the published values/endpoints used by the browser. This
+    # avoids dense-rank ties and precision-dependent export/UI disagreement.
+    norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
+    published = {k: clip_minmax(out[k], b) for k, b in norm.items()}
+    risk = (W["heat"] * published["lst"] + W["green"] * (1-published["green"])
+            + W["ac"] * (1-published["ac"]) + W["age65"] * published["pct65"])
+    pr = (risk * (C.POP_FLOOR + C.POP_WEIGHT * published["pop"]))[res]
+    out.loc[res, "score"] = (100 * minmax(pr)).round(1).values
+    out.loc[res, "rank"] = pr.rank(method="first", ascending=False).values
 
     by_id = {int(r["id"]): r for r in out.to_dict("records")}
     feats = []
@@ -311,7 +323,8 @@ def main():
     # ranking exactly. Keyed by the property each input is read from.
     norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
     C.OUT_FILE.write_text(json.dumps({"type": "FeatureCollection",
-                                      "norm": norm, "features": feats}))
+                                      "norm": norm, "metadata": {"schema_version": 3, "acs_year": C.ACS_YEAR,
+                                      "lace_year": 2023, "canopy_baseline_min_coverage": 0.99}, "features": feats}))
 
     log(f"  score: {out.score.min():.1f}–{out.score.max():.1f} "
         f"(median {out.score.median():.1f})")

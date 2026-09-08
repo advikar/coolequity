@@ -1,5 +1,21 @@
 # Contra Costa County build — findings
 
+## September 7 rebuild status
+
+ACS 2024 and occupied-housing LACE corrections are implemented. The current build contains
+2,697 ranked residential cells and source-specific canopy coverage. Prior income/canopy
+headlines below remain historical: the mixed-source and median-income methodology has not
+been revalidated. Use `reports/rebuild_summary.json` for current rebuild diagnostics.
+
+
+> **September 7, 2026 source audit: historical results pending revalidation.**
+> The existing county `green` field includes 430 residential NDVI-fallback cells. The canopy
+> comparisons below were not all computed from canopy alone. Do not quote them as verified
+> pure-canopy findings until the mosaic/source audit and recomputation are complete.
+> The new app labels the source and has retired the old landing headline.
+> See `PRODUCT_READINESS.md` and the latest section of `DATA_QUALITY.md`.
+
+
 **Status: shipped as a CANOPY EQUITY map.** Heat is measured and viewable but carries zero
 weight, for the reasons in §2. The scored model is missing canopy (55%), no A/C access (25%)
 and age 65+ (20%), scaled by population.

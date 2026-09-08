@@ -40,7 +40,7 @@
      score — so they get tabular figures globally rather than per-rule. */
   .num,.sc,.stat .v,.metric .top span:last-child,.badge,.tt-row span:last-child{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
   svg.ico{width:13px;height:13px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
-  #app{display:grid;grid-template-columns:366px 1fr;height:100vh;position:relative}
+  #app{display:grid;grid-template-columns:366px minmax(0,1fr);height:100vh;position:relative;overflow:hidden}
   #panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border-right:1px solid var(--edge);display:flex;flex-direction:column;min-height:0}
   /* ------------------------------------------------------------ intro */
   /* `align-items:center` + `overflow:hidden` clips a too-tall card at BOTH ends,
@@ -314,6 +314,7 @@
   .stat{background:#0a1017;border:1px solid var(--edge);border-radius:9px;padding:9px 11px}
   .stat .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
   .stat .k{font-size:10px;color:var(--muted2);margin-top:3px;line-height:1.25}
+  .roi-out .stat.hero{grid-column:1/-1}
   .stat.hero .v{color:var(--good)}
   .roi-note{font-size:9.5px;color:var(--muted2);margin-top:11px;line-height:1.4}
   .roi-feas{font-size:10.5px;line-height:1.55;margin-top:11px;padding:9px 11px;
@@ -372,6 +373,54 @@
   .srcs summary::before{content:"▸ ";color:var(--muted2)}
   .srcs[open] summary::before{content:"▾ "}
   .srcs>div{margin-top:6px}
+
+  :root{--muted2:#9aa5b5}
+  button.kind{width:100%;font:inherit;color:inherit;text-align:left;background:transparent;cursor:pointer}
+  .rank-label{display:block;font-size:12px;margin-top:12px;color:var(--muted)}
+  #rank-search{width:100%;padding:9px 10px;margin-top:6px;border:1px solid #566579;border-radius:7px;background:#101923;color:var(--txt);font:12px var(--sans)}
+  #rank-count{font-size:11px;color:var(--muted);margin:9px 0 2px;line-height:1.5}
+  .rank-pages{display:flex;justify-content:space-between;padding:12px 20px}
+  .rank-pages button{background:#1b2733;color:var(--txt);border:1px solid #566579;border-radius:6px;padding:8px 12px;cursor:pointer;font:12px var(--sans)}
+  .rank-pages button:disabled{opacity:.45;cursor:default}
+  .load-error{padding:28px;background:#111b27;color:#edf1f5;max-width:520px;font:15px/1.6 var(--sans)}
+  .load-error a{color:#ffcc86}
+
+  :focus-visible{outline:3px solid #ffb703;outline-offset:3px}
+  .helpnav{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .helpnav a,.helpnav button{font:600 12px var(--sans);color:var(--txt);background:#1b2733;border:1px solid #3e4d5e;border-radius:7px;padding:9px 10px;text-decoration:none;cursor:pointer}
+  .method-link{display:inline-block;color:#ffd28c;font-size:12px;line-height:1.5;margin-top:9px;text-underline-offset:3px}
+  .info-link{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;font:600 10px var(--sans);color:#c5ceda;text-decoration:none;vertical-align:middle;text-transform:none}
+  .info-link::before{content:"";position:absolute;inset:4px;border:1px solid #718298;border-radius:50%;pointer-events:none}
+  .info-link:hover{color:#ffcc86}
+  .info-link:hover::before{border-color:#ffcc86}
+  .row{width:100%;border:0;border-bottom:1px solid var(--edge);background:transparent;color:var(--txt);font:inherit;text-align:left}
+  button.toggle{width:100%;background:transparent;color:inherit;font:inherit;text-align:left;border:0;cursor:pointer}
+  button.toggle[hidden],[hidden]{display:none!important}
+  .score-details{margin:16px 0;border-block:1px solid var(--edge);padding:12px 0}
+  .score-details summary{cursor:pointer;font-size:13px;font-weight:600}
+  #detail:not(.show){visibility:hidden}
+  #detail .x,#coach .cx{background:none;border:0;color:var(--txt);min-width:32px;min-height:32px;font-size:22px;cursor:pointer}
+  .roi-note,.roi-feas,.cap{font-size:12px;line-height:1.6}
+  .roi .sub{font-size:12px}
+  .cooling-secondary{font-size:12px;color:var(--muted);margin:12px 0}.cooling-secondary b{color:var(--text);margin-left:6px}
+  #roi-slider{width:100%;min-height:32px}
+  .brand p{font-size:12px}
+  #detail{width:370px}
+  @media(max-width:760px){
+    #app{display:flex;flex-direction:column;height:100dvh}
+    #panel{width:100%;height:48%;flex:none}
+    #panel .brand{padding:10px 14px}
+    #panel .brand p,#takeaway-sec,#legend-cap{display:none}
+    .legend{padding-top:10px;padding-bottom:10px}
+    .brandtop #units{margin-left:auto}.helpnav{margin-top:8px}
+    #mapwrap{flex:1;min-height:0;width:100%}
+    #detail{width:100%;height:100dvh;z-index:45}
+    #chip{max-width:calc(100% - 115px);font-size:10px;white-space:normal}
+    .intro-card{padding:24px;width:100%;max-height:100dvh;overflow:auto}
+    .intro-card h1{font-size:34px}.istats{flex-wrap:wrap}
+    #coach{top:8px;max-height:calc(100% - 16px);overflow:auto}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -385,27 +434,19 @@
   <div class="intro-card">
     <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
     <div class="eyebrow">Tree canopy equity</div>
-    <h1>The poorest quarter of this county<br>has half the tree cover.</h1>
-    <p class="lede">In Contra Costa's poorest neighborhoods, tree canopy covers about
-      <b>13%</b> of the ground — roughly <b>half</b> what the wealthiest neighborhoods have.
-      <!-- One sentence, not a paragraph. The landing card is 979px tall against a
-           720px viewport at 1280x720, so anything added here pushes the wordmark
-           above the fold — which is exactly how the product name went missing. If
-           you add copy to this screen, re-measure .wordmark's top afterwards. -->
-      <b>577,000 people — half the county</b> — live on blocks with less than 15% canopy. This map
-      shows where they are, and what planting would cost.</p>
+    <h1>Put tree investment<br>where it matters most.</h1>
+    <p class="lede">Find priority areas for trees, understand the residents who live there, and explore the scale of a street-tree program. Built for Contra Costa’s urban forestry, climate planning and public works teams.</p>
     <div class="istats" id="istats"></div>
     <p class="ilbl">Explore the map, or switch city</p>
     <div class="switch" id="switch"></div>
-    <p class="sw-hint">Four California places are built. Any city on Earth can be added —
-      it is a bounding box in <code>pipeline/config.py</code> and one pipeline run.</p>
+    <p class="sw-hint">Compare local priorities. Each area uses its own data and ranking.</p>
     <button class="cta" id="intro-go">Explore Contra Costa County
       <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     <p class="fine" id="ifine"></p>
   </div>
 </div>
 
-<div id="app">
+<div id="app" inert>
   <aside id="panel">
     <div class="brand">
       <div class="brandtop">
@@ -426,7 +467,8 @@
           <button data-u="met" type="button">°C · km</button><button data-u="imp" type="button">°F · mi</button>
         </div>
       </div>
-      <p>Where is tree canopy thinnest, and who lives there? Canopy measured per block from satellite and priced per intervention — shown here on Contra Costa County, California.</p>
+      <p>Find areas to prioritize for trees in Contra Costa County.</p>
+      <nav class="helpnav" aria-label="Help and evidence"><button id="help-open" type="button">How to use</button><a href="guide.html" target="ce-guide">Data &amp; methods ↗</a></nav>
     </div>
 
     <div class="scroll">
@@ -442,19 +484,20 @@
       </div>
 
       <div class="section adv-only">
-        <p class="lbl">Map layer <span style="color:var(--muted2);font-weight:500;text-transform:none;letter-spacing:0">global inputs</span></p>
+        <p class="lbl">Map layers <a class="info-link" href="guide.html#display" target="ce-guide" aria-label="About map layers">i</a></p>
         <div class="layers" id="layers">
           <button class="layer active" data-k="score"><b>Priority</b><span>composite score</span></button>
           <button class="layer" data-k="lst"><b>Surface heat</b><span>land surface temp</span></button>
-          <button class="layer" data-k="green"><b>Tree canopy</b><span>% shaded</span></button>
+          <button class="layer" data-k="green"><b>Tree canopy</b><span>% of assessed ground</span></button>
+          <button class="layer" data-k="veg"><b>Vegetation greenness</b><span>satellite index · 0–100</span></button>
           <button class="layer" data-k="pop"><b>Population</b><span>residents exposed</span></button>
           <button class="layer" data-k="pct65"><b>Age 65+</b><span>% elderly</span></button>
-          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · measured</span></button>
+          <button class="layer" data-k="ac"><b>A/C access</b><span>% homes · estimated</span></button>
         </div>
       </div>
 
       <div class="section adv-only" id="weights">
-        <p class="lbl">What should count most <span class="wstate" id="w-state">pipeline defaults</span></p>
+        <p class="lbl">What should count most <a class="info-link" href="guide.html#weights" target="ce-guide" aria-label="About scoring weights">i</a> <span class="wstate" id="w-state">default priorities</span></p>
         <div class="presets" id="presets"></div>
         <div class="pwhy" id="w-why"></div>
         <button class="disc" id="w-disc" type="button" aria-expanded="false" aria-controls="wadv">
@@ -463,14 +506,7 @@
           <span class="dnote" id="w-dnote">4 inputs</span>
         </button>
         <div id="wadv" hidden>
-          <p class="wexp">Each input is scaled 0–1 <b>within this city</b>, multiplied by its
-            weight, and the results are added. That sum is then scaled by how many people live
-            in the hex. Weights are relative: they are normalised to 100%, so raising one
-            lowers the rest — which is why moving a single slider changes less than you expect,
-            and why the presets move all of them at once. The first four defaults come from
-            <code>pipeline/config.py</code>. <b>Walk to relief is a fifth input the shipped
-            pipeline does not use</b>, so it starts at 0; raise it to weigh distance to a
-            cooling site alongside the rest.</p>
+          <p class="wexp">Weights share 100%. Increasing one reduces the others. Population is a separate adjustment. <a class="method-link" href="guide.html#weights" target="ce-guide">How weights work ↗</a></p>
           <div id="w-rows"></div>
           <div class="wfoot"><span id="w-pop">weighted by population exposed</span>
             <button id="w-reset" disabled>Reset</button></div>
@@ -478,27 +514,23 @@
       </div>
 
       <div class="section adv-only">
-        <p class="lbl">Story overlays</p>
-        <p class="hint" id="story-note" hidden>No usable 1930s redlining map covers this
-          county. Checked directly against Mapping Inequality rather than assumed: the
-          East&nbsp;Bay 1937 survey is an Oakland/Berkeley map, and only 8 of its 120
-          polygons touch Contra Costa — all graded A, B or C, with no D grades at all.
-          Drawing it would imply a redlining story this data cannot support.</p>
+        <p class="lbl" id="story-heading" hidden>Historical context</p>
         <!-- Hidden at boot when no hex carries a grade — see syncHolcAvailable().
              An empty toggle would imply the data failed to load; removing it says
              the layer does not apply here. -->
-        <div class="toggle" id="tg-holc" data-layer="holc" hidden>
+        <button type="button" class="toggle" id="tg-holc" data-layer="holc" hidden>
           <div class="sw"></div>
           <div><div class="tt">Redlining (HOLC) <span class="tag us">US only</span></div><div class="ts">1930s grades vs. today's heat</div></div>
-        </div>
-        <div class="toggle" id="tg-access" data-layer="access">
+        </button>
+        <button type="button" class="toggle" id="tg-access" data-layer="access">
           <div class="sw"></div>
-          <div><div class="tt">Cooling-access gap</div><div class="ts">walk-time to nearest relief</div></div>
-        </div>
+          <div><div class="tt">Cooling-access gap</div><div class="ts">estimated walk to mapped sites</div></div>
+        </button>
+        <a class="method-link" href="guide.html#access" target="ce-guide">About walking access ↗</a>
       </div>
 
       <div class="section adv-only">
-        <p class="lbl">Cooling relief sites <span class="cnt" id="ct-n">—</span></p>
+        <p class="lbl">Potential cooling sites <a class="info-link" href="guide.html#access" target="ce-guide" aria-label="About mapped sites">i</a> <span class="cnt" id="ct-n">—</span></p>
         <!-- Same disclosure pattern as the weights panel: the count is the
              headline, the four categories and their definitions are one click
              away. Collapsed by default so the panel reads as a summary. -->
@@ -507,10 +539,10 @@
           Show the four categories
           <span class="dnote" id="k-dnote"></span>
         </button>
+        <a class="method-link" href="cooling.html" target="ce-cooling">County-listed locations &amp; contacts ↗</a>
+        <p class="hint" id="sites-status" role="status" hidden></p>
         <div id="kadv" hidden>
-          <p class="hint">Somewhere a resident without air conditioning can walk to and stay cool
-            at no cost. The pipeline counts four OpenStreetMap categories as relief. Switch a
-            category off to see how much of the network depends on it.</p>
+          <p class="hint">Mapped locations from OpenStreetMap. Opening hours, fees and cooling designation are unverified. Filters change markers; walking estimates stay fixed.</p>
           <div id="kinds"></div>
         </div>
       </div>
@@ -524,20 +556,20 @@
           <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
           <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
         </div>
-        <div class="cap" id="legend-cap"></div>
+        <div class="cap" id="legend-cap"></div><a class="method-link" id="legend-info" href="guide.html#score" target="ce-guide">How to interpret this layer ↗</a>
       </div>
 
       <div id="rankwrap">
         <div class="section" style="border-bottom:none;padding-bottom:4px">
-          <p class="lbl" style="margin:0">Highest-priority neighborhoods</p>
+          <p class="lbl" style="margin:0">Priority areas</p>
+          <label class="rank-label" for="rank-search">Find a ranked area</label><input id="rank-search" type="search" placeholder="Search area name or cell ID…" autocomplete="off"/>
+          <p id="rank-count" role="status"></p>
         </div>
-        <div id="rank"></div>
+        <div id="rank"></div><div class="rank-pages"><button id="rank-prev" type="button">Previous</button><button id="rank-next" type="button">Next 25</button></div>
       </div>
 
       <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>
-        <details class="srcs"><summary>Data sources &amp; method</summary>
-          <div>Real data · Landsat 8/9 thermal + Sentinel-2 NDVI (medians of summers 2022–2024, Planetary Computer) · tree canopy from the USFS/CAL FIRE 2022 California Urban Tree Canopy (0.6m NAIP aerial) · US Census ACS 2023 5-yr, Contra Costa County · OpenStreetMap cooling sites, streets and place names · undeveloped-hex land cover from ESA WorldCover 2021 (10m Sentinel). <b>Surface heat is measured but weighted zero</b> in this county's score — see the legend. A/C access is <b>measured</b> per census tract from US Census LACE estimates (2023). Heat and canopy are measured per hex; population, age and income are interpolated from census block groups roughly 3.6× a hex's size. Population is placed by area, not by building footprint: OpenStreetMap covers only a third of this county's housing and covers wealthy block groups 4.7× better than poor ones, so weighting by it would have demoted poor neighborhoods. H3 res-8 hexes, so the same engine runs anywhere.</div>
-        </details></div>
+        <a class="method-link" href="guide.html#geography" target="ce-guide">About these cells &amp; sources ↗</a></div>
     </div>
   </aside>
 
@@ -551,39 +583,39 @@
       <button data-b="map" class="on" type="button">Map</button><button data-b="sat" type="button">Satellite</button>
     </div></div>
     <div id="coach" hidden>
-      <div class="cx" id="coach-x" role="button" aria-label="Close">×</div>
+      <button class="cx" id="coach-x" aria-label="Close help">×</button>
       <h4>How to read this map</h4>
       <ol>
-        <li>Each hexagon is a <b>neighborhood block</b>. <b>Darker means more need</b> for cooling investment.</li>
-        <li><b>Click any block</b> for its numbers, why it ranks where it does, and a planting-cost estimate.</li>
+        <li>Each hexagon is an <b>analysis cell, about 0.77 km²</b>. <b>Darker means more need</b> for cooling investment.</li>
+        <li><b>Select a ranked area or map cell</b> for its numbers, why it ranks where it does, and a planting-cost estimate.</li>
         <li>Switch <b>Simple → Explore</b> (top-left) to change what counts and turn on more layers.</li>
       </ol>
       <button class="cbtn" id="coach-ok" type="button">Got it</button>
     </div>
   </div>
 
-  <aside id="detail">
+  <aside id="detail" inert aria-label="Selected area">
     <div class="dhead">
       <div class="badge" id="d-badge">1</div>
       <div style="flex:1"><div class="nm" id="d-name">—</div><div class="rk" id="d-rank">—</div></div>
-      <div class="x" id="d-close">×</div>
+      <button class="x" id="d-close" aria-label="Close selected area">×</button>
     </div>
     <div class="dbody">
       <div class="explain" id="d-explain"></div>
       <div id="d-metrics"></div>
-      <p class="lbl" id="d-bd-label" style="margin:16px 0 8px">How this score was built</p>
-      <div class="bd" id="d-breakdown"></div>
+      <details id="d-bd-label" class="score-details"><summary>Why this score?</summary><a class="method-link" href="guide.html#score" target="ce-guide">Scoring method ↗</a><div class="bd" id="d-breakdown"></div></details>
       <div class="roi">
-        <h3><svg class="ico" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.9-7-6.4C5 5.2 8.1 3 12 3s7 2.2 7 5.6c0 3.5-3.1 6.4-7 6.4z"/></svg> Intervention ROI</h3>
-        <p class="sub">Raise tree canopy in this hex and price the result. Cooling factor from WRI; every number below is an estimate, not a measurement.</p>
-        <div class="slider-row"><span>Target canopy</span><b><span id="roi-target">–</span>%</b></div>
-        <input type="range" id="roi-slider" min="0" max="45" value="0"/>
+        <h3><svg class="ico" viewBox="0 0 24 24"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.9-7-6.4C5 5.2 8.1 3 12 3s7 2.2 7 5.6c0 3.5-3.1 6.4-7 6.4z"/></svg> Planting scenario <a class="info-link" href="guide.html#planting" target="ce-guide" aria-label="About planting estimates (opens guide)">i</a></h3>
+        <p class="sub">Explore a share of mapped street capacity. Confirm feasible planting sites on the ground.</p>
+        <div class="slider-row"><label for="roi-slider">Plant this share of street capacity</label><b><span id="roi-target">–</span>%</b></div>
+        <input type="range" id="roi-slider" min="0" max="100" step="5" value="25"/>
         <div class="roi-out">
-          <div class="stat hero"><div class="v" id="roi-temp">–</div><div class="k">est. afternoon cooling</div></div>
-          <div class="stat"><div class="v" id="roi-people">–</div><div class="k">residents cooled</div></div>
-          <div class="stat"><div class="v" id="roi-seniors">–</div><div class="k">of them aged 65+</div></div>
-          <div class="stat"><div class="v" id="roi-cost">–</div><div class="k">est. cost · <span id="roi-per">–</span>/resident</div></div>
+          <div class="stat hero"><div class="v" id="roi-trees">–</div><div class="k">trees in this scenario</div></div>
+          <div class="stat"><div class="v" id="roi-canopy">–</div><div class="k">percentage-point canopy gain</div></div>
+          <div class="stat"><div class="v" id="roi-cost">–</div><div class="k">indicative planting cost</div></div>
         </div>
+        <p class="cooling-secondary">Illustrative summer air cooling <b id="roi-temp">–</b> <a class="info-link" href="guide.html#cooling" target="ce-guide" aria-label="About illustrative air cooling">i</a></p>
+        <p class="hint">New shade also reduces direct sun and surface heating along planted streets. <a href="guide.html#cooling" target="ce-guide">How cooling works ↗</a></p>
         <div class="roi-note" id="roi-note"></div>
         <!-- Where the three constants come from. A dollar figure with no stated
              source is the fastest way to lose a room, and $500 is an assumption,
@@ -592,7 +624,7 @@
              subdivisions, so "plant here" is only actionable where the city
              owns the ground. Street frontage is that, measured from OSM. -->
         <div class="roi-feas" id="roi-feas"></div>
-        <div class="roi-src" id="roi-src"></div>
+        <a class="method-link" href="guide.html#cost" target="ce-guide">Costs, assumptions &amp; limits ↗</a>
       </div>
     </div>
   </aside>
@@ -620,8 +652,8 @@ const THIS_CITY='contracosta';
 const _selfSub=(CITY_NAV.find(c=>c.slug===THIS_CITY)||{}).sub||'';
 const SITE_ROOT=(_selfSub && location.pathname.endsWith(_selfSub))
   ? location.pathname.slice(0,-_selfSub.length) : '/';
-const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson`;
-const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson`;
+const DATA_URL     = `../data/${_q.get('data') || CITY_SLUG}.geojson?v=20260907-conditional`;
+const CENTERS_URL  = `../data/centers_${CITY_SLUG}.geojson?v=20260907-ehsd`;
 const BOUNDARY_URL = `../data/boundary_${CITY_SLUG}.geojson`;  // flat fallback only
 
 /* ---------------------------------------------------------------- colour ramps
@@ -669,7 +701,7 @@ const HOLC={A:'#6ea966',B:'#6a9fb5',C:'#c9b458',D:'#c0603f'};
 const ACTIVITY_FILL='#c2c8d0';
 // EMPTY (undeveloped) hexes: a lighter neutral, muted on every layer.
 const EMPTY_FILL='#e0e4ea';
-const emptyWrap=e=>['case',['==',['get','place'],'empty'],EMPTY_FILL,e];
+const emptyWrap=e=>current!=='score'?e:['case',['==',['get','place'],'empty'],EMPTY_FILL,e];
 
 /* ------------------------------------------------- what a "cooling center" is
  * Not a guess and not a category we invented: these are the four OpenStreetMap
@@ -678,13 +710,13 @@ const emptyWrap=e=>['case',['==',['get','place'],'empty'],EMPTY_FILL,e];
  * the file rather than hardcoded, so this stays true if you repoint the city. */
 const KIND={
   library:           {c:'#1d4ed8',label:'Public library',
-    what:'Air-conditioned and open to the public at no cost. Usually the largest category in a US city.'},
+    what:'Mapped library. Verify opening hours, air conditioning and access before visiting.'},
   community_centre:  {c:'#7c3aed',label:'Community center',
-    what:'Recreation centers and civic halls. These are the buildings a city typically opens as a designated cooling center during a heat emergency.'},
+    what:'Mapped community facility. Heat-emergency designation and public access are unverified.'},
   pool:              {c:'#0891b2',label:'Public pool',
-    what:'Municipal swimming pools. Effective relief, but seasonal and limited to opening hours.'},
+    what:'Mapped swimming pool. Check public access, fees, season and opening hours.'},
   'shelter/senior':  {c:'#db2777',label:'Senior center / shelter',
-    what:'Senior centers and shelters. A small category, located where many high-risk residents already are.'},
+    what:'Mapped senior facility or shelter. Eligibility and public access may be restricted.'},
 };
 const KIND_KEYS=Object.keys(KIND);
 let kindOn=new Set(KIND_KEYS);
@@ -697,10 +729,10 @@ function centersFilter(){return ['in',['get','kind'],['literal',[...kindOn]]];}
  * metric — the WRI cooling coefficient, the 40 m² per tree and the 4.8 km/h walk
  * pace are all defined in metric, and converting the inputs instead of the
  * outputs is how you end up with a $500 tree costing $/ft². Convert at render. */
-let UNITS = localStorage.getItem('ce-units') === 'imp' ? 'imp' : 'met';
+let UNITS='met';try{UNITS=localStorage.getItem('ce-units')==='imp'?'imp':'met';}catch(_){}
 const isImp = () => UNITS === 'imp';
 const fTemp  = c => isImp() ? (c*9/5+32).toFixed(1)+'°F' : c.toFixed(1)+'°C';
-const fTempD = d => isImp() ? (d*9/5).toFixed(2)+'°F' : d.toFixed(2)+'°C';   // a delta: no +32
+const fTempD = d => {const v=isImp()?d*9/5:d,u=isImp()?'°F':'°C';return v>0&&v<.1?'<0.1'+u:v.toFixed(1)+u;};   // a delta: no +32
 const fDist  = km => isImp() ? (km*0.621371).toFixed(2)+' mi' : km.toFixed(2)+' km';
 const fArea  = m2 => isImp() ? (m2*3.861e-7).toFixed(2)+' sq mi' : (m2/1e6).toFixed(2)+' km²';
 const fMin   = m => m.toFixed(0)+' min';   // time is time
@@ -712,17 +744,19 @@ const LAYERS={
   score:{title:'Canopy priority',ramp:PRIORITY,worse:'hi',fmt:v=>v.toFixed(0),
     cap:'Composite of surface heat, missing canopy, low A/C access and share aged 65+, scaled by the population exposed. Weights are live — drag them above. Deeper = greater need for cooling investment.'},
   lst:{title:'Surface temperature',ramp:HEAT,worse:'hi',fmt:v=>fTemp(v),
-    cap:'Daytime land surface temperature from satellite thermal bands, summer 2023 median. Measured, and available for any city on Earth. Deeper = hotter.'},
+    cap:'Mid-morning surface temperature, summer medians 2022–24. This is not air temperature.'},
   green:{title:'Tree canopy',ramp:CANOPY,worse:'lo',fmt:v=>v.toFixed(0)+'%',
-    cap:'Share of ground under tree canopy, measured from the USFS/CAL FIRE 2022 aerial map (0.6m NAIP) — canopy, not greenness, so an irrigated lawn does not count. Shade is the cheapest durable cooling there is, so here the brown end is the end that needs help.'},
+    cap:'Aerial classification or legacy height-map canopy, as a share of assessed ground. Gray = canopy unavailable. Open a cell for source and coverage.'},
+  veg:{title:'Vegetation greenness',ramp:CANOPY,worse:'lo',fmt:v=>(v/45*100).toFixed(0),
+    cap:'Scaled satellite vegetation index, 0–100. Includes trees, grass and shrubs; this is not percent cover. Describes summer greenness, not planting feasibility.'},
   pop:{title:'Population exposed',ramp:POPU,worse:'hi',fmt:v=>v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0),
-    cap:'Residents living in each hex, from census block groups apportioned by area. Deeper = more people feeling the same heat.'},
+    cap:'Estimated residents, allocated from ACS 2024 block groups by area. These are not cell-level counts.'},
   pct65:{title:'Share aged 65+',ramp:AGE,worse:'hi',fmt:v=>v.toFixed(0)+'%',
-    cap:'Older adults die in heat waves at many times the rate of the general population — the sharpest vulnerability multiplier in the model. Deeper = older.'},
+    cap:'Estimated share aged 65+, smoothed for small populations.'},
   ac:{title:'A/C access',ramp:ACCESS_AC,worse:'lo',fmt:v=>v.toFixed(0)+'%',est:false,
-    cap:'MEASURED share of occupied homes with air conditioning, from the US Census Bureau LACE estimates (2023), per census tract. Deep navy = fewest homes with A/C, i.e. the end that needs help.'},
+    cap:'Census LACE 2023 tract estimates, weighted by occupied homes. Income proxy where unavailable; gray = no occupied-home support.'},
   access:{title:'Walk to cooling relief',ramp:WALK,worse:'hi',fmt:v=>fMin(v),key:'access_min',est:true,
-    cap:'Walking minutes to the nearest cooling site, routed on the OpenStreetMap pedestrian network at 4.8 km/h — a freeway or creek with no walkable crossing is a real detour, not a straight line. Deeper = further from relief.'},
+    cap:'Estimated walk to mapped sites at 4.8 km/h on the OSM network. Hours and cooling availability are unverified.'},
   // Categorical layer — no ramp. Present in LAYERS so setLayer() can read .title/.cap
   // uniformly; the legend swaps to the A–D swatch key instead of a gradient bar.
   holc:{title:'Redlining grade (HOLC)',ramp:null,fmt:v=>v,
@@ -811,9 +845,9 @@ const W_INPUTS=[
   {k:'green',prop:'green', label:'Missing canopy',    swatch:CANOPY[0], invert:true,
    note:'less shade → higher risk'},
   {k:'ac',   prop:'ac',    label:'No A/C access',     swatch:ACCESS_AC[0], invert:true, est:false,
-   note:'measured from Census LACE — scored here'},
+   note:'Census LACE estimate — scored here'},
   {k:'age65',prop:'pct65', label:'Age 65+',           swatch:AGE[7],
-   note:'older residents die first'},
+   note:'prioritize older residents'},
   {k:'access',prop:'access_min',label:'Far from relief',swatch:WALK[7], est:true,
    note:'not in the shipped model — starts at 0', show:v=>fMin(v)},
 ];
@@ -825,41 +859,19 @@ const W_INPUTS=[
  *  a policy question someone might actually be asked to defend. */
 const PRESETS=[
   {id:'default',name:'Canopy deficit',w:{...DEFAULT_W},pop:DEFAULT_POPW,
-   why:'<b>The shipped model.</b> Missing tree canopy (55%), no air conditioning (25%) and '
-      +'age 65+ (20%), scaled by how many people live on the block. <b>Surface heat is '
-      +'deliberately weighted zero</b> — open the sliders below for why, it is the most '
-      +'important decision in this build.'},
+   why:'Default: 55% missing canopy, 25% low A/C access and 20% age 65+, adjusted for population.'},
   {id:'canopy',name:'Canopy only',w:{heat:0,green:1,ac:0,age65:0,access:0},pop:.45,
-   why:'<b>Just the shade gap.</b> Nothing but measured tree canopy and population — no A/C, '
-      +'no age. The purest view of where shade is missing, with no other input in it. '
-      +'The Richmond blocks stay at the top.'},
+   why:'Compare shade gaps with population; exclude A/C and age.'},
   {id:'heat',name:'Heat first',w:{heat:1,green:0,ac:0,age65:0,access:0},pop:.45,
-   why:'<b>What the heat layer alone says — and why it is not scored.</b> The answer moves '
-      +'inland, to Concord and Antioch, and off the Richmond shoreline almost entirely: '
-      +'summer surface temperature runs 36.8&nbsp;°C in the west against 43.1&nbsp;°C at the '
-      +'Delta, and <b>38.8% of all variance in it is explained by longitude and latitude '
-      +'alone</b>. County-wide, corr(heat, canopy) is just &minus;0.24 — against &minus;0.64 '
-      +'in San&nbsp;Ramon. At this scale absolute heat maps distance from the Bay, not shade, '
-      +'which is why it carries no weight in the score.'},
+   why:'Compare surface heat with population. Coastal-to-inland climate strongly affects this view.'},
   {id:'seniors',name:'Protect seniors',w:{heat:0,green:.35,ac:.15,age65:.50,access:0},pop:.45,
-   why:'<b>Who is least able to cope?</b> The 65+ share runs from 4 to 84% across these '
-      +'blocks. The answer moves south of Walnut Creek to <b>Saranap and Rossmoor</b> — '
-      +'Rossmoor is the county\'s large retirement community, 84% aged 65+ — though note these '
-      +'blocks already carry 24–33% canopy, well above the 13% county median. '
-      +'The Richmond blocks that lead by default are young: 6–17% aged 65+.'},
-  {id:'ac',name:'A/C poverty',w:{heat:0,green:.30,ac:.60,age65:.10,access:0},pop:.45,
-   why:'<b>Who cannot cool their own home?</b> Leans hardest on <b>measured</b> A/C access '
-      +'(US Census LACE 2023). Homes without A/C are the ones that cannot self-cool in a heat '
-      +'wave. Measured A/C prevalence still tracks income here (r&nbsp;=&nbsp;0.30), so compare '
-      +'against <b>Canopy only</b>, which uses no A/C at all.'},
+   why:'Give older residents more weight, alongside canopy and A/C.'},
+  {id:'ac',name:'Low A/C access',w:{heat:0,green:.30,ac:.60,age65:.10,access:0},pop:.45,
+   why:'Emphasize limited home cooling using Census estimates.'},
   {id:'stranded',name:'No relief nearby',w:{heat:0,green:.40,ac:.20,age65:.15,access:.25},pop:.45,
-   why:'<b>Who has nowhere to go today?</b> Brings in walking time to one of the 488 mapped '
-      +'cooling sites. Distance is what a county can fix this week by opening a building, '
-      +'rather than in twenty years by planting a tree. Routed on the OSM pedestrian network; the '
-      +'shipped default weights it zero, so this preset is where it counts.'},
+   why:'Include walking distance to mapped facilities. Availability is unverified.'},
   {id:'people',name:'Most people',w:{...DEFAULT_W},pop:.90,
-   why:'<b>Reach over severity.</b> Same weights, but density dominates: a block with 5,000 '
-      +'residents and moderate canopy outranks a barer one with 300.'},
+   why:'Increase the influence of population while keeping the default input weights.'},
 ];
 let W_RAW={...DEFAULT_W}, POPW=DEFAULT_POPW;
 const LIVE={score:new Map(),rank:new Map(),order:[],lo:0,hi:1};
@@ -938,13 +950,12 @@ function syncHolcAvailable(){
   const any=HEX.features.some(f=>f.properties.holc);
   const tg=document.getElementById('tg-holc');
   tg.hidden=!any;
-  const note=document.getElementById('story-note');
-  if(note)note.hidden=any;
+  document.getElementById('story-heading').hidden=!any;
   return any;
 }
 
 function computeRanges(){
-  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{
+  ['score','lst','green','veg','pop','pct65','ac','access_min'].forEach(k=>{
     const a=HEX.features.map(f=>f.properties[k]).filter(v=>typeof v==='number'&&isFinite(v));
     vals[k]=a.length?[Math.min(...a),Math.max(...a)]:[0,1];
     if(vals[k][0]===vals[k][1])vals[k][1]=vals[k][0]+1;  // avoid divide-by-zero on flat fields
@@ -953,11 +964,12 @@ function computeRanges(){
   // the weights are. Pinning it stops the legend's endpoints twitching every time
   // a slider moves, which would read as the scale rather than the map changing.
   vals.score=[0,100];
+  vals.veg=[0,45];
   // Scoring normalises against the pipeline's p2/p98 endpoints (geojson `norm`),
   // so one leafy or one crowded hex no longer sets the scale for the score; the
   // colour ramps above stay on the raw range so the map still spans real values.
   // Falls back to the raw range when `norm` is absent (older data files).
-  ['score','lst','green','pop','pct65','ac','access_min'].forEach(k=>{svals[k]=vals[k];});
+  ['score','lst','green','veg','pop','pct65','ac','access_min'].forEach(k=>{svals[k]=vals[k];});
   const nm=HEX&&HEX.norm;
   if(nm) for(const k in nm){ if(Array.isArray(nm[k])&&nm[k][1]>nm[k][0]) svals[k]=nm[k]; }
 }
@@ -993,6 +1005,7 @@ function lift(css,target=152){
 }
 function inkOn(css){return lum(rgbOf(css))>150?'#0b0f14':'#ffffff';}
 function areaOf(p){return p.area_m2||AREA_M2_FALLBACK;}
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function nameOf(p){return p.name||`Hex ${p.id}`;}
 
 // Frame whatever city the pipeline produced, rather than a hardcoded LA view —
@@ -1026,23 +1039,26 @@ function fillExpr(k){
   if(k==='score') return ['case',['==',['get','place'],'activity'],ACTIVITY_FILL,
     ['interpolate',['linear'],liveScoreExpr(),...rampStops('score',0,100)]];
   const pk=propKey(k),[lo,hi]=rng(k);
+  if(k==='ac')return ['case',['!=',['get','ac_src'],'lace'],'#d6dbe1',['interpolate',['linear'],['get','ac'],...rampStops(k,lo,hi)]];
+  if(k==='green')return ['case',['==',['get','green_src'],'ndvi'],'#d6dbe1',['interpolate',['linear'],['get','green'],...rampStops(k,lo,hi)]];
   // coalesce: real pipelines leave no-data hexes null; without this they'd break the ramp
   return ['interpolate',['linear'],['coalesce',['get',pk],lo],...rampStops(k,lo,hi)];
 }
 
 const EMPTY={type:'FeatureCollection',features:[]};
-const optional=url=>fetch(url).then(r=>r.ok?r.json():EMPTY).catch(()=>EMPTY);
+const optional=url=>fetch(url,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Optional data unavailable');return r.json();}).then(d=>{if(d.type!=='FeatureCollection'||!Array.isArray(d.features))throw new Error('Invalid optional data');return d;}).catch(()=>({...EMPTY,loadFailed:true}));
 
 async function boot(){
   // Only the hex file is load-bearing; the other two degrade to nothing.
   const [h,c,b]=await Promise.all([
-    fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.json();}),
+    fetch(DATA_URL,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.json();}),
     optional(CENTERS_URL),
     optional(BOUNDARY_URL)
   ]);
   HEX=h;CENTERS=c;BOUNDARY=b;
+  if(c.loadFailed){const status=document.getElementById('sites-status');status.hidden=false;status.textContent='Mapped locations could not load. County-listed contacts are still available.';}
   computeRanges();
-  document.getElementById('chip-n').textContent=`${HEX.features.filter(f=>f.properties.place==='res').length} hexes`;
+  document.getElementById('chip-n').textContent=`${HEX.features.filter(f=>f.properties.place==='res').length} ranked cells`;
   syncHolcAvailable();
 
   // Panel UI is data-only. Render it BEFORE the map so a slow or blocked basemap
@@ -1195,16 +1211,11 @@ boot().catch(err=>{
   // already in memory and it was the map that threw wastes the one thing you
   // don't have at a demo, which is time.
   const gotData=HEX&&HEX.features&&HEX.features.length;
-  document.getElementById('map').innerHTML=gotData
-    ? `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
-         <b>Data loaded (${HEX.features.length} hexes) but the map failed to start</b>
-         <br>${err.message}<br><br>The panel and ranking on the left are still live.
-       </div>`
-    : `<div style="padding:40px;color:#e6edf3;font:14px/1.6 system-ui">
-         <b>Could not load ${DATA_URL}</b><br>${err.message}<br><br>
-         Serve from the repo root so <code>data/</code> resolves:<br>
-         <code>python -m http.server 8000</code> then open <code>/app/</code>
-       </div>`;
+  const host=gotData?document.getElementById('map'):document.getElementById('intro');
+  if(gotData)document.getElementById('intro')?.remove();
+  document.getElementById('app').inert=!gotData;
+  host.innerHTML=`<section role="alert" class="load-error"><h2>${gotData?'The map is unavailable':'We couldn’t load this area'}</h2><p>${gotData?'The area list and its data are still available.':'Check your connection and try again.'}</p><a href="${gotData?'?flat=1&go=1':'./'}">${gotData?'Open the plain map':'Try again'}</a> · <a href="guide.html">Data &amp; methods</a></section>`;
+
 });
 
 let pendingOps=[];
@@ -1244,13 +1255,14 @@ function setLayer(k){
   current=k;
   // May run before the map is ready (panel renders first) — legend still updates.
   paintFill();
-  document.querySelectorAll('.layer').forEach(b=>b.classList.toggle('active',b.dataset.k===k));
+  document.querySelectorAll('.layer').forEach(b=>{b.classList.toggle('active',b.dataset.k===k);b.setAttribute('aria-pressed',b.dataset.k===k);});
   const L=LAYERS[k];
   document.getElementById('legend-title').textContent=L.title;
   document.getElementById('chip-layer').textContent=L.title;
   const holcKey=document.getElementById('holc-key'),bar=document.getElementById('legend-bar');
   const dir=document.getElementById('legend-dir');
   document.getElementById('legend-cap').textContent=L.cap;
+  document.getElementById('legend-info').href='guide.html#'+k;
   if(k==='holc'){holcKey.style.display='flex';bar.style.display='none';dir.style.display='none';
     document.getElementById('legend-lo').textContent='“best”';
     document.getElementById('legend-hi').textContent='“hazardous”';
@@ -1264,7 +1276,7 @@ function setLayer(k){
   // are protective, so for them the needy end is the left one.
   const hi=L.worse!=='lo';
   dir.className='dir'+(hi?' hi':'');
-  dir.textContent=(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
+  dir.textContent=k==='veg'?'deeper colour = less greenness ←':(hi?'':'← ')+'deeper colour = more need'+(hi?' →':'');
 }
 
 // ---------------------------------------------------------------- intro
@@ -1288,26 +1300,19 @@ function buildIntro(){
   document.getElementById('istats').innerHTML=[
     // Labels stay short so all five sit on one row at 760px. A fifth stat that
     // wraps alone onto a second line reads as a mistake.
-    [HEX.features.filter(f=>f.properties.place==='res').length.toLocaleString(),'neighborhoods'],
+    [HEX.features.filter(f=>f.properties.place==='res').length.toLocaleString(),'residential cells'],
     // Not always millions. LA's 6.5M formatted fine as "6.5M"; San Ramon's
     // 85,569 came out "0.1M", which reads as a rounding error rather than a
     // population. Switch units at a million.
     [pop>=1e6?(pop/1e6).toFixed(1)+'M':Math.round(pop).toLocaleString(),'residents'],
-    [fTemp(hot),'hottest block'],
-    [canopy.toFixed(0)+'%','avg. canopy'],
-    [CENTERS.features.length.toLocaleString(),'cooling sites'],
+    [fTemp(hot),'max. surface temp'],
+    [HEX.features.filter(f=>f.properties.place==='res'&&f.properties.green_src==='canopy').length.toLocaleString(),'canopy-backed cells'],
+    [CENTERS.features.length.toLocaleString(),'mapped sites'],
   ].map(([v,k])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
 
   buildSwitch();
 
-  document.getElementById('ifine').innerHTML=
-    'Tree canopy and surface heat are measured per hex, from satellite. Population, age and '
-   +'income are real ACS figures interpolated from census block groups about 3.6&times; the '
-   +'size of one hex, so they vary smoothly rather than per block. <b>Surface heat is measured '
-   +'but weighted zero</b> in the score — this county spans marine to Delta and absolute '
-   +'temperature across it mostly tracks distance from the Bay. A/C access is <b>measured</b> '
-   +'(US Census LACE 2023), not modelled from income. Walk time is <b>routed on the OpenStreetMap pedestrian network</b>, '
-   +'not a straight-line estimate. Landsat 8/9 · Sentinel-2 · USFS/CAL FIRE 2022 urban canopy · US Census ACS 2023 · OpenStreetMap.';
+  document.getElementById('ifine').innerHTML='Planning assessment · canopy and vegetation sources · ACS 2024 · <a href="guide.html#overview" target="ce-guide">Explore data &amp; methods ↗</a>';
 
   document.getElementById('intro-go').onclick=dismissIntro;
   document.addEventListener('keydown',e=>{
@@ -1372,6 +1377,8 @@ function drawIntroMap(){
 function dismissIntro(){
   const el=document.getElementById('intro');if(!el)return;
   el.classList.add('gone');
+  el.inert=true;document.getElementById('app').inert=false;
+  document.getElementById('help-open').focus();
   el.addEventListener('transitionend',()=>el.remove(),{once:true});
   setTimeout(()=>{if(el.isConnected)el.remove();},900);   // transitionend can be skipped
   // The map has been alive underneath the whole time; it just needs to be told
@@ -1389,12 +1396,12 @@ function buildKinds(){
   const n={};for(const f of CENTERS.features){const k=f.properties.kind;n[k]=(n[k]||0)+1;}
   kindOn=new Set(KIND_KEYS.filter(k=>n[k]));
   document.getElementById('kinds').innerHTML=KIND_KEYS.filter(k=>n[k]).map(k=>`
-    <div class="kind" data-k="${k}">
+    <button type="button" class="kind" data-k="${k}">
       <span class="kdot" style="background:${KIND[k].c}"></span>
       <div class="kb"><div class="khd"><span class="kn">${KIND[k].label}</span>
         <span class="kc">${n[k]}</span></div>
         <div class="kw">${KIND[k].what}</div></div>
-    </div>`).join('');
+    </button>`).join('');
   document.getElementById('kinds').addEventListener('click',e=>{
     const row=e.target.closest('.kind');if(!row)return;
     const k=row.dataset.k;
@@ -1409,7 +1416,7 @@ function buildKinds(){
   syncKinds();
 }
 function syncKinds(){
-  document.querySelectorAll('.kind').forEach(r=>r.classList.toggle('off',!kindOn.has(r.dataset.k)));
+  document.querySelectorAll('.kind').forEach(r=>{r.classList.toggle('off',!kindOn.has(r.dataset.k));r.setAttribute('aria-pressed',kindOn.has(r.dataset.k));});
   const shown=CENTERS.features.filter(f=>kindOn.has(f.properties.kind)).length;
   document.getElementById('ct-n').textContent=
     `${shown} of ${CENTERS.features.length} shown`;
@@ -1502,13 +1509,12 @@ function applyWeights(){
   : `the most-populated hex counts ${(1/(1-POPW)).toFixed(1)}× the least`;
   const st=document.getElementById('w-state');
   const pre=matchPreset();
-  st.textContent=def?'pipeline defaults':pre?pre.name.toLowerCase():'your weights';
+  st.textContent=def?'default priorities':pre?pre.name.toLowerCase():'your weights';
   st.classList.toggle('custom',!def);
   document.getElementById('w-reset').disabled=def;
-  document.querySelectorAll('.pst').forEach(b=>b.classList.toggle('on',!!pre&&b.dataset.id===pre.id));
+  document.querySelectorAll('.pst').forEach(b=>{const on=!!pre&&b.dataset.id===pre.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   document.getElementById('w-why').innerHTML=pre?pre.why
-    :'<b>Your own weighting.</b> Not one of the presets — the map, the ranked list and every '
-    +'ROI figure below are running on the numbers you set.';
+    :'<b>Your own weighting.</b> The map and ranked list use your settings. Planting estimates are independent of these weights.';
   document.getElementById('w-dnote').textContent=
     W_INPUTS.map(w=>Math.round(W[w.k]*100)+'%').join(' · ');
   // The caption for the priority layer is generated from the weights in force,
@@ -1519,19 +1525,7 @@ function applyWeights(){
   if(W.ac>0.005)    parts.push(`no A/C access (${Math.round(W.ac*100)}%)`);
   if(W.age65>0.005) parts.push(`share aged 65+ (${Math.round(W.age65*100)}%)`);
   if(W.access>0.005)parts.push(`walk to relief (${Math.round(W.access*100)}%)`);
-  LAYERS.score.cap=`Composite of ${parts.join(', ').replace(/, ([^,]*)$/,' and $1')}, `
-    +`then weighted by the population living there. `
-    +(def?'These are the weights pipeline/config.py shipped with. ':'Re-scored live in your browser. ')
-    +(W.heat<=0.005
-      ? 'Surface heat is weighted zero on purpose: this county spans marine to Delta, '
-        +'39% of all variance in surface temperature is explained by position alone, and '
-        +'county-wide corr(heat, canopy) is only −0.24 — trees do cool a block, but ranking '
-        +'Richmond against Antioch on one thermal scale does not work. It stays viewable as '
-        +'its own layer. '
-      : '')
-    // A within-area min-max: 100 means first in line HERE, not bad in absolute terms.
-    +'This is a ranking within this county, not an absolute hazard level — 100 means '
-    +'first in line here. Deeper = thinner canopy over more people.';
+  LAYERS.score.cap=`${parts.join(' · ')}. Population-adjusted; relative within this county. Some cells use a vegetation proxy.`+(W.heat<=0.005?' Surface heat is not scored.':'');
   if(current==='score')setLayer('score');     // repaints AND refreshes the caption
   buildRank();
   if(selId!=null)selectHex(selId,false);
@@ -1581,6 +1575,11 @@ function wireUI(){
   if(bm)bm.addEventListener('click',e=>{const x=e.target.closest('button');if(x)setBasemap(x.dataset.b);});
   const cok=document.getElementById('coach-ok'),cx=document.getElementById('coach-x');
   if(cok)cok.onclick=dismissCoach;if(cx)cx.onclick=dismissCoach;
+  document.getElementById('rank-search').oninput=()=>{rankPage=0;buildRank();};
+  document.getElementById('rank-prev').onclick=()=>{rankPage--;buildRank();document.querySelector('#rank .row')?.focus();};
+  document.getElementById('rank-next').onclick=()=>{rankPage++;buildRank();document.querySelector('#rank .row')?.focus();};
+  document.getElementById('help-open').onclick=()=>{document.getElementById('coach').hidden=false;cok.focus();};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!document.getElementById('coach').hidden)dismissCoach();else if(!document.getElementById('detail').inert)document.getElementById('d-close').click();}});
   document.getElementById('layers').addEventListener('click',e=>{
     const b=e.target.closest('.layer');if(!b)return;
     holcOn=false;accessOn=false;syncToggles();setLayer(b.dataset.k);
@@ -1589,6 +1588,9 @@ function wireUI(){
   document.getElementById('tg-access').onclick=()=>{accessOn=!accessOn;if(accessOn){holcOn=false;setLayer('access');}else setLayer('score');syncToggles();};
   document.getElementById('d-close').onclick=()=>{
     document.getElementById('detail').classList.remove('show');
+    document.getElementById('detail').inert=true;
+    syncDetailAccess();
+    document.querySelector('.row.sel')?.focus();
     selId=null;paintSel();
     document.querySelectorAll('.row').forEach(r=>r.classList.remove('sel'));
   };
@@ -1596,6 +1598,8 @@ function wireUI(){
 
 function syncToggles(){
   document.getElementById('tg-holc').classList.toggle('on',holcOn);
+  document.getElementById('tg-holc').setAttribute('aria-pressed',holcOn);
+  document.getElementById('tg-access').setAttribute('aria-pressed',accessOn);
   document.getElementById('tg-access').classList.toggle('on',accessOn);
 }
 
@@ -1607,7 +1611,7 @@ function setMode(m){
   const app=document.getElementById('app');
   app.classList.toggle('simple',m==='simple');
   app.classList.toggle('explore',m!=='simple');
-  document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.querySelectorAll('#mode button').forEach(b=>{b.classList.toggle('on',b.dataset.m===m);b.setAttribute('aria-pressed',b.dataset.m===m);});
   const hint=document.getElementById('mode-hint');if(hint)hint.textContent=m==='simple'?'the essentials':'all layers & controls';
   if(m==='simple'){holcOn=false;accessOn=false;syncToggles();setLayer('score');buildTakeaway();}
   try{localStorage.setItem('ce-mode',m);}catch(_){}
@@ -1619,12 +1623,8 @@ function setMode(m){
 function buildTakeaway(){
   const el=document.getElementById('takeaway');if(!el)return;
   const top=LIVE.order[0];const name=top?nameOf(top.properties):'—';
-  el.innerHTML=`<b>Darker blocks need cooling investment most.</b> In Contra Costa that is the `
-    +`poorest, least-shaded neighborhoods: the poorest quarter of residents live under 13% tree `
-    +`canopy — about half what the richest have — and 577,000 people, half the county, live on `
-    +`blocks below 15% canopy.`
-    +`<div class="tk-now">Highest need right now: <b>${name}</b>. `
-    +`Tap any block for its numbers and a planting estimate, or switch to <b>Explore</b> to change what counts.</div>`;
+  el.innerHTML=`<b>Start with a priority area below.</b> Select a cell to see its evidence and explore a planting scenario.`;
+
 }
 
 /* Aerial/street basemap toggle (needs a connection). The satellite raster is
@@ -1650,24 +1650,39 @@ function maybeCoach(){
 }
 function dismissCoach(){
   const c=document.getElementById('coach');if(c)c.hidden=true;
+  document.getElementById('help-open').focus();
   try{localStorage.setItem('ce-coach2','1');}catch(_){}
 }
 
+let rankPage=0;const RANK_PAGE_SIZE=25;
 function buildRank(){
   // LIVE.order is already sorted by the weights in force — never by the
   // pipeline's frozen `rank`, or the list would contradict the map the moment
   // a weight moved.
-  const top=LIVE.order.slice(0,25);
+  const query=document.getElementById('rank-search').value.trim().toLowerCase();
+  const matches=LIVE.order.filter(f=>!query||(/^\d+$/.test(query)?String(f.properties.id)===query:nameOf(f.properties).toLowerCase().includes(query)));
+  rankPage=Math.max(0,Math.min(rankPage,Math.ceil(matches.length/RANK_PAGE_SIZE)-1));
+  const start=rankPage*RANK_PAGE_SIZE,top=matches.slice(start,start+RANK_PAGE_SIZE);
+  document.getElementById('rank-count').textContent=matches.length?`${start+1}–${start+top.length} of ${matches.length.toLocaleString()} ranked areas`:'No matching area. Try a nearby place name or clear the search.';
+  document.getElementById('rank-prev').disabled=rankPage===0;
+  document.getElementById('rank-next').disabled=start+RANK_PAGE_SIZE>=matches.length;
   const el=document.getElementById('rank');el.innerHTML='';
   top.forEach(f=>{const p=f.properties,s=sc(p);
-    const row=document.createElement('div');row.className='row';row.dataset.id=p.id;
+    const row=document.createElement('button');row.type='button';row.className='row';row.dataset.id=p.id;
     if(p.id===selId)row.classList.add('sel');
     const c=colorFor('score',s);
     row.innerHTML=`<div class="badge" style="background:${c};color:${inkOn(c)}">${rk(p)}</div>
-      <div><div class="nm">${nameOf(p)}</div><div class="sub">${fTemp(p.lst)} · ${p.green.toFixed(0)}% canopy · ${fMin(p.access_min)} to relief</div></div>
+      <div><div class="nm">${escapeHtml(nameOf(p))}</div><div class="sub">${fTemp(p.lst)} · ${p.green_src==='ndvi'?LAYERS.veg.fmt(p.green)+'/100 greenness':p.green.toFixed(0)+'% canopy'} · ${fMin(p.access_min)} to relief</div></div>
       <div class="sc" style="color:${lift(c)}">${s.toFixed(0)}</div>`;
-    row.onclick=()=>selectHex(p.id,true);el.appendChild(row);});
+    row.onclick=()=>{selectHex(p.id,true);document.getElementById('d-close').focus({preventScroll:true});};el.appendChild(row);});
 }
+
+function syncDetailAccess(){
+  const blocked=matchMedia('(max-width:760px)').matches&&document.getElementById('detail').classList.contains('show');
+  document.getElementById('panel').inert=blocked;
+  document.getElementById('mapwrap').inert=blocked;
+}
+addEventListener('resize',syncDetailAccess);
 
 function selectHex(id,fly){
   selId=id;const f=HEX.features.find(x=>x.properties.id===id);if(!f)return;const p=f.properties;
@@ -1695,24 +1710,32 @@ function selectHex(id,fly){
   else { if(bdLabel) bdLabel.hidden=false; renderBreakdown(p,s); }
   const m=[
     ['Surface heat','lst',p.lst,LAYERS.lst.fmt(p.lst),false],
-    ['Tree canopy','green',p.green,LAYERS.green.fmt(p.green),false],
+    [p.green_src==='ndvi'?'Vegetation greenness':'Tree canopy',p.green_src==='ndvi'?'veg':'green',p.green,p.green_src==='ndvi'?LAYERS.veg.fmt(p.green)+'/100':LAYERS.green.fmt(p.green),false],
     ['Population','pop',p.pop,Math.round(p.pop).toLocaleString(),false],
     ['Age 65+','pct65',p.pct65,LAYERS.pct65.fmt(p.pct65),false],
-    ['A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
+    [p.ac_src==='income-model'?'A/C income proxy':'A/C access','ac',p.ac,LAYERS.ac.fmt(p.ac),true],
     ['Walk to cooling','access',p.access_min,`${fMin(p.access_min)} · ${fDist(p.access_km)}`,true],
   ];
   document.getElementById('d-metrics').innerHTML=m.map(([lab,k,v,disp,est])=>{
     const t=norm(k,v);
-    return `<div class="metric"><div class="top"><span>${lab}${est?'<span class="est">est</span>':''}</span><span>${disp}</span></div>
+    return `<div class="metric"><div class="top"><span>${lab} <a class="info-link" href="guide.html#${k==='access'?'access':k}" target="ce-guide" aria-label="About ${lab} (opens guide)">i</a>${est?'<span class="est">est</span>':''}</span><span>${disp}</span></div>
       <div class="track"><div class="fill" style="width:${Math.max(2,t*100).toFixed(0)}%;background:${lift(colorFor(k,v),130)}"></div></div></div>`;
   }).join('');
+  if(p.access_quality==='approach-review'){
+    const note=document.createElement('p');note.className='hint';
+    note.textContent='Walking estimate includes a '+fDist(p.access_snap_m/1000)+' straight-line connection from the cell centre to the network. Check the pedestrian approach.';
+    document.getElementById('d-metrics').appendChild(note);
+  }
   // ROI init
   const slider=document.getElementById('roi-slider');
-  slider.min=Math.round(p.green);slider.max=45;
-  slider.value=Math.min(45,Math.round(p.green)+12);
+  slider.min=0;slider.max=100;
+  slider.value=plantingShares.get(p.id)??25;
+  slider.disabled=!(p.street_m>0)||p.scenario_ok!==true;
   slider.oninput=()=>updateROI(p);
   updateROI(p);
+  document.getElementById('detail').inert=false;
   document.getElementById('detail').classList.add('show');
+  syncDetailAccess();
   if(fly&&map){const c=f.geometry.coordinates[0];let lon=0,lat=0;c.forEach(pt=>{lon+=pt[0];lat+=pt[1];});
     lon/=c.length;lat/=c.length;map.flyTo({center:[lon,lat],zoom:12.4,duration:850,essential:true});}
 }
@@ -1738,7 +1761,7 @@ function renderBreakdown(p,score){
   const mult=(1-POPW)+POPW*nv('pop');
   const tot=Math.max(1e-9,base);
   document.getElementById('d-breakdown').innerHTML=`
-    <div class="stack">${parts.map(x=>
+    <p class="hint">${p.green_src==='ndvi'?'This score uses a vegetation proxy for the canopy input.':'Canopy source: '+(p.canopy_source==='usfs-2022'?'2022 aerial assessment · '+(p.coverage_frac>0&&p.coverage_frac<.01?'<1':Math.round((p.coverage_frac||0)*100))+'% cell coverage.':'legacy height model · coverage unverified.')}</p><div class="stack">${parts.map(x=>
       `<i style="width:${(x.pts/tot*100).toFixed(2)}%;background:${x.swatch}" title="${x.label}"></i>`).join('')}</div>
     <table><tbody>
       ${parts.map(x=>`<tr>
@@ -1751,7 +1774,7 @@ function renderBreakdown(p,score){
       <tr><td class="k">× population</td><td class="n">${fInt(p.pop)}</td>
         <td class="n">${nv('pop').toFixed(2)} of max</td><td class="p">${mult.toFixed(3)}</td></tr>
     </tbody></table>
-    <div class="eq">priority ${(base*mult).toFixed(3)} → rescaled across all ${HEX.features.length} hexes → <b>score ${score.toFixed(1)}</b></div>`;
+    <div class="eq">priority ${(base*mult).toFixed(3)} → rescaled across ${LIVE.order.length} residential cells → <b>score ${score.toFixed(1)}</b></div>`;
 }
 
 // Single source of truth for a scoring-normalised input, [0,1] against the p2/p98
@@ -1779,22 +1802,22 @@ function cityStats(){
   return _cstats;
 }
 const DRIVER={
-  green:p=>`its low tree canopy (${p.green.toFixed(0)}%)`,
-  lst:p=>`its high surface heat (${fTemp(p.lst)})`,
-  ac:p=>`low measured A/C access (${p.ac.toFixed(0)}% of homes)`,
+  green:p=>p.green_src==='ndvi'?`the vegetation-proxy input (${LAYERS.veg.fmt(p.green)}/100)`:`its low tree canopy (${p.green.toFixed(0)}%)`,
+  heat:p=>`its high surface heat (${fTemp(p.lst)})`,
+  ac:p=>`low estimated A/C access (${p.ac.toFixed(0)}% of homes)`,
   age65:p=>`a high share of residents 65+ (${p.pct65.toFixed(0)}%)`,
   access:p=>`a long walk to cooling (${fMin(p.access_min)})`,
 };
 function explainHex(p){
   const el=document.getElementById('d-explain');if(!el)return;
   if(p.place==='empty'){
-    el.innerHTML=`<b>Undeveloped land</b> — no residents, streets or buildings, so it is shown muted `
-      +`and not ranked. Land cover here is <b>${p.land||'undeveloped'}</b> (ESA WorldCover 2021, 10&nbsp;m).`;
+    el.innerHTML=`<b>Undeveloped land</b> — no residential ranking; shown muted on Priority `
+      +`and available on environmental layers. Land cover here is <b>${escapeHtml(p.land||'undeveloped')}</b> (ESA WorldCover 2021, 10&nbsp;m).`;
     return;
   }
   if(p.place==='activity'){
     el.innerHTML=`A <b>developed block with no residents</b> (commercial, industrial or institutional), `
-      +`so it carries no resident-priority score. Its measured heat and tree canopy are shown below, `
+      +`so it carries no resident-priority score. Its available heat and vegetation estimates are shown below, `
       +`because shade still matters where people work and walk.`;
     return;
   }
@@ -1804,88 +1827,52 @@ function explainHex(p){
     .filter(x=>x.pts>0.001).sort((a,b)=>b.pts-a.pts);
   const drivers=parts.slice(0,2).map(x=>DRIVER[x.k]).filter(Boolean).map((f,i)=>f(p));
   const driverTxt=drivers.length?drivers.join(' and '):'a combination of factors';
-  const hot=st.pctHotterThan(p.lst);
-  const heatCtx=hot>=67?'hotter than most blocks in the county':hot<=33?'cooler than most blocks':'about county-average';
   const seniors=Math.round(p.pop*p.pct65/100);
   const canopyCtx=p.green<st.medGreen?'below':p.green>st.medGreen?'above':'at';
   el.innerHTML=`Ranks <b>#${r} of ${st.n.toLocaleString()}</b> for cooling need`
     +(isDefaultW()?'':' <span class="why">(at your weights)</span>')
     +` — driven most by <span class="why">${driverTxt}</span>. `
     +`About <b>${fInt(Math.round(p.pop))}</b> people live here, ${seniors.toLocaleString()} aged 65 or older. `
-    +`Tree canopy covers <b>${p.green.toFixed(0)}%</b> of the ground — ${canopyCtx} the ${st.medGreen.toFixed(0)}% county median — `
-    +`and summer surface heat is <b>${fTemp(p.lst)}</b>, ${heatCtx}.`;
+    +(p.green_src==='ndvi'?`Vegetation greenness: <b>${LAYERS.veg.fmt(p.green)}/100</b>. Tree-canopy coverage is unavailable here. `:`Tree canopy covers <b>${p.green.toFixed(0)}%</b> of the assessed ground. `)
+    +`<a class="method-link" href="guide.html#score" target="ce-guide">About this ranking ↗</a>`;
 }
 
+// Preserve scenario choices when units or scoring weights change.
+const plantingShares=new Map();
 function updateROI(p){
   const slider=document.getElementById('roi-slider');
-  const target=+slider.value, delta=Math.max(0,target-p.green);
-  const tempDrop=delta/10*0.3;                     // WRI: +10% canopy ≈ −0.3°C
-  const area=areaOf(p);
-  const trees=Math.round(delta/100*area/TREE_M2);
-  const cost=trees*COST_TREE;
-  // Nobody is cooled by an intervention you haven't made. Reading a flat
-  // "15,759 residents cooled" while the slider sits at the hex's current canopy
-  // and the cost reads $0 is the one number on this panel that looked broken —
-  // it was the only figure that never responded to the slider.
-  const acts=delta>0;
-  const people=acts?Math.round(p.pop):0;
-  const seniors=acts?Math.round(p.pop*p.pct65/100):0;
-  const perPerson=acts&&p.pop?cost/p.pop:0;
-  const money=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1000?'$'+Math.round(v/1000)+'k':'$'+Math.round(v);
-  document.getElementById('roi-target').textContent=target;
-  document.getElementById('roi-temp').textContent=acts?'−'+fTempD(tempDrop):fTempD(0);
-  document.getElementById('roi-people').textContent=fInt(people);
-  document.getElementById('roi-seniors').textContent=fInt(seniors);
-  document.getElementById('roi-cost').textContent=money(cost);
-  document.getElementById('roi-per').textContent=money(perPerson);
-  document.getElementById('roi-note').textContent=acts
-    ? `Raising canopy from ${p.green.toFixed(0)}% to ${target}% — about ${trees.toLocaleString()} trees over ${fArea(area)} — is estimated to cool afternoons by ${fTempD(tempDrop)}, easing heat for ${fInt(people)} residents, ${fInt(seniors)} of whom are aged 65 or over.`
-    : `No planting: the target equals this hex's current ${p.green.toFixed(0)}% canopy, so nothing is spent and nobody is cooled. Drag the slider up to price an intervention.`;
-  // What the city can actually do here, as opposed to what the model wants.
-  const fm=p.street_m||0;
-  const capacity=Math.floor(fm*2/TREE_SPACING_M);
-  const feas=document.getElementById('roi-feas');
-  if(!fm){
-    feas.innerHTML='<b>No mapped public street frontage in this hex.</b> Any planting here '
-      +'would be on private ground — an incentive, permission or partnership question, '
-      +'not a public-works one.';
-  }else{
-    const enough=capacity>=trees;
-    const km=(fm/1000);
-    feas.innerHTML=`<b>${(km*(isImp()?0.621371:1)).toFixed(1)} ${isImp()?'mi':'km'}</b> of city street `
-      +`frontage here — room for about <b>${fInt(capacity)}</b> street trees at `
-      +`${TREE_SPACING_M} m spacing, both sides. `
-      +(acts
-        ? (enough
-           ? `<span class="ok">The ${fInt(trees)} trees above fit within public right-of-way.</span>`
-           : `<span class="gap">Only ${fInt(capacity)} of the ${fInt(trees)} trees above fit in `
-             +`public right-of-way — the remaining ${fInt(trees-capacity)} would need private `
-             +`land.</span>`)
-        : 'Drag the slider to compare against a planting target.');
+  const share=slider.disabled||p.scenario_ok!==true?0:+slider.value;plantingShares.set(p.id,share);
+  if(p.scenario_ok!==true){
+    ['roi-target','roi-trees','roi-canopy','roi-temp','roi-cost'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('roi-note').textContent='No mapped street capacity is available for this cell. A site survey can identify opportunities not captured here.';
+    document.getElementById('roi-feas').textContent='Choose an area with mapped streets to explore a planting scenario.';
+    slider.setAttribute('aria-valuetext','Unavailable: mapped street capacity absent');
+    return;
   }
-  document.getElementById('roi-src').innerHTML=
-     '<b>Where these numbers come from</b>'
-    +'<div><b>Cooling.</b> World Resources Institute, <i>Cooling Potential of Urban Trees</i>: '
-    +'about +10% canopy cover per −0.3 °C of afternoon air temperature.</div>'
-    // Someone will notice the score ignores heat and ask why the ROI still promises
-    // cooling. These are different claims and the distinction is worth stating.
-    +'<div><b>Why cooling is claimed here when heat is not scored.</b> Those are different '
-    +'questions. Planting shade on a block cools that block — that is a measured local '
-    +'effect and it is what this figure uses. The score ignores heat because <i>comparing '
-    +'absolute temperature between blocks 60 km apart</i> mostly measures distance from the '
-    +'Bay, not shade. Adding trees still cools; ranking Richmond against Antioch by raw '
-    +'thermal reading is what does not work.</div>'
-    +`<div><b>Tree count.</b> ${TREE_M2} m² of crown per mature street tree, applied to this `
-    +'hex&rsquo;s own measured area.</div>'
-    +`<div><b>Cost.</b> $${COST_TREE} per tree is a <i>planning assumption</i>, not a quote or a `
-    +'bid — the order of magnitude US municipal programmes use for a planted street tree plus '
-    +'roughly three years of establishment care. Real unit costs vary widely with species, site '
-    +'preparation and whether sidewalk work is needed. Treat it as a scale, not a budget.</div>'
-    +`<div><b>Street frontage.</b> Metres of residential, tertiary and unclassified road `
-    +`centreline inside this hex, from OpenStreetMap. Capacity assumes both sides at `
-    +`${TREE_SPACING_M} m spacing and takes no account of driveways, utilities, sight lines `
-    +`or existing trees, so read it as an upper bound on what the public right-of-way could `
-    +`hold — not a planting plan.</div>`;
+  const capacity=Math.floor(Math.max(0,p.street_m||0)*2/TREE_SPACING_M);
+  const area=areaOf(p);
+  // Observed canopy bounds maximum possible new cover, without extrapolating
+  // a partial assessment over unknown land. Placement remains conditional.
+  const knownCanopy=p.canopy_baseline_ok?Math.max(p.canopy_m2||0,p.green/100*area):p.canopy_source==='usfs-2022'?Math.max(0,p.canopy_m2||0):0;
+  const trees=Math.min(Math.round(capacity*share/100),Math.floor(Math.max(0,area-knownCanopy)/TREE_M2));
+  const delta=trees*TREE_M2/area*100, cost=trees*COST_TREE;
+  document.getElementById('roi-target').textContent=share;
+  slider.setAttribute('aria-valuetext',share+' percent of theoretical street capacity');
+  document.getElementById('roi-trees').textContent=fInt(trees);
+  document.getElementById('roi-canopy').textContent='+'+delta.toFixed(1);
+  document.getElementById('roi-temp').textContent=fTempD(delta/10*0.3);
+  document.getElementById('roi-cost').textContent=cost.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+  const baseline=p.canopy_baseline_ok
+    ? `Canopy baseline: ${p.green.toFixed(1)}% → ${(p.green+delta).toFixed(1)}% at maturity. `
+    : p.canopy_source==='usfs-2022'
+      ? `Partial aerial coverage (${p.coverage_frac>0&&p.coverage_frac<.01?'<1':Math.round((p.coverage_frac||0)*100)}%). Whole-cell canopy total is not estimated. `
+      : 'Whole-cell canopy baseline is unverified; future total is not estimated. ';
+  document.getElementById('roi-note').textContent=trees
+    ? baseline+`Scenario assumes ${fInt(trees*TREE_M2)} m² of new, non-overlapping crown at maturity and $500 per tree. Site feasibility is unverified.`
+    : 'No planting in this scenario; no added canopy or cost.';
+  document.getElementById('roi-feas').textContent=capacity
+    ? `Mapped streets imply an upper bound of ${fInt(capacity)} tree positions at 10 m spacing on both sides. Actual capacity depends on ownership, existing trees, utilities and space.`
+    : 'No eligible street length is mapped here. Capacity is unknown; this does not establish that public planting land is absent.';
 }
 
 function wireHover(){
@@ -1895,17 +1882,17 @@ function wireHover(){
     // the tooltip would quietly disagree with the hex it is pointing at.
     const s=sc(p),r=rk(p);
     pop.setLngLat(e.lngLat).setHTML(
-      `<b>${nameOf(p)}</b>
+      `<b>${escapeHtml(nameOf(p))}</b>
        <div class="tt-row"><span>Priority</span><span>${p.place==='empty'?((p.land||'undeveloped')+' · no residents'):p.place==='activity'?'developed · not ranked':s==null?'–':s.toFixed(0)+' · #'+r}</span></div>
        <div class="tt-row"><span>Surface heat</span><span>${fTemp(+p.lst)}</span></div>
-       <div class="tt-row"><span>Canopy</span><span>${(+p.green).toFixed(0)}%</span></div>
+       <div class="tt-row"><span>${p.green_src==='ndvi'?'Greenness index':'Canopy'}</span><span>${p.green_src==='ndvi'?LAYERS.veg.fmt(+p.green)+'/100':(+p.green).toFixed(0)+'%'}</span></div>
        <div class="tt-row"><span>Walk to cooling</span><span>${fMin(+p.access_min)}</span></div>`).addTo(map);});
   map.on('mouseleave','fill',()=>{map.getCanvas().style.cursor='';pop.remove();});
   map.on('click','fill',e=>{
     // A centre sits on top of the hex it is in, and both layers get the click.
     // Let the marker win — you clicked the dot, not the 0.8 km² under it.
     if(map.queryRenderedFeatures(e.point,{layers:['centers']}).length)return;
-    selectHex(e.features[0].properties.id,false);
+    selectHex(e.features[0].properties.id,false);document.getElementById('d-close').focus({preventScroll:true});
   });
 
   // "What actually IS a cooling center?" answered on the object itself, with the
@@ -1914,7 +1901,7 @@ function wireHover(){
   map.on('click','centers',e=>{
     const p=e.features[0].properties,k=KIND[p.kind]||{c:'#64748b',label:p.kind,what:''};
     cpop.setLngLat(e.features[0].geometry.coordinates).setHTML(
-      `<b>${p.name||k.label}</b>
+      `<b>${escapeHtml(p.name||k.label)}</b>
        <div class="tt-kind"><i style="background:${k.c}"></i>${k.label}</div>
        <div class="tt-what">${k.what}</div>`).addTo(map);
   });

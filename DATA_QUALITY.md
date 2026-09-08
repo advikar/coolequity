@@ -1,5 +1,159 @@
 # CoolEquity — data-quality audit
 
+## Current update — conditional scenarios and official cooling sources
+
+September 7, 2026; Contra Costa branch only. This supersedes the earlier 99%-coverage
+scenario gate. Coverage is the fraction assessed, **not a percentage accuracy score**.
+
+- Conditional tree counts, cost, added canopy and illustrative air cooling now require
+  mapped street capacity and valid area: **1,832 residential cells**. The former blanket
+  exclusion was unnecessarily restrictive for scoping. None of these outputs certify
+  plantability or budget accuracy; 10m spacing, 40m² new crown and $500/tree remain assumptions.
+- `canopy_baseline_ok` retains the >=99% aerial-coverage check only for displaying a
+  whole-cell current-to-future canopy total (788 residential cells). Partial or unknown
+  coverage displays added canopy but omits a future total. Known aerial canopy area bounds
+  the maximum possible new area without extending partial coverage over unassessed land.
+- UI replaces “pts” with **percentage-point canopy gain**. Guide example: 10% → 15% is
+  +5 percentage points. Added crowns and cooling require feasible, non-overlapping new cover.
+- Cooling is explicitly **summer air cooling**, not surface-temperature change. A surface
+  response formula has not been added: cross-sectional tree/urban LST differences are not
+  a validated marginal intervention response for Contra Costa. Surface shading benefits are
+  explained without inventing a local degree reduction. Source: Schwaab et al. (2021),
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC8611034/.
+- Added searchable **county-listed cooling directory**, 17 locations with addresses and
+  phone links. Source: EHSD bulletin, June 2026 revision, served at the July 2026 URL and
+  checked September 7. No open-now status, coordinates, hours or unrestricted eligibility
+  are invented. The source asks visitors to call before going.
+- The same bulletin identifies El Cerrito and Kensington libraries as lacking A/C. Both
+  are excluded by exact name/kind from the discovery inventory (488 → 486); walking
+  estimates rebuilt against the remaining discovery sites. The official directory is a
+  distinct reference, not the denominator of the walking layer.
+- Routing now projects cells before finding centroids, exports the cell-to-network straight
+  connection length, and flags connections >100m for approach review. The flag is an
+  operational review trigger, not assurance that shorter approaches are safe or accessible.
+- Failed optional-site loads now show a status message and retain access to official contacts.
+
+Remaining: official-site coordinates/entrances, hours and eligibility verification; routing
+against that service set; local species/growth/survival and cost validation; uncertainty
+propagation and full surface-model development. No public deployment has occurred.
+
+
+## Current implementation — validated rebuild, September 7, 2026
+
+This supersedes the source-audit and UI-only notes below. Those describe the pre-rebuild data.
+Changed branch: **contra-costa only**. Local build; not publicly deployed.
+
+- Re-ran all four locally available USFS/CAL FIRE rasters. **Canopy percentages are unchanged**.
+  Frozen, H3-aligned fallback mask repairs all related columns; positive canopy with zero
+  canopy area falls from **866 to 0**. Legacy CHM corridor areas remain unvalidated and must
+  not be interpreted as verified public planting space.
+- Sources across 2,859 cells: **1,334 USFS 2022**, **1,079 legacy CHM**, **446 no canopy**.
+  Aerial extent: **789 cells >=99% assessed**, **545 partial**. CHM extent stays unknown;
+  no coverage is invented from its percentage. Exact boundary matching, common equal-area
+  CRS/pixel-area checks and overlap removal protect aggregation.
+- Export adds source/year, assessed_m2, coverage_frac, canopy_quality and scenario_ok.
+  Planting scenarios require USFS coverage >=99%: **788 residential cells enabled**.
+  The 99% cutoff is an operational denominator tolerance (up to 1% unassessed), not source
+  accuracy or site-feasibility certification. Partial and legacy cells remain browsable.
+- Refreshed to **2020–2024 ACS five-year** and matching 2024 boundaries, 708 block groups.
+  Cache includes vintage, occupied homes B25003_001E and published 90% margins of error.
+  Missing required counts/vintage or unmatched block groups fail instead of silently becoming
+  zero population. Per-cell uncertainty propagation and improved spatial allocation remain pending.
+- LACE 2023 now weights **allocated occupied homes**, with explicit A/C numerator, housing
+  denominator and coverage. Partial/suppressed coverage cannot masquerade as 0% A/C.
+  All **2,697 residential cells** remain LACE-backed; nonresidential fallback records retain
+  income-model flags. In a controlled 2023 run, population and age match exactly while A/C
+  changes by up to **5.4 points**. No income-equity headline has been reinstated.
+- Export and browser now rank the same published inputs with the same tie ordering. Previous
+  dense ranks and pre-rounding inputs could disagree with the live list. Default top 25 overlap
+  after rebuild: **24/25**; median absolute rank move **8**, maximum **393**.
+- Greenness is publicly explorable as a **0–100 index**, not vegetation percent. The legacy
+  0–45 `veg` scaling is mapped to 0–100 for display. Canopy layer never paints NDVI as canopy;
+  missing canopy is gray. Raw NDVI is not recoverable outside the clamped endpoints.
+- Cooling remains a secondary illustration. Primary reference: Krayenhoff et al. (2021),
+  https://doi.org/10.1088/1748-9326/abdcf1: informal synthesis of higher-quality modeling
+  studies, approximately 0.3°C per 10 canopy points for clear-sky summer afternoons.
+  This is not observed Contra Costa cooling or a surface-temperature response model.
+
+Validation: five pipeline regression tests; 11,436 scenario cases; all residential browser/export
+rank and score agreement; stable IDs/geometries; source/area consistency. Nine weight stress
+cases retain 19–24 of the default top 25; this is a diagnostic, not a confidence interval.
+See `reports/rebuild_summary.json`, `reports/rebuild_cell_changes.csv`, `reports/source_manifest.json`.
+
+
+## Latest source audit — critical corrections, September 7, 2026
+
+**This section supersedes the earlier “Current UI accuracy corrections” where inconsistent.**
+The earlier review missed the NDVI fallback and was too reassuring about canopy coverage.
+
+- Joined grid IDs to current canopy/satellite CSVs and GeoJSON: **446 cells lack canopy_pct,
+  including 430 residential cells**. All fallback `green` values match satellite `green_pct`;
+  none is in the default top 25. Remaining residential cells: **2,265 canopy-backed**.
+- Added `green_src` metadata to pipeline export and current file. Source-aware UI labels and
+  disabled planting scenarios prevent those proxy values being presented as canopy baselines.
+  Existing numerical fields, score/rank and geometry are unchanged (regression-checked).
+- **866 positive-canopy records have zero canopy_m2 (860 residential).** Fallback loop in
+  `02d_canopy_usfs.py` fills the percent before using percent-missingness for its other fields.
+  Proposed repair: freeze missing mask; apply it to all matching columns; validate area and
+  assessed coverage before rebuilding. No canopy raster reprocessing was performed this pass.
+- Partial urban-boundary canopy denominators differ from whole-cell scenario areas. Export
+  assessed area/coverage and constrain scenarios before treating these as locally validated.
+- A/C input is modeled **occupied-housing-unit** prevalence, but the join uses people as
+  weights. Propose occupied-unit weighting with reconciliation and source/uncertainty flags.
+- ACS 2020–2024 five-year is available (January 29, 2026); current build remains 2023.
+  Proposed update includes rank/coverage/MOE comparison. Fine 2020 census blocks are not
+  automatically “exact” allocation truth: they are older and privacy-protected.
+- Canopy-equity headlines derived from mixed canopy/NDVI need recomputation; the app landing
+  no longer publishes the old ratio or below-15% count as pure canopy findings.
+- $500/tree, 40m² crown, 10m spacing, chosen score weights and 100-person age smoothing remain
+  project assumptions, not local calibration or externally endorsed constants.
+
+Full evidence, source links, method alternatives and acceptance criteria: `PRODUCT_READINESS.md`.
+UI notes stay short; substantive improvement proposals are kept in that owner-facing audit.
+
+
+## Current UI accuracy corrections — September 7, 2026
+
+**Read this before the historical issue tables below.** Those tables record earlier builds;
+references to income-only A/C, unrouted county access and the previous canopy model are
+historical unless explicitly retained here. This pass changes presentation and scenario
+controls, not input data or score weights.
+
+1. **LACE is modeled, not directly measured.** Verified against the Census LACE product
+   page and `03_census.py`. The old CSV value `ac_src=measured` means LACE-backed. Joining
+   residential GeoJSON IDs through the grid to census CSV confirms all 2,695 residential
+   cells are LACE-backed; 140 of all 2,859 census rows use the income fallback. Corrected
+   visible app labels and guide. Cell-level source flags still are not exported in GeoJSON.
+2. **Right-of-way capacity is not verified feasibility.** OSM road length does not establish
+   ownership or available tree positions. Replaced categorical “fits” and “needs private
+   land” claims with theoretical-capacity language; absence means unknown opportunity.
+3. **No confirmed beneficiary count or financial ROI.** Removed “residents cooled” and
+   cost-per-beneficiary framing. Population is contextual. $500/tree and 40 m²/crown are
+   explicit uncalibrated assumptions; overlapping crowns, survival and time are not modeled.
+4. **Cooling is illustrative ambient-air cooling.** WRI summarizes ~0.3 °C per 10 percentage
+   points of added canopy. No verified local afternoon prediction is available. Removed
+   the previous implication of a locally measured effect and an afternoon guarantee.
+   Source: https://www.wri.org/insights/urban-trees-cooling-potential
+5. **Sites are potential relief, not verified centers.** Hours, access, fees and A/C remain
+   unverified. All 2,859 current overlay rows say routed; endpoints use straight snap links
+   and are not verified barrier-free door-to-door routes. Category filters do not reroute.
+6. **Geographic denominator corrected:** 2,695 residential ranked cells; 8 activity and
+   156 undeveloped cells; 2,859 total. Score breakdown now uses the residential denominator.
+7. **Heat vintage corrected in layer caption:** summers 2022–2024, not summer 2023 alone.
+8. **Verified current figures:** 1,161,570 residents; 577,342 in cells below 15% canopy.
+   The guide attributes the 12.9% vs 27.0% income-quarter finding to the existing findings
+   analysis and discloses ecological/median aggregation and geography limitations.
+
+Remaining priorities for deployment as an operational planning product: complete per-cell
+source/coverage metadata; ACS uncertainty; verified site inventory; municipal tree/ownership
+and utility data; local costs; validated crown/maturity assumptions. No approximation here
+is represented as “the most accurate” without comparative validation.
+
+UI validation: `node tests/ui-contract.cjs` — 11,436 zero/quarter/half/full-share cases across
+all cells, no nonfinite outputs, monotonic tree counts, capacity/canopy bounds and zero cost.
+Desktop and narrow-screen browser checks are a targeted UI audit, not WCAG certification.
+
+
 *Every approximation, caveat, and known error in the pipeline, with a concrete fix for each.*
 Written to be read by a GIS analyst or a city sustainability team, not just the build. If a
 figure from this tool is going into a grant application or a planting plan, read the item that
@@ -244,3 +398,7 @@ census-tract **air** temperature (degree-hours/day, 2 m, urban-minus-upwind-rura
 3. **Validate against a sample of hand-checked routes before shipping** — the whole reason this
    is staged is that an inaccurate route is worse than an honest estimate. Until it is
    validated, the app must keep labelling walk time "estimated, not routed."
+
+### Validation — September 8, 2026
+
+Current Contra Costa export supports 1,832 residential conditional scenarios; 788 residential cells qualify for displaying a canopy baseline and future total. Removing the two county-identified libraries without A/C and rebuilding access changed 21 cells’ walking estimates. Seven Python tests and 11,436 scenario checks passed. These checks verify implementation consistency, not field accuracy or planting feasibility. County source check date remains September 7, 2026.

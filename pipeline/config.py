@@ -141,7 +141,7 @@ NDVI_CLAMP = (0.05, 0.65)
 CANOPY_MAX_PCT = 45.0
 
 # ---------------------------------------------------------------- census (US)
-ACS_YEAR = 2023
+ACS_YEAR = 2024
 STATE_FIPS = "06"
 COUNTY_FIPS = "013"          # Contra Costa County (LA build used 037)
 

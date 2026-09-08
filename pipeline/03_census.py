@@ -24,12 +24,13 @@ import config as C
 ACS_URL = f"https://api.census.gov/data/{C.ACS_YEAR}/acs/acs5"
 BG_ZIP = (f"https://www2.census.gov/geo/tiger/GENZ{C.ACS_YEAR}/shp/"
           f"cb_{C.ACS_YEAR}_{C.STATE_FIPS}_bg_500k.zip")
-BG_CACHE = C.CACHE / f"bg_{C.STATE_FIPS}.zip"
+BG_CACHE = C.CACHE / f"bg_{C.ACS_YEAR}_{C.STATE_FIPS}.zip"
 ACS_CSV = C.ACS_FILE                  # committed fallback
 OUT_CSV = C.CENSUS_CSV
 
 POP = "B01001_001E"
 INCOME = "B19013_001E"
+OCCUPIED = "B25003_001E"   # occupied housing units, matching LACE denominator
 UNITS = "B25001_001E"   # total housing units — denominator for the dasymetric guard
 # B01001 age brackets from 65 up, male then female.
 AGE65 = [f"B01001_{n:03d}E" for n in (20, 21, 22, 23, 24, 25,
@@ -58,7 +59,7 @@ def fetch_acs():
     """Block-group ACS table for the target county. Cached to data/acs.csv."""
     key = load_key()
     params = {
-        "get": ",".join([POP, INCOME, UNITS] + AGE65),
+        "get": ",".join(ACS_FIELDS),
         "for": "block group:*",
         "in": f"state:{C.STATE_FIPS} county:{C.COUNTY_FIPS}",
     }
@@ -69,24 +70,53 @@ def fetch_acs():
 
     r = requests.get(ACS_URL, params=params, timeout=60)
     r.raise_for_status()
-    rows = r.json()
-    df = pd.DataFrame(rows[1:], columns=rows[0])
-
-    num = [POP, INCOME, UNITS] + AGE65
-    df[num] = df[num].apply(pd.to_numeric, errors="coerce")
-    # ACS uses large negative sentinels (-666666666) for suppressed estimates.
-    df[num] = df[num].mask(df[num] < -1e6)
-
-    df["GEOID"] = (df["state"] + df["county"] + df["tract"] + df["block group"])
-    df["pop"] = df[POP].fillna(0)
-    df["pop65"] = df[AGE65].sum(axis=1, min_count=1).fillna(0)
-    df["income"] = df[INCOME]
-    df["units"] = df[UNITS].fillna(0)
-
-    out = df[["GEOID", "pop", "pop65", "income", "units"]]
+    out = parse_acs(r.json(), C.ACS_YEAR)
     out.to_csv(ACS_CSV, index=False)
-    log(f"  ACS: {len(out)} block groups, pop {out['pop'].sum():,.0f} "
-        f"-> cached {ACS_CSV.name}")
+    log(f"  ACS: {len(out)} block groups, pop {out['pop'].sum():,.0f} -> {ACS_CSV.name}")
+    return out
+
+
+ACS_FIELDS = [v for e in [POP, INCOME, UNITS, OCCUPIED] + AGE65
+              for v in [e, e[:-1] + "M"]]
+
+
+def parse_acs(rows, year):
+    """Retain published 90% MOEs and vintage with the native-geography cache."""
+    df = pd.DataFrame(rows[1:], columns=rows[0])
+    df[ACS_FIELDS] = df[ACS_FIELDS].apply(pd.to_numeric, errors="coerce")
+    df[ACS_FIELDS] = df[ACS_FIELDS].mask(df[ACS_FIELDS] < 0)
+    df["GEOID"] = df["state"] + df["county"] + df["tract"] + df["block group"]
+    out = df[["GEOID"]].copy()
+    for name, field in [("pop", POP), ("income", INCOME), ("units", UNITS), ("occupied", OCCUPIED)]:
+        out[name] = df[field]
+        out[name + "_moe"] = df[field[:-1] + "M"]
+    out["pop65"] = df[AGE65].sum(axis=1, min_count=len(AGE65))
+    # Census approximation for a sum, ignoring unavailable covariances.
+    out["pop65_moe"] = np.sqrt(df[[x[:-1] + "M" for x in AGE65]].pow(2).sum(axis=1, min_count=len(AGE65)))
+    out["acs_year"] = year
+    if out[["pop", "pop65", "occupied", "units"]].isna().any().any():
+        raise ValueError("Missing ACS counts must be resolved before allocation")
+    return out
+
+
+def aggregate_ac(inter, lace):
+    """Allocate occupied homes, then sum A/C numerators and coverage per cell.
+
+    Missing tract estimates never count as zero A/C. Only full covered-housing
+    support produces a LACE rate; partial/zero cases retain explicit coverage.
+    """
+    if "occupied" not in inter or inter["occupied"].isna().any():
+        raise ValueError("Occupied housing counts are required for LACE weighting")
+    d = inter.copy()
+    d["occupied_s"] = d["occupied"] * d["frac"]
+    d["lace_ac"] = d["GEOID"].str[:11].map(lace)
+    valid = d["lace_ac"].between(0, 100)
+    d["ac_homes"] = (d["occupied_s"] * d["lace_ac"] / 100).where(valid, 0)
+    d["ac_covered_homes"] = d["occupied_s"].where(valid, 0)
+    out = d.groupby("h3")[["occupied_s", "ac_homes", "ac_covered_homes"]].sum().rename(columns={"occupied_s":"occupied"})
+    out["ac_coverage"] = out["ac_covered_homes"] / out["occupied"].replace(0, np.nan)
+    full = (out["occupied"] > 0) & (out["ac_coverage"] >= 1 - 1e-9)
+    out["ac_meas"] = (100 * out["ac_homes"] / out["occupied"].replace(0, np.nan)).where(full)
     return out
 
 
@@ -249,8 +279,8 @@ def area_weight(hexes, bgs, buildings=None, city_buildings=None):
         "pop": g["pop_s"].sum(),
         "pop65": g["pop65_s"].sum(),
     })
-    # Income is a median, so it can't be summed — weight it by the people it
-    # describes, not by area, or empty industrial slivers would sway it.
+    # Legacy income context: population-weighted mean of source BG medians.
+    # This is NOT a cell median and must not support median-income claims.
     w = inter.dropna(subset=["income"]).copy()
     w["wt"] = w["pop_s"]
     gi = w.groupby("h3")
@@ -258,18 +288,8 @@ def area_weight(hexes, bgs, buildings=None, city_buildings=None):
                    if d["wt"].sum() > 0 else np.nan, include_groups=False)
     out["income"] = num
 
-    # Measured A/C: every block group in a tract shares its tract LACE rate;
-    # a hex gets the population-weighted average of the tract rates it overlaps.
-    lace = load_lace()
-    if lace:
-        inter["lace_ac"] = inter["GEOID"].str[:11].map(lace)
-        wa = inter.dropna(subset=["lace_ac"]).copy()
-        wa["wt"] = wa["pop_s"]
-        out["ac_meas"] = wa.groupby("h3").apply(
-            lambda d: np.average(d["lace_ac"], weights=d["wt"])
-            if d["wt"].sum() > 0 else np.nan, include_groups=False)
-    else:
-        out["ac_meas"] = np.nan
+    # LACE's denominator is occupied homes, not people.
+    out = out.join(aggregate_ac(inter, load_lace()))
 
     out["pct65"] = np.where(out["pop"] > 0, out["pop65"] / out["pop"] * 100, 0.0)
     return out.reset_index()
@@ -279,7 +299,7 @@ LACE_TRACT = C.CACHE / "ac_src" / "LACE_23_Tract.csv"
 
 
 def load_lace():
-    """Measured A/C prevalence per census tract from the US Census Bureau's LACE
+    """Modeled A/C prevalence per census tract from the US Census Bureau's LACE
     (Local Air Conditioning Estimates, 2023) — % of occupied homes with any air
     conditioning, modelled by Census from the AHS+ACS. Replaces the income proxy:
     real, official, and it captures the climate/housing signal the income rank
@@ -315,9 +335,11 @@ def main():
     hexes = gpd.read_file(C.GRID_FILE).to_crs(C.RASTER_CRS)
 
     try:
+        if "--offline" in sys.argv:
+            raise RuntimeError("offline rebuild requested")
         acs = fetch_acs()
     except Exception as e:
-        log(f"  Census API failed ({type(e).__name__}: {e})")
+        log(f"  Census API unavailable ({type(e).__name__}); request details omitted")
         if ACS_CSV.exists():
             log(f"  falling back to cached {ACS_CSV.name}")
             acs = pd.read_csv(ACS_CSV, dtype={"GEOID": str})
@@ -328,10 +350,12 @@ def main():
                 "https://api.census.gov/data/key_signup.html)"
             )
 
+    if "occupied" not in acs or "acs_year" not in acs or not (acs["acs_year"] == C.ACS_YEAR).all():
+        raise SystemExit("ACS cache lacks occupied housing or matching vintage; refresh it first")
     bgs = load_block_groups().merge(acs, on="GEOID", how="left")
     miss = bgs["pop"].isna().sum()
     if miss:
-        log(f"  {miss} block groups had no ACS row — treated as empty")
+        raise SystemExit(f"{miss} block groups lack ACS rows; refusing silent population loss")
     bgs[["pop", "pop65"]] = bgs[["pop", "pop65"]].fillna(0)
 
     buildings, city_buildings = load_buildings()
@@ -361,14 +385,16 @@ def main():
     modelled = model_ac_access(out["income"])
     if "ac_meas" in out.columns and out["ac_meas"].notna().any():
         out["ac_est"] = out["ac_meas"].where(out["ac_meas"].notna(), modelled)
-        out["ac_src"] = np.where(out["ac_meas"].notna(), "measured", "income-model")
-        meas_share = 100.0 * (out["ac_src"] == "measured").mean()
+        out["ac_src"] = np.where(out["ac_meas"].notna(), "lace", "income-model")
+        meas_share = 100.0 * (out["ac_src"] == "lace").mean()
     else:
         out["ac_est"] = modelled
         out["ac_src"] = "income-model"
         meas_share = 0.0
 
-    out = out[["h3", "pop", "pct65", "income", "ac_est", "ac_src"]]
+    out["acs_year"] = C.ACS_YEAR
+    out = out[["h3", "pop", "pct65", "income", "ac_est", "ac_src",
+               "occupied", "ac_homes", "ac_covered_homes", "ac_coverage", "acs_year"]]
     out["pop"] = out["pop"].round(0)
     out[["pct65", "ac_est"]] = out[["pct65", "ac_est"]].round(2)
     out.to_csv(OUT_CSV, index=False)
@@ -380,8 +406,8 @@ def main():
         f"(median {out.pct65.median():.1f})")
     log(f"  income ${out.income.min():,.0f}–${out.income.max():,.0f}")
     log(f"  ac_est {out.ac_est.min():.0f}–{out.ac_est.max():.0f}% "
-        f"({meas_share:.0f}% of hexes MEASURED from LACE, rest income-model)")
-    log(f"  wrote {OUT_CSV.relative_to(C.ROOT)}")
+        f"({meas_share:.0f}% of hexes modeled by Census LACE, rest income-model)")
+    log(f"  wrote {OUT_CSV.name}")
 
     # A wild miss means the area weighting is wrong. The band is per-county in
     # config — but note this total is only the part of the county the grid

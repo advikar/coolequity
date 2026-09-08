@@ -1,5 +1,15 @@
 # CoolEquity — build status & handoff
 
+## September 8, 2026 — delivery plan and portable model handoff
+
+Added `DELIVERY_PLAN.md` with Claude-heavy ownership, dependency-ordered work through
+publication, separate explorer/operational acceptance, and provider-switch instructions.
+`HANDOFF.md` records the active next packet and recovery context. Planning only on
+`contra-costa`; no product/data behavior or other city branch changed, no tests rerun,
+and no deployment performed. Existing implementation changes remain in the workspace.
+Inspection found `deploy.sh` omits the new cooling-directory JSON and archives committed
+branches rather than local edits; repair and assembled-site verification are release work.
+
 ## Session 2026-09-06d — routed walk time + F-bar UI fix (DEPLOYED)
 
 - **Routed pedestrian walk time replaces the straight-line estimate** (DATA_QUALITY
@@ -809,3 +819,77 @@ force.
 - Nothing off-host except CARTO's basemap: MapLibre, both typefaces and all data
   are local. Re-audit with `?flat=1` after any front-end change — that path must
   stay at **zero** external requests.
+
+
+## September 7, 2026 — Contra Costa UI and evidence guide
+
+Implemented the user's review in the contra-costa working tree: persistent help, a dedicated
+17-topic searchable Data & methods page, contextual links, collapsed score decomposition,
+street-capacity planting scenarios, removal of irrelevant redlining content, keyboard ranked
+rows, mobile layout and accurate model/estimate labels. See `UI_REVIEW.md` for candid review,
+`FEATURES.md` for the current UI contract and `DATA_QUALITY.md` for accuracy corrections.
+Validation: `node tests/ui-contract.cjs`; desktop and mobile browser checks. No source-data
+rerun, no ranking weight change, no public deployment in this pass. Deployment script reads
+committed city branches; do not run it expecting to include uncommitted guide files.
+
+
+## September 7, 2026 — benefits-led guide and deeper source audit
+
+Rewrote guide around city uses and method-choice rationale, compacted essential notes, made
+info rings smaller, added all-residential-area search/pagination, semantic facility filters,
+startup storage protection, safe HTML names and failure recovery. Source audit found 430
+residential NDVI fallbacks and 866 inconsistent canopy-area rows. Added green_src export and
+source-aware labels/scenario guards; preserved all prior data values/ranks. Retired mixed-source
+canopy headline pending recheck. `PRODUCT_READINESS.md` records research and proposed upgrades.
+Analytical rebuilds, latest ACS integration, local assumptions and public deployment remain pending.
+
+## September 7, 2026 — first analytical rebuild completed
+
+Contra Costa only: canopy rasters rebuilt and atomic fallback fixed (866 area inconsistencies
+to zero); coverage/source flags and 99% aerial scenario gate; ACS 2024/native MOEs and housing
+LACE weighting; matched live/export ordinal ranks; separate public greenness index; secondary
+air cooling display. 2,697 ranked areas, 24/25 top-25 overlap. Five pipeline tests and 11,436
+scenario cases pass; all residential ranks reproduce in browser scorer. Reports and manifest
+in reports/. Official facilities, local planting validation, uncertainty propagation and public
+deployment remain pending.
+
+## Current update — conditional scenarios and official cooling sources
+
+September 7, 2026; Contra Costa branch only. This supersedes the earlier 99%-coverage
+scenario gate. Coverage is the fraction assessed, **not a percentage accuracy score**.
+
+- Conditional tree counts, cost, added canopy and illustrative air cooling now require
+  mapped street capacity and valid area: **1,832 residential cells**. The former blanket
+  exclusion was unnecessarily restrictive for scoping. None of these outputs certify
+  plantability or budget accuracy; 10m spacing, 40m² new crown and $500/tree remain assumptions.
+- `canopy_baseline_ok` retains the >=99% aerial-coverage check only for displaying a
+  whole-cell current-to-future canopy total (788 residential cells). Partial or unknown
+  coverage displays added canopy but omits a future total. Known aerial canopy area bounds
+  the maximum possible new area without extending partial coverage over unassessed land.
+- UI replaces “pts” with **percentage-point canopy gain**. Guide example: 10% → 15% is
+  +5 percentage points. Added crowns and cooling require feasible, non-overlapping new cover.
+- Cooling is explicitly **summer air cooling**, not surface-temperature change. A surface
+  response formula has not been added: cross-sectional tree/urban LST differences are not
+  a validated marginal intervention response for Contra Costa. Surface shading benefits are
+  explained without inventing a local degree reduction. Source: Schwaab et al. (2021),
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC8611034/.
+- Added searchable **county-listed cooling directory**, 17 locations with addresses and
+  phone links. Source: EHSD bulletin, June 2026 revision, served at the July 2026 URL and
+  checked September 7. No open-now status, coordinates, hours or unrestricted eligibility
+  are invented. The source asks visitors to call before going.
+- The same bulletin identifies El Cerrito and Kensington libraries as lacking A/C. Both
+  are excluded by exact name/kind from the discovery inventory (488 → 486); walking
+  estimates rebuilt against the remaining discovery sites. The official directory is a
+  distinct reference, not the denominator of the walking layer.
+- Routing now projects cells before finding centroids, exports the cell-to-network straight
+  connection length, and flags connections >100m for approach review. The flag is an
+  operational review trigger, not assurance that shorter approaches are safe or accessible.
+- Failed optional-site loads now show a status message and retain access to official contacts.
+
+Remaining: official-site coordinates/entrances, hours and eligibility verification; routing
+against that service set; local species/growth/survival and cost validation; uncertainty
+propagation and full surface-model development. No public deployment has occurred.
+
+### Verification complete — September 8, 2026
+
+Contra Costa branch: seven Python tests, 11,436 scenario checks, JavaScript/guide contract checks, and git whitespace checks passed. Browser checks covered a partial-canopy scenario and the searchable county directory; final directory styling was visually verified. FEATURES.md and DATA_QUALITY.md reflect the current behavior. Work is uncommitted and unpublished; the remaining production-readiness work listed above is still open.

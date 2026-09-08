@@ -1,5 +1,30 @@
 # CoolEquity
 
+## Latest scenario and cooling-source update
+
+Conditional planting scenarios now work with partial/unknown canopy coverage when street
+capacity exists. Near-complete aerial coverage is needed only for whole-cell before/after
+canopy totals. “Percentage-point canopy gain” replaces “pts”; cooling remains an illustrative
+air-temperature effect. Added a searchable county-listed cooling directory and corrected two
+library exclusions; walking access still uses the broader discovery inventory. See current
+[feature documentation](FEATURES.md) and [data audit](DATA_QUALITY.md). Local and unpublished.
+
+
+## Current Contra Costa build
+
+The September 7 analytical rebuild updates ACS to 2024, corrects housing-weighted LACE,
+repairs canopy fallback areas, and exports canopy source/coverage. Public Explore separates
+tree canopy and satellite greenness. Planting requires >=99% aerial coverage; illustrative
+air cooling is secondary. See [current readiness status](PRODUCT_READINESS.md) and
+[rebuild diagnostics](reports/rebuild_summary.json). Local changes are not deployed.
+
+
+> **Current Contra Costa validation status (September 7, 2026):** UI and source-audit work
+> is in progress. The new `green_src` field distinguishes canopy from vegetation fallback;
+> old canopy-equity findings require revalidation. Read `PRODUCT_READINESS.md` and the latest
+> `DATA_QUALITY.md` section before using older figures in a city pitch.
+
+
 **Where is tree canopy thinnest, and who lives there?** An engine that scores every hex in a
 study area on satellite-measured canopy and heat, population, age and walking distance to
 relief — then prices the intervention.
@@ -332,3 +357,13 @@ into hexes · city limits from **US Census TIGERweb** (place GEOID 0668378) ·
 **OpenStreetMap** contributors (cooling sites, subdivision and park names) via
 Overpass · tree-cooling coefficient from **WRI**, *Cooling Potential of Urban
 Trees* · **H3** hex grid (Uber) · basemap © CARTO. No HOLC layer — see above.
+
+
+### Contra Costa UI reference (September 2026)
+
+The app's **Data & methods** link opens `app/guide.html`, a searchable feature and source
+reference. Contextual info links jump to individual topics and preserve the map in its
+original tab. **How to use** is always available. The planting calculator now explores a
+share of theoretical street capacity, with explicit cost/crown assumptions. See
+`UI_REVIEW.md`, `FEATURES.md`, and the latest section of `DATA_QUALITY.md`.
+Run `node tests/ui-contract.cjs` before publishing this UI.
