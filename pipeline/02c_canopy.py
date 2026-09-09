@@ -129,6 +129,12 @@ def main():
     hx = hexes.to_crs("EPSG:3857")
 
     row_geom = None
+    if not C.STREETS_FILE.exists():
+        # Not fatal, but never silent: a missing streets file used to produce a
+        # clean run reporting 0.00 km2 of plantable public land, which reads as a
+        # finding rather than an absent input.
+        log(f"  !! NO {C.STREETS_FILE.name} — right-of-way columns will be 0. "
+            f"Run 04_overlays.py first if you want them.")
     if C.STREETS_FILE.exists():
         st = gpd.read_file(C.STREETS_FILE).to_crs("EPSG:3857")
         row_geom = st.geometry.buffer(ROW_HALF_WIDTH_M).union_all()

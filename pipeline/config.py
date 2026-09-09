@@ -127,7 +127,7 @@ NDVI_CLAMP = (0.05, 0.65)
 CANOPY_MAX_PCT = 45.0
 
 # ---------------------------------------------------------------- census (US)
-ACS_YEAR = 2023
+ACS_YEAR = 2024
 STATE_FIPS = "06"
 COUNTY_FIPS = "029"          # Kern County (LA used 037, San Ramon 013)
 
@@ -230,6 +230,12 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 # Plantable street centrelines, committed. 04 measures frontage per hex; the app
 # turns that into how many street trees the city could actually put in.
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
+
+# How far outside BBOX 02b pulls buildings. 03 divides a block group's residents
+# by that block group's TOTAL housing, so any block group straddling the bbox
+# edge needs its outside-the-bbox houses counted. Bakersfield's bbox is the
+# incorporated city, so keep San Ramon's generous margin (see 02b).
+BUILDINGS_MARGIN_DEG = 0.09
 # 02c -> 03/05: measured canopy, crown counts, plantable right-of-way.
 CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 # 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the

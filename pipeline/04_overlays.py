@@ -27,6 +27,7 @@ import pandas as pd
 import requests
 
 import config as C
+from cooling_sources import eligible_discovery_sites
 
 OUT_CSV = C.OVERLAYS_CSV
 UA = {"User-Agent": "CoolEquity/0.1 (hackathon heat-equity mapper)"}
@@ -476,6 +477,9 @@ def main():
     log(f"  grid: {len(hexes)} hexes")
 
     centers = cached(C.CENTERS_FILE, fetch_centers, "centers", refresh)
+    if centers:
+        centers = eligible_discovery_sites(centers)
+        C.CENTERS_FILE.write_text(json.dumps(centers))
     places = cached(C.PLACES_FILE, fetch_places, "places", refresh)
     # Gated on the URL as well as the country: San Ramon is in the USA and still
     # has no HOLC map, because HOLC surveyed built-up cities in 1935-40 and San

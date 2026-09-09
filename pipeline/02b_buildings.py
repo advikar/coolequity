@@ -49,13 +49,13 @@ MIN_RES_M2 = 30.0
 # without needing a tag that most buildings do not carry.
 MULTIFAMILY_M2 = 600.0
 
-# Queried WIDER than the city bbox on purpose. 03 divides a block group's
-# residents by that block group's total housing, and 17 of the 61 block groups
-# touching San Ramon extend past the bbox -- by up to 0.07 deg to the west.
-# Miss their outside-the-bbox houses and the denominator is too small, which
-# inflates every in-city hex sharing those block groups. That single error was
-# most of a 2.7% overcount against the ACS place total.
-MARGIN_DEG = 0.09
+# Queried WIDER than the study bbox on purpose: 03 divides a block group's
+# residents by that block group's TOTAL housing, so block groups straddling the
+# edge need their outside houses counted or the denominator is short and every
+# in-area hex sharing them is inflated. The margin is per-study-area and lives in
+# config.BUILDINGS_MARGIN_DEG -- see the note there for why San Ramon needed
+# 0.09 deg and a county-wide bbox needs far less.
+MARGIN_DEG = C.BUILDINGS_MARGIN_DEG
 
 BUILDINGS_OQL = f"""[out:json][timeout:{C.OVERPASS_TIMEOUT_S}];
 way["building"]({C.BBOX[1]-MARGIN_DEG},{C.BBOX[0]-MARGIN_DEG},\

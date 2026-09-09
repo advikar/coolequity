@@ -1,5 +1,51 @@
 # CoolEquity — build status & handoff
 
+## September 8, 2026 — Bakersfield brought up to the Contra Costa reference build (Claude)
+
+Ported the Contra Costa UI v2 + methods guide + cooling directory and the September 7
+pipeline rebuild (ACS 2024, canopy provenance/coverage, housing-weighted LACE, conditional
+scenarios, route-approach flags, published-value ranking) to `bakersfield`. Committed on
+this branch only; **not yet deployed**.
+
+- **App:** `app/index.html` is the Contra Costa v2 app retargeted (slug, copy, cache tags).
+  Weights follow `config.py` — heat 35 / canopy 25 / A/C 25 / age 15 — with presets and the
+  heat rationale rewritten for one valley climate. `app/guide.html` (17 topics) and
+  `app/cooling.html` are Bakersfield/Kern versions. The retired `turf` weight from the old
+  Bakersfield app is not carried over (Contra Costa dropped it; `veg` stays as a layer).
+- **Cooling directory:** `data/cooling_directory_bakersfield.json` — 10 Kern County
+  Aging & Adult Services centers (1 in Bakersfield), addresses only, no per-site phone,
+  no hours/coordinates/live status invented. Source: county page + its list iframe,
+  checked September 8, 2026. Centers open 1–8 p.m. only on 105/108/93 °F forecast days.
+  No discovery-site exclusions (Contra Costa's El Cerrito/Kensington rule is CC-only;
+  `cooling_sources.py` keeps the hook with an empty set).
+- **Data rebuild** (02d → 03 → 04 → 04b → 05 → 06): canopy percentages unchanged from
+  the September 6 build; canopy_m2 now real for every cell (positive-%-zero-area 768 → 0).
+  2,359 cells USFS 2022 (1,995 full / 364 partial coverage), 1,695 legacy CHM. ACS 2024
+  refresh: 410,400 residents (was 408,905), 3,788 ranked cells (was 3,777). Default
+  top-25 overlap with the previous build **22/25**, median |rank change| 30, max 824.
+  Aerial-only top-25 overlap 25/25. Scenarios enabled for 2,586 ranked cells; whole-cell
+  baseline for 1,960. Reports in `reports/`.
+- **Two Bakersfield-specific defects found and fixed in the ported pipeline:**
+  1. Codex's 03 had dropped the clip-to-city-limits step (a no-op on the county-derived
+     Contra Costa bbox). On Bakersfield it re-created the documented 12% overcount
+     (459,537 residents). Restored, conditioned on `BOUNDARY_FILE`.
+  2. The housing-weighted LACE rule returned no rate for 10 one-resident edge cells whose
+     block groups report zero occupied homes; the income-model fallback (65%) then
+     stretched the A/C normalisation from 96.5–100 to 65–100 and muted A/C citywide
+     (top-25 overlap fell to 9/25). Added a population-weighted tract-rate fallback for
+     the no-housing case only, labelled `ac_src = lace-pop`.
+  Also: `canopy_m2` rounds to 2 dp so a single 0.36 m² pixel is not stored as 0.
+- **Checks run:** `python -m unittest discover -s tests` 7/7 OK; `node tests/ui-contract.cjs`
+  PASS (16,216 scenario cases, stable geometry, browser/export rank parity on all 3,788
+  ranked cells); inline-script syntax checks on index/cooling/guide; `git diff --check`.
+  Browser smoke on a local server: intro stats, map, guide and directory load without
+  console errors.
+- **Not done / caveats:** README, DATA_QUALITY-style docs for this branch still describe
+  the older Bakersfield build (this branch never had FEATURES/DATA_QUALITY files). No
+  income-equity headline recomputed. `deploy.sh` copied from contra-costa (4-city build)
+  for consistency; deployment needs an explicit instruction.
+
+
 > ## Branch: `san-ramon`
 >
 > This branch retargets the whole engine at **San Ramon, California** — 419 populated hexes
