@@ -1,5 +1,36 @@
 # CoolEquity — build status & handoff
 
+## September 8, 2026 — San Ramon brought up to the Contra Costa reference build (Claude)
+
+Ported the Contra Costa UI v2 + methods guide + cooling directory and the September 7
+pipeline rebuild (ACS 2024, canopy provenance/coverage, housing-weighted LACE, conditional
+scenarios, route-approach flags, published-value ranking) to `san-ramon`, following the
+Bakersfield port. Committed on this branch only; **not deployed until instructed**.
+
+- **App:** Contra Costa v2 app retargeted; weights follow `config.py` — heat 45 / canopy 33 /
+  A/C 0 / age 22 — with presets (incl. the San Ramon "Shade gap") and the heat/A-C rationale
+  rewritten. `turf` weight not carried over. Guide and county cooling directory (17 EHSD
+  locations; San Ramon's is the Alcosta Senior and Community Center) ported.
+- **Data rebuild** (02d → 03 → 04 → 04b → 05 → 06): canopy percentages unchanged; canopy_m2
+  real everywhere (positive-%-zero-area 11 → 0). 513 cells USFS 2022 (427 full / 86 partial
+  coverage), 28 legacy CHM. ACS 2024: 85,444 residents (was 85,569), 419 ranked cells
+  (unchanged). Default top-25 overlap with the previous build **24/25**, median |rank change|
+  4, max 38. Scenarios enabled for 403 ranked cells; whole-cell baseline for 356.
+- **Population method preserved (dasymetric).** The ported census script's mask guard was
+  judged over the whole county's block groups and with in-city buildings only, which read
+  San Ramon's mask as 0.05 coverage. Fixed to judge over block groups touching the study
+  area with the full building pull (0.68 coverage, same as the original 0.66). Its
+  count-based income-bias ratio still reads 2.5x, but the diagnostic shows the lowest-income
+  quartile is apartment-heavy (2.8 units per mapped building, 109 m² floor per unit, fully
+  inside the city), not unmapped; `DASY_MAX_INCOME_BIAS` is 3.0 on this branch with that
+  evidence in config.py. Area weighting would have given 80,852 residents and 532 ranked
+  cells — a method change, rejected.
+- **Checks:** unittest 7/7; `node tests/ui-contract.cjs` PASS; inline-script syntax checks;
+  `git diff --check`; local browser smoke.
+- **Not done:** README/older STATUS sections still describe the previous San Ramon build;
+  no income-equity headline recomputed.
+
+
 > ## Branch: `san-ramon`
 >
 > This branch retargets the whole engine at **San Ramon, California** — 419 populated hexes

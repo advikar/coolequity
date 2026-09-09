@@ -35,6 +35,7 @@ import sys
 import numpy as np
 
 import config as C
+from cooling_sources import eligible_discovery_sites
 
 MARGIN_DEG = 0.02           # pull the graph a little past the bbox so edge hexes
                             # can route to a just-outside site and border routes
@@ -72,7 +73,7 @@ def routed_meters(grid, centers_gj):
     from shapely.geometry import shape
     from scipy.spatial import cKDTree
 
-    cen = gpd.GeoSeries(grid.geometry.centroid, crs=grid.crs).to_crs(C.RASTER_CRS)
+    cen = grid.to_crs(C.RASTER_CRS).geometry.centroid
     cpts = [shape(f["geometry"]) for f in centers_gj["features"]]
     cpt = gpd.GeoSeries(cpts, crs="EPSG:4326").to_crs(C.RASTER_CRS)
 
@@ -115,7 +116,8 @@ def routed_meters(grid, centers_gj):
                  ratio_med=float(np.median(ratio)) if ok.any() else float("nan"),
                  ratio_min=float(ratio.min()) if ok.any() else float("nan"),
                  ratio_p90=float(np.percentile(ratio, 90)) if ok.any() else float("nan"),
-                 snap_p95=float(np.percentile(hx_snap, 95)))
+                 snap_p95=float(np.percentile(hx_snap, 95)),
+                 hex_snap_m=np.asarray(hx_snap,dtype=float).tolist())
     return routed_m, crow_m, stats
 
 
@@ -131,7 +133,7 @@ def main():
         raise SystemExit(f"\nNo {C.CENTERS_FILE.name}; run 04 first.")
 
     grid = gpd.read_file(C.GRID_FILE)[["h3", "geometry"]]
-    centers = json.loads(C.CENTERS_FILE.read_text())
+    centers = eligible_discovery_sites(json.loads(C.CENTERS_FILE.read_text()))
     log(f"  {len(grid)} hexes, {len(centers['features'])} cooling sites")
 
     routed_m, crow_m, st = routed_meters(grid, centers)
@@ -160,6 +162,10 @@ def main():
     ov["access_min"] = np.round(mins[idx.values], 1)
     ov["access_km"] = np.round(km[idx.values], 2)
     ov["access_src"] = src[idx.values]
+    ov["access_snap_m"] = np.round(np.asarray(st["hex_snap_m"])[idx.values], 0)
+    # Review flag, not a safe/unsafe route classification. Short snaps also need
+    # pedestrian validation; long straight approaches deserve explicit disclosure.
+    ov["access_quality"] = np.where(ov["access_snap_m"] > 100, "approach-review", "network-estimate")
     ov.to_csv(C.OVERLAYS_CSV, index=False)
     log(f"  access: median {np.median(mins):.1f} min, max {np.max(mins):.1f} min "
         f"(routed). wrote {C.OVERLAYS_CSV.relative_to(C.ROOT)}")

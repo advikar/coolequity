@@ -122,7 +122,7 @@ NDVI_CLAMP = (0.05, 0.65)
 CANOPY_MAX_PCT = 45.0
 
 # ---------------------------------------------------------------- census (US)
-ACS_YEAR = 2023
+ACS_YEAR = 2024
 STATE_FIPS = "06"
 COUNTY_FIPS = "013"          # Contra Costa County (LA build used 037)
 
@@ -225,6 +225,27 @@ BUILDINGS_FILE = DATA / f"buildings_{SLUG}.geojson"
 # Plantable street centrelines, committed. 04 measures frontage per hex; the app
 # turns that into how many street trees the city could actually put in.
 STREETS_FILE = DATA / f"streets_{SLUG}.geojson"
+
+# How far outside BBOX 02b pulls buildings; see the note in 02b. San Ramon
+# needed 0.09 deg because 17 of its 61 block groups run past the city bbox.
+BUILDINGS_MARGIN_DEG = 0.09
+
+# --- when dasymetric placement is allowed at all -------------------------------
+# 03_census.py checks the OSM building mask for completeness and income bias
+# over the block groups touching the study area, and falls back to area
+# weighting if either fails. San Ramon measured 0.66 coverage, even across
+# income (uniformly wealthy) -> dasymetric is used. Do not raise these to force
+# it on; fix the mask instead.
+DASY_MIN_COVERAGE = 0.50     # mapped buildings per ACS housing unit, study-wide
+# 3.0 here, not the 2.0 used elsewhere, on evidence (2026-09-08, ACS 2024 BGs):
+# the count-based check reads 2.5x because San Ramon's lowest-income quartile
+# ($89k-$172k) is apartment/condo-heavy -- median 2.8 housing units per mapped
+# building vs 1.1-1.2 in the other quartiles -- not because it is unmapped:
+# those block groups sit fully inside the city and carry a median 109 m2 of
+# mapped floor area per unit. Dasymetric weights by floor area, so multifamily
+# is handled; a building COUNT per unit is the wrong completeness metric for
+# it. Contra Costa's 4.7x is a real mapping gap and keeps the 2.0 limit.
+DASY_MAX_INCOME_BIAS = 3.0   # richest-quartile coverage / poorest-quartile
 # 02c -> 03/05: measured canopy, crown counts, plantable right-of-way.
 CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 # 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the

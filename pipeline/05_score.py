@@ -24,7 +24,8 @@ import config as C
 # MapLibre just paints a hex the no-data colour and moves on.
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
-            "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land"]
+            "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land", "green_src", "canopy_source", "canopy_year", "assessed_m2",
+            "coverage_frac", "canopy_quality", "scenario_ok", "canopy_baseline_ok", "ac_src", "ac_coverage", "acs_year", "access_snap_m", "access_quality"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -40,24 +41,37 @@ def minmax(s):
     return (s - lo) / (hi - lo)
 
 
-# One-sided percentile clip for the SCORING inputs. Raw min-max lets a single
-# benign outlier set the scale (one 92%-canopy hex flattens the "missing canopy"
-# term; a few huge-population hexes pin the multiplier near its floor). We pull in
-# only the LEAST-need tail so it stops setting the scale, and never blunt the
-# most-in-need tail — the hottest, oldest and barest blocks are what the tool must
-# rank. Which end is benign is read off the score formula: protective inputs enter
-# as (1-n) so their HIGH end is low-need; risk inputs enter as n so their LOW end
-# is. Population is a saturating multiplier and is clipped at the crowded end.
-# Endpoints go into the geojson so the front end normalises against them exactly.
+# Percentile-clipped normalisation for the SCORING inputs. Plain min-max lets a
+# single outlier set the scale: one 92%-canopy hex compresses the "missing
+# canopy" term across every other block, and a handful of very crowded hexes pin
+# ~98% of the population multiplier near its floor.
+#
+# The clip is ONE-SIDED, and on purpose. We only pull in the tail that represents
+# the LEAST need — a single fully-canopied block, a single empty-cool one — so it
+# stops setting the scale. We never touch the most-in-need tail, because the
+# hottest, oldest and barest blocks are exactly what the tool exists to rank, and
+# clipping them would blunt it (a two-sided clip flattened Rossmoor's 84%-elderly
+# down to an ordinary block and broke the "Protect seniors" view). Population is
+# a saturating multiplier — 2,500 people and 5,600 are both "a lot" — so it is
+# clipped at the crowded end.
+#
+# Which end is benign is read off the score formula: protective inputs enter as
+# (1-n) so their HIGH end is low-need; risk inputs enter as n so their LOW end is.
+# Display values and colour ramps still use the raw range (this is score-only),
+# and these endpoints are written into the geojson so the front end normalises
+# against the identical bounds rather than recomputing percentiles a different way.
 CLIP_LO_Q, CLIP_HI_Q = 2.0, 98.0
 
 
 def clip_bounds(s, clip_high):
+    """One-sided percentile clip. clip_high pulls the top tail in to p98 (the
+    benign end for protective inputs and the saturating end for population);
+    otherwise the bottom tail comes in to p2 and the true maximum is kept."""
     if clip_high:
         lo, hi = float(s.min()), float(np.percentile(s, CLIP_HI_Q))
     else:
         lo, hi = float(np.percentile(s, CLIP_LO_Q)), float(s.max())
-    if not np.isfinite(lo) or hi <= lo:
+    if not np.isfinite(lo) or hi <= lo:            # degenerate: fall back to range
         lo, hi = float(s.min()), float(s.max())
     return lo, hi
 
@@ -79,8 +93,7 @@ def shrink_age65(pop, pct65):
 
 def building_counts(h3_series):
     """Buildings per hex from the 02b footprints, by centroid. A hex with no
-    residents but several buildings is developed (commercial/institutional), which
-    street length alone can miss — see the three-class split in main()."""
+    residents but several buildings is developed, which street length can miss."""
     if not C.BUILDINGS_FILE.exists():
         return {}
     import geopandas as gpd
@@ -92,11 +105,9 @@ def building_counts(h3_series):
 
 
 def classify_land(df):
-    """A best-effort land-type label for EMPTY hexes, from the satellite layers we
-    already have — so a blank hole becomes a legible 'open water / woodland /
-    open land / bare hillside'. Approximate by design (labelled 'likely' in the UI):
-    water reads cool and unvegetated, woodland reads high-canopy, open green ground
-    reads high-NDVI/low-canopy, and the rest is bare or dry hillside."""
+    """Best-effort land-type label for EMPTY hexes from the satellite layers we
+    already have: water reads cool+unvegetated, woodland high-canopy, open green
+    ground high-NDVI/low-canopy, the rest bare/dry hillside. Approximate by design."""
     lst = df["lst_c"]
     veg = df["veg_pct"] if "veg_pct" in df.columns else df["green_pct"]
     can = (df["canopy_pct"] if "canopy_pct" in df.columns
@@ -126,28 +137,14 @@ def load():
             )
         df = df.merge(pd.read_csv(path), on="h3", how="left")
 
-    # MEASURED canopy replaces the NDVI proxy at source, AFTER satellite.csv has
-    # supplied green_pct, so the score, the output and every log line downstream
-    # all read one number. `green_pct` keeps its name — it is the pipeline<->app
-    # contract — but stops meaning "greenness" and starts meaning "ground under
-    # vegetation at least 2 m tall".
-    #
-    # This is a correction, not a refinement. On San Ramon the NDVI proxy put
-    # canopy at 21.2% of the ground; the canopy-height model puts it at 11.2%.
-    # NDVI cannot tell an irrigated lawn from an oak, and in a summer-dry
-    # climate that is most of the difference.
+    df["green_src"] = "ndvi"
+
+    # Preserve the satellite proxy separately and attach explicit canopy provenance.
     if C.CANOPY_CSV.exists():
         df = df.merge(pd.read_csv(C.CANOPY_CSV), on="h3", how="left")
         have = df["canopy_pct"].notna()
-        log(f"  canopy: MEASURED for {int(have.sum())}/{len(df)} hexes from a "
-            f"canopy-height model; NDVI proxy retained where absent")
-        # Keep the NDVI figure as `veg`. It is not a worse canopy measure — it
-        # is a measure of something else: TOTAL photosynthesising ground, trees
-        # plus lawn plus shrub. Both cool, and independently: holding the other
-        # constant, canopy correlates with surface heat at -0.807 and non-tree
-        # vegetation at -0.649. The difference between the two is the useful
-        # part, because "already irrigated, no shade" is where a tree is
-        # cheapest to plant and likeliest to survive.
+        df.loc[have, "green_src"] = "canopy"
+        log(f"  canopy-source values for {int(have.sum())}/{len(df)} cells; NDVI elsewhere")
         df["veg_pct"] = df["green_pct"]
         df["green_pct"] = df["canopy_pct"].where(have, df["green_pct"])
     else:
@@ -178,22 +175,15 @@ def main():
     grid, df = load()
     log(f"  merged: {len(df)} hexes x {len(df.columns)} fields")
 
-    # Three classes, and NOTHING is dropped — every hex in the study area stays on
-    # the map so there are no mystery holes:
+    # Three classes, and NOTHING is dropped — every hex stays on the map:
     #   res      — has residents: scored and ranked.
-    #   activity — no residents but developed (real street frontage OR a cluster of
-    #              buildings): commercial/industrial ground people use all day.
-    #              Shown with real canopy/heat, greyed on Priority, not ranked.
+    #   activity — developed but unpopulated (street frontage OR buildings): a
+    #              commercial/industrial block people use all day. Shown with real
+    #              canopy/heat, greyed on Priority, not ranked by residential need.
     #   empty    — undeveloped: shown muted, with a best-effort land label.
-    # Buildings catch developed hexes that street length alone misses (a mall with
-    # one access road, a school, a business park).
     df["bldg_n"] = df["h3"].map(building_counts(df["h3"])).fillna(0).astype(int)
     street = (df["street_m"].fillna(0) if "street_m" in df.columns
               else pd.Series(0.0, index=df.index))
-    # Developed = real street frontage, OR a building cluster, OR the "roads AND
-    # buildings" case (a small road plus any structure). Catches malls, schools,
-    # business parks and small developed pockets a street-only rule missed, while
-    # a lone rural structure on open land stays 'empty'.
     developed = ((street >= 120.0) | (df["bldg_n"] >= 3)
                  | ((street >= 40.0) & (df["bldg_n"] >= 1)))
     df["place"] = np.where(df["pop"] >= C.MIN_POP, "res",
@@ -213,19 +203,22 @@ def main():
     log(f"  pct65: raw max {df.pct65.max():.1f}% -> smoothed "
         f"{df.pct65_s.max():.1f}% (median {df.pct65_s.median():.1f}%)")
 
-    # p2/p98 endpoints per scoring input, reused by the app (keyed by the
-    # property the front end reads). clip_high on the protective inputs and on
-    # population; heat and age keep their true maximum.
+    # p2/p98 endpoints per scoring input, computed once and reused by the app.
+    # Keyed by the PROPERTY NAME the front end reads, so it can look them up.
+    # clip_high=True on the protective inputs (green, ac) and on population; the
+    # risk inputs (heat, age) keep their true maximum and clip the cool/young tail.
+    # Bounds/normalisation computed on RESIDENTIAL hexes only, so a handful of
+    # developed-unpopulated blocks never stretch the ramp or move a resident's rank.
     R = df.loc[res]
     bounds = {
-        "lst":   clip_bounds(R["lst_c"],     clip_high=False),
+        "lst":   clip_bounds(R["lst_c"],    clip_high=False),
         "green": clip_bounds(R["green_pct"], clip_high=True),
         "ac":    clip_bounds(R["ac_est"],    clip_high=True),
-        "pct65": clip_bounds(R["pct65_s"],   clip_high=False),
+        "pct65": clip_bounds(R["pct65_s"],  clip_high=False),
         "pop":   clip_bounds(R["pop"],       clip_high=True),
     }
     log("  score inputs clipped to p2/p98: " + ", ".join(
-        f"{k} {lo:.1f}-{hi:.1f}" for k, (lo, hi) in bounds.items()))
+        f"{k} {lo:.1f}–{hi:.1f}" for k, (lo, hi) in bounds.items()))
     n = pd.DataFrame({
         "heat":  clip_minmax(df["lst_c"], bounds["lst"]),
         "green": clip_minmax(df["green_pct"], bounds["green"]),
@@ -241,12 +234,14 @@ def main():
             + W["age65"] * n["age65"])
     priority = base * (C.POP_FLOOR + C.POP_WEIGHT * n["pop"])
 
-    # Score/rank residential hexes only; activity hexes get null score/rank.
+    # Score and rank RESIDENTIAL hexes only; activity hexes get null score/rank
+    # (they show canopy/heat but are not part of the resident-need ranking). Rank
+    # the unrounded priority so rounding to 1dp does not manufacture ties.
     df["score"] = np.nan
     df["rank"] = np.nan
     pr = priority[res]
     df.loc[res, "score"] = (100 * minmax(pr)).values
-    df.loc[res, "rank"] = pr.rank(method="dense", ascending=False).values
+    df.loc[res, "rank"] = pr.rank(method="first", ascending=False).values
 
     df["access_min"] = df["access_min"].fillna(df["access_min"].median())
     df["access_km"] = df["access_km"].fillna(df["access_km"].median())
@@ -256,7 +251,20 @@ def main():
         "name":       df["name"].fillna("Unnamed"),
         "lst":        df["lst_c"].round(2),
         "green":      df["green_pct"].round(2),
-        # Total vegetation from NDVI. `veg` minus `green` is non-tree ground.
+        "green_src":  df["green_src"],
+        "canopy_source": df.get("canopy_source", pd.Series("unknown", index=df.index)).fillna("unknown"),
+        "canopy_year": df.get("canopy_year", pd.Series(None, index=df.index)),
+        "assessed_m2": df.get("assessed_m2", pd.Series(np.nan, index=df.index)),
+        "coverage_frac": df.get("coverage_frac", pd.Series(np.nan, index=df.index)),
+        "canopy_quality": df.get("canopy_quality", pd.Series("unknown", index=df.index)),
+        # 99% is an explicit operational coverage threshold, not a validation claim.
+        "scenario_ok": (df["street_m"].fillna(0) > 0) & (df["area_m2"] > 0),
+        "canopy_baseline_ok": ((df.get("canopy_source", pd.Series("", index=df.index)) == "usfs-2022") &
+                        (df.get("coverage_frac", pd.Series(0., index=df.index)) >= .99)),
+        "ac_src": df.get("ac_src", pd.Series("unknown", index=df.index)),
+        "ac_coverage": df.get("ac_coverage", pd.Series(np.nan, index=df.index)),
+        "acs_year": df.get("acs_year", pd.Series(C.ACS_YEAR, index=df.index)),
+        # Legacy scaled NDVI proxy. Subtracting canopy does not identify non-tree cover.
         "veg":        (df["veg_pct"] if "veg_pct" in df.columns
                        else df["green_pct"]).round(1),
         "canopy_m2":  (df["canopy_m2"] if "canopy_m2" in df.columns
@@ -270,12 +278,12 @@ def main():
                        else pd.Series(0.0, index=df.index)).fillna(0).round(1),
         "pop":        df["pop"].round(0).astype(int),
         "pct65":      df["pct65_s"].round(1),
-        # 2dp, not 1: measured A/C is nearly uniform in hot cities, so its clip
-        # range is narrow and 1dp rounding blows up the app's live-score parity.
         "ac":         df["ac_est"].round(2),
         "holc":       df["holc"],
         "access_min": df["access_min"].round(1),
         "access_km":  df["access_km"].round(2),
+        "access_snap_m": df.get("access_snap_m", pd.Series(np.nan,index=df.index)),
+        "access_quality": df.get("access_quality", pd.Series("unknown",index=df.index)),
         "score":      df["score"].round(1),
         "rank":       df["rank"],
         "place":      df["place"],
@@ -287,6 +295,16 @@ def main():
         # real need.
         "street_m":   df["street_m"].fillna(0).round(0).astype(int),
     })[CONTRACT]
+
+    # Rank exactly the published values/endpoints used by the browser. This
+    # avoids dense-rank ties and precision-dependent export/UI disagreement.
+    norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
+    published = {k: clip_minmax(out[k], b) for k, b in norm.items()}
+    risk = (W["heat"] * published["lst"] + W["green"] * (1-published["green"])
+            + W["ac"] * (1-published["ac"]) + W["age65"] * published["pct65"])
+    pr = (risk * (C.POP_FLOOR + C.POP_WEIGHT * published["pop"]))[res]
+    out.loc[res, "score"] = (100 * minmax(pr)).round(1).values
+    out.loc[res, "rank"] = pr.rank(method="first", ascending=False).values
 
     by_id = {int(r["id"]): r for r in out.to_dict("records")}
     feats = []
@@ -301,10 +319,12 @@ def main():
                       "geometry": {"type": "Polygon",
                                    "coordinates": round_coords(f["geometry"])}})
 
-    # p2/p98 endpoints the front end normalises against to reproduce this rank.
+    # p2/p98 endpoints the front end must normalise against to reproduce this
+    # ranking exactly. Keyed by the property each input is read from.
     norm = {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in bounds.items()}
     C.OUT_FILE.write_text(json.dumps({"type": "FeatureCollection",
-                                      "norm": norm, "features": feats}))
+                                      "norm": norm, "metadata": {"schema_version": 3, "acs_year": C.ACS_YEAR,
+                                      "lace_year": 2023, "canopy_baseline_min_coverage": 0.99}, "features": feats}))
 
     log(f"  score: {out.score.min():.1f}–{out.score.max():.1f} "
         f"(median {out.score.median():.1f})")

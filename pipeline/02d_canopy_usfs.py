@@ -1,39 +1,13 @@
 """Phase 2d — measured tree canopy from the USFS / CAL FIRE 2022 product.
 
-Why this replaces 02c (the Meta/WRI canopy-height model)
---------------------------------------------------------
-02c read Meta's Canopy Height Map, whose imagery is **2009–2020** and which reads
-~38% below professional aerial assessment. This module reads the **USFS Pacific
-Southwest / CAL FIRE California Urban Tree Canopy (2022)** instead:
+Reads the USFS/CAL FIRE 2022 urban-area classification and its matching
+assessment boundaries. Canopy percentage uses assessed ground, not unassessed
+land. Legacy height-map fallback values are retained with explicit provenance;
+their coverage is unknown and they do not enable planting scenarios.
 
-  * 0.6 m, derived from **2022 NAIP** aerial imagery by a deep-CNN classifier
-    (EarthDefine/Dewberry under USFS+CAL FIRE+NOAA), CC0 public domain;
-  * an aerial-grade **canopy / no-canopy classification**, not a height proxy, so
-    the low bias and the "ranks but does not certify" caveat both go away — the
-    percentages are citable in absolute terms;
-  * it ships a 2018→2022 change layer (not consumed here, but see DATA_QUALITY.md).
-
-Get the data (per urban area, or statewide) from
-<https://www.fs.usda.gov/r05/state-private-tribal/california-urban-canopy-data>
-and drop each urban area's `*_canopy2022.tif` **and** its matching urban-boundary
-`*.shp` into `data/_cache/canopy_src/`. A county that spans several urban areas
-(Contra Costa) needs several pairs; this module processes every pair it finds and
-sums per-hex pixel counts, so the split across urban areas is transparent.
-
-The raster
-----------
-EPSG:3310 (California Albers, **equal-area** — so pixel area is exactly
-`res^2` m² with no web-Mercator distortion, which is what 02c got wrong for
-`row_m2`). Values: **1 = canopy, 255 = nodata**. Non-canopy land is *not* stored,
-so the denominator for a canopy fraction is the assessed land inside the urban
-boundary, taken from the boundary shapefile — not "every pixel in the hex."
-
-Output (identical contract to 02c, so 05_score.py and the app are unchanged)
----------------------------------------------------------------------------
-  canopy_pct      canopy px / (hex ∩ urban boundary) px, as %
-  canopy_m2       canopy px × pixel area (equal-area, exact)
-  row_m2          UNSHADED plantable public right-of-way inside the boundary
-  row_canopy_pct  share of that right-of-way already shaded
+Outputs canopy_pct, canopy_m2, row_m2, row_canopy_pct plus canopy_source,
+canopy_year, assessed_m2, coverage_frac and canopy_quality. ROW fields describe
+a buffered street corridor, not verified public ownership or plantability.
 """
 import glob
 import sys
@@ -71,6 +45,8 @@ def main():
             f"folder. See the module docstring.")
 
     hexes = gpd.read_file(C.GRID_FILE)[["h3", "geometry"]]
+    cell_area = hexes.to_crs("EPSG:3310").geometry.area.to_numpy()
+    seen_boundary = None
     n = len(hexes)
     px_tot = np.zeros(n)   # pixels of each hex that fall on assessed land
     px_can = np.zeros(n)   # of those, canopy
@@ -94,13 +70,23 @@ def main():
         cand = glob.glob(os.path.join(os.path.dirname(tif), "*.shp")) or shps
         if not cand:
             raise SystemExit(f"  no urban-boundary .shp found for {os.path.basename(tif)}")
-        bnd_path = cand[0] if len(cand) == 1 else _match_boundary(stem, cand)
+        bnd_path = _match_boundary(stem, cand)
 
         with rasterio.open(tif) as src:
             crs = src.crs
+            if crs.to_epsg() != 3310:
+                raise ValueError("Canopy area requires the source EPSG:3310 grid")
+            if pix_area_m2 is not None and not np.isclose(pix_area_m2, abs(src.res[0] * src.res[1])):
+                raise ValueError("Mixed source pixel areas are not supported")
             if pix_area_m2 is None:
                 pix_area_m2 = float(src.res[0] * src.res[1])   # 3310 => exact ground m²
             bnd_union = gpd.read_file(bnd_path).to_crs(crs).geometry.union_all()
+            # Never count overlapping assessments twice; deterministic file order.
+            from shapely.geometry import box
+            bnd_union = bnd_union.intersection(box(*src.bounds))
+            if seen_boundary is not None:
+                bnd_union = bnd_union.difference(seen_boundary)
+            seen_boundary = bnd_union if seen_boundary is None else seen_boundary.union(bnd_union)
             hx = hexes.to_crs(crs)
             # Denominator geometry: each hex clipped to the assessed urban boundary,
             # so a hex overhanging into unassessed (rural) land does not count that
@@ -149,26 +135,22 @@ def main():
     with np.errstate(invalid="ignore", divide="ignore"):
         out["canopy_pct"] = np.where(px_tot > 0, px_can / px_tot * 100, np.nan)
         out["row_canopy_pct"] = np.where(row_tot > 0, row_can / row_tot * 100, 0.0)
-    out["canopy_m2"] = (px_can * pix_area_m2).round(0)
+    out["canopy_m2"] = (px_can * pix_area_m2).round(2)   # 2 dp: a single 0.36 m² pixel must not round to 0
     out["row_m2"] = ((row_tot - row_can) * pix_area_m2).clip(min=0).round(0)
 
-    # The USFS product covers 2020 Census urban areas only, so rural-fringe hexes
-    # outside the boundary come back NaN. Fill them from the older Meta/WRI CHM
-    # canopy (still a *measured* height product, and better than the NDVI proxy in
-    # exactly the summer-dry fringe where NDVI is weakest). Save the CHM run as
-    # `canopy_<slug>_chm.csv` beside this output to enable the fallback.
+    out["assessed_m2"] = (px_tot * pix_area_m2).round(2)
+    out["coverage_frac"] = out["assessed_m2"] / cell_area
+    if (out["coverage_frac"] > 1.002).any():
+        raise ValueError("Assessed canopy area exceeds cell area")
+    out["coverage_frac"] = out["coverage_frac"].clip(0, 1)
+    out["canopy_source"] = np.where(px_tot > 0, "usfs-2022", "none")
+    out["canopy_year"] = np.where(px_tot > 0, "2022", "")
+    out["canopy_quality"] = np.where(px_tot > 0,
+        np.where(out["coverage_frac"] >= .99, "full", "partial"), "unassessed")
     chm_path = C.CANOPY_CSV.with_name(C.CANOPY_CSV.stem + "_chm.csv")
     if chm_path.exists():
-        chm = pd.read_csv(chm_path).set_index("h3")
-        miss = out["canopy_pct"].isna()
-        out = out.set_index("h3")
-        for c in ["canopy_pct", "row_canopy_pct", "canopy_m2", "row_m2"]:
-            if c in chm.columns:
-                out[c] = out[c].where(~out["canopy_pct"].isna() if c != "canopy_pct"
-                                      else out[c].notna(), chm[c])
-        out = out.reset_index()
-        log(f"  filled {int(miss.sum())} fringe hexes (outside the urban boundary) "
-            f"from the CHM fallback {chm_path.name}")
+        out, filled = fill_legacy_canopy(out, pd.read_csv(chm_path))
+        log(f"  filled {filled} cells from legacy CHM; coverage remains unknown")
 
     ok = out["canopy_pct"].notna()
     log(f"  canopy_pct: {out.loc[ok,'canopy_pct'].min():.1f}–"
@@ -181,13 +163,27 @@ def main():
     log(f"  wrote {C.CANOPY_CSV.relative_to(C.ROOT)}")
 
 
+def fill_legacy_canopy(out, chm):
+    """Freeze one aligned missing mask before filling any dependent fields."""
+    out = out.set_index("h3").copy()
+    chm = chm.set_index("h3").reindex(out.index)
+    use = out["canopy_pct"].isna() & chm["canopy_pct"].notna()
+    for col in ["canopy_pct", "row_canopy_pct", "canopy_m2", "row_m2"]:
+        out.loc[use, col] = chm.loc[use, col] if col in chm else np.nan
+    out.loc[use, "canopy_source"] = "chm-legacy"
+    out.loc[use, "canopy_year"] = "2009-2020"
+    out.loc[use, "canopy_quality"] = "coverage-unknown"
+    out.loc[use, ["assessed_m2", "coverage_frac"]] = np.nan
+    return out.reset_index(), int(use.sum())
+
+
 def _match_boundary(stem, cands):
-    """When a folder holds several urban areas, pick the boundary whose filename
-    shares the longest prefix with this raster's urban-area name."""
-    import os
-    base = os.path.basename(stem).lower()
-    return max(cands, key=lambda c: len(os.path.commonprefix(
-        [base, os.path.splitext(os.path.basename(c))[0].lower()])))
+    """Require an exact urban-area filename match; never guess by prefix."""
+    from pathlib import Path
+    matches = [c for c in cands if Path(c).stem.lower() == Path(stem).name.lower()]
+    if len(matches) != 1:
+        raise ValueError(f"Expected one matching boundary for {Path(stem).name}")
+    return matches[0]
 
 
 if __name__ == "__main__":
