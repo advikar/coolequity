@@ -26,6 +26,28 @@ trap 'rm -rf "$BUILD"' EXIT
 cd "$REPO"
 
 command -v git >/dev/null || { echo "git not found"; exit 1; }
+
+# --- guardrail: never publish from a stale copy of this script -------------
+# Every city branch carries a copy of deploy.sh so it can be run from any
+# checkout, but only the copy on contra-costa is canonical. An older copy that
+# knows fewer cities would happily build a two-city site and force-push it
+# over the four-city one (this happened on 2026-09-08). So: refuse unless this
+# file is byte-identical to contra-costa:deploy.sh.
+CANON="$(git show contra-costa:deploy.sh 2>/dev/null)" || { echo "cannot read contra-costa:deploy.sh"; exit 1; }
+if [ "$CANON" != "$(cat "${BASH_SOURCE[0]}")" ]; then
+  echo "REFUSING: this deploy.sh differs from contra-costa:deploy.sh (the canonical copy)."
+  echo "Run it from a contra-costa checkout, or copy that file onto this branch first."
+  exit 1
+fi
+# Every city branch this script builds from must exist locally AND be the
+# version you think it is: warn loudly if a branch is behind its remote.
+git fetch -q origin 2>/dev/null || echo "warning: could not fetch origin; building from local branches as-is"
+for b in master san-ramon contra-costa bakersfield; do
+  if git rev-parse --verify -q "origin/$b" >/dev/null && \
+     [ "$(git rev-parse "$b")" != "$(git rev-parse "origin/$b")" ]; then
+    echo "note: local $b ($(git rev-parse --short "$b")) != origin/$b ($(git rev-parse --short "origin/$b")); building from LOCAL"
+  fi
+done
 git rev-parse --verify master   >/dev/null 2>&1 || { echo "no master branch";   exit 1; }
 git rev-parse --verify san-ramon >/dev/null 2>&1 || { echo "no san-ramon branch"; exit 1; }
 git rev-parse --verify contra-costa >/dev/null 2>&1 || { echo "no contra-costa branch"; exit 1; }
@@ -69,6 +91,13 @@ for f in index.html app/index.html sanramon/app/index.html \
          bakersfield/data/bakersfield.geojson; do
   [ -s "$BUILD/$f" ] || { echo "MISSING or empty: $f"; exit 1; }
 done
+
+# Never publish a site with fewer city folders than the one currently live.
+PREV="$(git ls-tree --name-only origin/gh-pages 2>/dev/null | grep -cE '^(app|sanramon|contracosta|bakersfield)$' || true)"
+NOW="$(ls -d "$BUILD"/app "$BUILD"/sanramon "$BUILD"/contracosta "$BUILD"/bakersfield 2>/dev/null | wc -l | tr -d ' ')"
+if [ -n "$PREV" ] && [ "$NOW" -lt "$PREV" ]; then
+  echo "REFUSING: new build has $NOW city folders, live site has $PREV."; exit 1
+fi
 
 cd "$BUILD"
 git init -q -b gh-pages
