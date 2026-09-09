@@ -401,6 +401,12 @@
   #detail:not(.show){visibility:hidden}
   #detail .x,#coach .cx{background:none;border:0;color:var(--txt);min-width:32px;min-height:32px;font-size:22px;cursor:pointer}
   .roi-note,.roi-feas,.cap{font-size:12px;line-height:1.6}
+  .export{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+  .export button{font:600 12px var(--sans);color:var(--txt);background:#1b2733;border:1px solid #3e4d5e;border-radius:7px;padding:8px 10px;cursor:pointer}
+  .export button:hover{border-color:#66768a}
+  .export button:disabled{opacity:.45;cursor:default}
+  .export .hint{flex-basis:100%;margin:2px 0 0}
+  .export .hint.warn{color:#ffd28c}
   .roi .sub{font-size:12px}
   .cooling-secondary{font-size:12px;color:var(--muted);margin:12px 0}.cooling-secondary b{color:var(--text);margin-left:6px}
   #roi-slider{width:100%;min-height:32px}
@@ -566,6 +572,13 @@
           <p id="rank-count" role="status"></p>
         </div>
         <div id="rank"></div><div class="rank-pages"><button id="rank-prev" type="button">Previous</button><button id="rank-next" type="button">Next 25</button></div>
+        <div class="export" id="list-export" aria-label="Export or load a scenario">
+          <button type="button" id="exp-list-csv">Export ranked list (CSV)</button>
+          <button type="button" id="exp-list-json">Scenario (JSON)</button>
+          <button type="button" id="exp-load">Load scenario…</button>
+          <input type="file" id="exp-file" accept="application/json,.json" hidden>
+          <p class="hint" id="exp-status" role="status">Exports carry the weights in force, planting shares and the data version, so a colleague can reload the same view. <a href="guide.html#export" target="ce-guide">About exports ↗</a></p>
+        </div>
       </div>
 
       <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>
@@ -625,6 +638,11 @@
              owns the ground. Street frontage is that, measured from OSM. -->
         <div class="roi-feas" id="roi-feas"></div>
         <a class="method-link" href="guide.html#cost" target="ce-guide">Costs, assumptions &amp; limits ↗</a>
+        <div class="export" id="d-export" aria-label="Export this area">
+          <button type="button" id="exp-cell-json">Export this area (JSON)</button>
+          <button type="button" id="exp-cell-csv">CSV</button>
+          <p class="hint">Metrics, sources, the weights in force, this planting scenario and the data version. <a href="guide.html#export" target="ce-guide">About exports ↗</a></p>
+        </div>
       </div>
     </div>
   </aside>
@@ -1033,10 +1051,144 @@ function fillExpr(k){
 const EMPTY={type:'FeatureCollection',features:[]};
 const optional=url=>fetch(url,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Optional data unavailable');return r.json();}).then(d=>{if(d.type!=='FeatureCollection'||!Array.isArray(d.features))throw new Error('Invalid optional data');return d;}).catch(()=>({...EMPTY,loadFailed:true}));
 
+
+/* ================================================================ export (CE-06)
+ *
+ * A planner leaves a meeting with a file, not a URL. Two exports, both
+ * reproducible: the selected area (one record + the scenario around it) and
+ * the ranked list in force (every ranked cell, in the order the weights put
+ * them). Both carry the weights, the population multiplier, the planting
+ * assumptions, per-cell source/coverage flags and the SHA-256 of the data
+ * file that was loaded, so "which version was this?" has an answer.
+ *
+ * The JSON form reloads: weights, population weight and planting shares are
+ * restored, the selected cell is reselected. A file from another city or
+ * export schema is refused; a file built on different data is loaded with a
+ * visible warning, because the numbers may not reproduce. */
+const EXPORT_SCHEMA=1;
+let DATA_SHA='unavailable';
+async function sha256Hex(text){
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+  catch(_){return 'unavailable';}     // file:// or a very old browser: say so rather than fake a hash
+}
+const CITY_NAME=(CITY_NAV.find(c=>c.slug===THIS_CITY)||{}).name||CITY_SLUG;
+const EXPORT_NOTES=[
+  'Scores are relative 0–100 within this study area under the weights in this file; they are not health-risk probabilities or cross-city rankings.',
+  'rank/score are computed live from the exported weights; rank_default/score_default are the pipeline defaults shipped with the data.',
+  'Population, age and A/C are allocated estimates from ACS block groups and Census LACE tracts, not household counts.',
+  'Canopy percentages are assessed cover per canopy_source; chm-legacy cells have unknown assessed extent (coverage_frac empty).',
+  'Planting scenarios are theoretical: mapped street length at 10 m spacing, capped by cell area minus known canopy. Site feasibility, ownership, utilities and species are unverified.',
+  'Cost is trees × $500 (an assumption, not a bid). Cooling is an illustrative clear-sky summer air-temperature figure, 0.3 °C per 10 canopy points, not a local forecast.',
+  'Walking access is routed on the OpenStreetMap pedestrian network to mapped discovery sites, whose hours and cooling designation are unverified; approach-review flags a >100 m straight connection from the cell centre to the network.',
+];
+function currentPresetId(){const m=typeof matchPreset==='function'?matchPreset():null;return m?m.id:null;}
+function exportHeader(){
+  const W=normW();
+  const md=HEX.metadata||{};
+  return {
+    export_schema:EXPORT_SCHEMA, app:'CoolEquity', city:CITY_NAME, city_slug:CITY_SLUG,
+    exported_at:new Date().toISOString(),
+    dataset:{file:DATA_URL.split('?')[0].replace(/^\.\.\//,''), version_tag:(DATA_URL.split('?')[1]||'').replace(/^v=/,''),
+      sha256:DATA_SHA, schema_version:md.schema_version??null, acs_year:md.acs_year??null, lace_year:md.lace_year??null,
+      cells:HEX.features.length, ranked_cells:LIVE.order.length, norm:HEX.norm||null},
+    weights:W_INPUTS.reduce((o,{k})=>(o[k]=+W[k].toFixed(4),o),{}),
+    population_weight:POPW, preset:currentPresetId(), default_weights:isDefaultW(),
+    planting_assumptions:{tree_spacing_m:TREE_SPACING_M, crown_m2_per_tree:TREE_M2, cost_per_tree_usd:COST_TREE, cooling_c_per_10_canopy_points:0.3},
+    notes:EXPORT_NOTES,
+  };
+}
+const EXPORT_FIELDS=['id','name','place','rank','score','rank_default','score_default','lst_c','canopy_pct','green_src','canopy_source','canopy_year',
+  'coverage_frac','canopy_quality','canopy_m2','assessed_m2','pop','pct65','ac_pct','ac_src','ac_coverage','acs_year','access_min','access_km',
+  'access_quality','access_snap_m','area_m2','street_m','scenario_ok','canopy_baseline_ok','land','holc',
+  'planting_share','trees','canopy_gain_points','cost_usd','cooling_c','future_canopy_pct'];
+function cellRecord(p){
+  const s=sc(p), r=rk(p), share=plantingShares.get(p.id), scn=(share!=null)?scenarioFor(p,share):null;
+  const num=v=>(v==null||v==='')?null:+v;
+  return {id:p.id, name:nameOf(p), place:p.place, rank:r??null, score:s==null?null:+s.toFixed(1),
+    rank_default:num(p.rank), score_default:num(p.score), lst_c:num(p.lst), canopy_pct:num(p.green), green_src:p.green_src??null,
+    canopy_source:p.canopy_source??null, canopy_year:p.canopy_year??null, coverage_frac:num(p.coverage_frac), canopy_quality:p.canopy_quality??null,
+    canopy_m2:num(p.canopy_m2), assessed_m2:num(p.assessed_m2), pop:num(p.pop), pct65:num(p.pct65), ac_pct:num(p.ac), ac_src:p.ac_src??null,
+    ac_coverage:num(p.ac_coverage), acs_year:num(p.acs_year), access_min:num(p.access_min), access_km:num(p.access_km),
+    access_quality:p.access_quality??null, access_snap_m:num(p.access_snap_m), area_m2:num(p.area_m2), street_m:num(p.street_m),
+    scenario_ok:p.scenario_ok===true, canopy_baseline_ok:p.canopy_baseline_ok===true, land:p.land??null, holc:p.holc??null,
+    planting_share:scn?scn.share:null, trees:scn?scn.trees:null, canopy_gain_points:scn?scn.canopy_gain_points:null,
+    cost_usd:scn?scn.cost_usd:null, cooling_c:scn?scn.cooling_c:null, future_canopy_pct:scn?scn.future_canopy_pct:null};
+}
+function csvCell(v){if(v==null)return '';const t=typeof v==='boolean'?(v?'true':'false'):String(v);return /[",\n\r]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
+/** CSV: one row per cell; the scenario header is repeated as trailing columns
+ *  so a row can never be separated from the weights that produced its rank. */
+function toCsv(records,header){
+  const hcols={city:header.city_slug, exported_at:header.exported_at, dataset_sha256:header.dataset.sha256, dataset_version:header.dataset.version_tag,
+    acs_year:header.dataset.acs_year, preset:header.preset||'custom', population_weight:header.population_weight,
+    ...Object.fromEntries(Object.entries(header.weights).map(([k,v])=>['w_'+k,v]))};
+  const cols=[...EXPORT_FIELDS,...Object.keys(hcols)];
+  const lines=[cols.join(',')];
+  for(const rec of records)lines.push(cols.map(c=>csvCell(c in rec?rec[c]:hcols[c])).join(','));
+  return lines.join('\r\n')+'\r\n';
+}
+function download(name,text,type){
+  const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+const stamp=()=>new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+function exportStatus(msg,warn){const el=document.getElementById('exp-status');if(!el)return;el.textContent=msg;el.classList.toggle('warn',!!warn);}
+function exportCell(kind){
+  if(selId==null)return;
+  const f=HEX.features.find(x=>x.properties.id===selId);if(!f)return;
+  const header=exportHeader(), rec=cellRecord(f.properties);
+  const base=`coolequity-${CITY_SLUG}-area-${rec.id}-${stamp()}`;
+  if(kind==='csv')download(base+'.csv',toCsv([rec],header),'text/csv');
+  else download(base+'.json',JSON.stringify({...header,kind:'area',selected:rec},null,1),'application/json');
+}
+function exportList(kind){
+  const header=exportHeader();
+  const recs=LIVE.order.map(f=>cellRecord(f.properties));
+  const base=`coolequity-${CITY_SLUG}-ranked-${stamp()}`;
+  if(kind==='csv')download(base+'.csv',toCsv(recs,header),'text/csv');
+  else download(base+'.json',JSON.stringify({...header,kind:'ranked-list',selected_id:selId,cells:recs},null,1),'application/json');
+  exportStatus(`Exported ${recs.length.toLocaleString()} ranked areas with the weights in force.`);
+}
+/** Reload a JSON export. Refuses another city or export schema; warns when the
+ *  data file differs (results may not reproduce); restores weights, population
+ *  weight, planting shares and the selection. Returns a status string. */
+function loadScenario(doc){
+  if(!doc||typeof doc!=='object')return {ok:false,msg:'Not a CoolEquity scenario file.'};
+  if(doc.export_schema!==EXPORT_SCHEMA)return {ok:false,msg:`This file uses export schema ${doc.export_schema??'?'}; this app reads schema ${EXPORT_SCHEMA}. Not loaded.`};
+  if(doc.city_slug!==CITY_SLUG)return {ok:false,msg:`This scenario is for ${(doc.city&&doc.city!==CITY_NAME)?doc.city:(doc.city_slug||'another city')}, not ${CITY_NAME}. Not loaded.`};
+  const w=doc.weights||{};
+  if(!W_INPUTS.every(({k})=>typeof w[k]==='number'&&isFinite(w[k])&&w[k]>=0))return {ok:false,msg:'Scenario weights are missing or invalid. Not loaded.'};
+  if(typeof doc.population_weight!=='number'||doc.population_weight<0||doc.population_weight>1)return {ok:false,msg:'Population weight is missing or invalid. Not loaded.'};
+  W_RAW=W_INPUTS.reduce((o,{k})=>(o[k]=w[k],o),{});POPW=doc.population_weight;
+  W_INPUTS.forEach(x=>{const el=document.getElementById('ws-'+x.k);if(el)el.value=Math.round(W_RAW[x.k]*100);});
+  const pe=document.getElementById('ws-pop');if(pe)pe.value=Math.round(POPW*100);
+  plantingShares.clear();
+  const cells=doc.kind==='area'?(doc.selected?[doc.selected]:[]):(Array.isArray(doc.cells)?doc.cells:[]);
+  let shares=0;for(const c of cells){if(c&&typeof c.planting_share==='number'&&c.id!=null){plantingShares.set(+c.id,Math.max(0,Math.min(100,c.planting_share)));shares++;}}
+  applyWeights();
+  const sel=doc.kind==='area'?(doc.selected&&doc.selected.id):doc.selected_id;
+  if(sel!=null&&HEX.features.some(f=>f.properties.id===+sel))selectHex(+sel,true);
+  const same=doc.dataset&&doc.dataset.sha256&&DATA_SHA!=='unavailable'&&doc.dataset.sha256===DATA_SHA;
+  const base=`Loaded ${doc.preset?('preset “'+doc.preset+'”'):'custom weights'}${shares?` and ${shares} planting share${shares===1?'':'s'}`:''}.`;
+  if(same)return {ok:true,msg:base+' Same data version as this page.'};
+  return {ok:true,warn:true,msg:base+` Different data version (file ${String(doc.dataset&&doc.dataset.sha256||'unknown').slice(0,8)}, page ${DATA_SHA.slice(0,8)}): ranks and figures may not reproduce.`};
+}
+function wireExport(){
+  const on=(id,fn)=>{const el=document.getElementById(id);if(el)el.onclick=fn;};
+  on('exp-cell-json',()=>exportCell('json'));on('exp-cell-csv',()=>exportCell('csv'));
+  on('exp-list-csv',()=>exportList('csv'));on('exp-list-json',()=>exportList('json'));
+  const file=document.getElementById('exp-file');
+  on('exp-load',()=>file&&file.click());
+  if(file)file.onchange=()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;
+    f.text().then(t=>{let doc;try{doc=JSON.parse(t);}catch(_){exportStatus('That file is not valid JSON. Not loaded.',true);return;}
+      const r=loadScenario(doc);exportStatus(r.msg,!r.ok||r.warn);}).catch(()=>exportStatus('Could not read that file.',true));};
+}
+
 async function boot(){
   // Only the hex file is load-bearing; the other two degrade to nothing.
   const [h,c,b]=await Promise.all([
-    fetch(DATA_URL,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.json();}),
+    fetch(DATA_URL,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(`${DATA_URL} → ${r.status}`);return r.text();}).then(async t=>{DATA_SHA=await sha256Hex(t);return JSON.parse(t);}),
     optional(CENTERS_URL),
     optional(BOUNDARY_URL)
   ]);
@@ -1050,7 +1202,7 @@ async function boot(){
   // CDN can never leave the demo staring at an empty screen.
   // buildWeights() -> applyWeights() -> rescore() + buildRank() + setLayer('score'),
   // so the panel is fully populated from the live model before the map exists.
-  buildWeights();buildKinds();wireUI();setUnits(UNITS);buildIntro();
+  buildWeights();buildKinds();wireUI();wireExport();setUnits(UNITS);buildIntro();
   // Two-speed panel: default to Simple so a first-time reader gets the answer, not
   // a control surface. Remembered per browser.
   let savedMode='simple';try{if(localStorage.getItem('ce-mode')==='explore')savedMode='explore';}catch(_){}
@@ -1824,6 +1976,21 @@ function explainHex(p){
 
 // Preserve scenario choices when units or scoring weights change.
 const plantingShares=new Map();
+/** One place for the scenario arithmetic, so the panel and the export can never
+ *  disagree. Returns null when no scenario is possible for this cell. */
+function scenarioFor(p,share){
+  if(p.scenario_ok!==true)return null;
+  const capacity=Math.floor(Math.max(0,p.street_m||0)*2/TREE_SPACING_M);
+  const area=areaOf(p);
+  // Observed canopy bounds maximum possible new cover, without extrapolating
+  // a partial assessment over unknown land. Placement remains conditional.
+  const knownCanopy=p.canopy_baseline_ok?Math.max(p.canopy_m2||0,p.green/100*area):p.canopy_source==='usfs-2022'?Math.max(0,p.canopy_m2||0):0;
+  const trees=Math.min(Math.round(capacity*share/100),Math.floor(Math.max(0,area-knownCanopy)/TREE_M2));
+  const delta=trees*TREE_M2/area*100, cost=trees*COST_TREE;
+  return {share,capacity,trees,canopy_gain_points:+delta.toFixed(2),cost_usd:cost,cooling_c:+(delta/10*0.3).toFixed(3),
+    known_canopy_m2:Math.round(knownCanopy),new_crown_m2:trees*TREE_M2,
+    future_canopy_pct:p.canopy_baseline_ok?+(p.green+delta).toFixed(1):null};
+}
 function updateROI(p){
   const slider=document.getElementById('roi-slider');
   const share=slider.disabled||p.scenario_ok!==true?0:+slider.value;plantingShares.set(p.id,share);
@@ -1834,13 +2001,8 @@ function updateROI(p){
     slider.setAttribute('aria-valuetext','Unavailable: mapped street capacity absent');
     return;
   }
-  const capacity=Math.floor(Math.max(0,p.street_m||0)*2/TREE_SPACING_M);
-  const area=areaOf(p);
-  // Observed canopy bounds maximum possible new cover, without extrapolating
-  // a partial assessment over unknown land. Placement remains conditional.
-  const knownCanopy=p.canopy_baseline_ok?Math.max(p.canopy_m2||0,p.green/100*area):p.canopy_source==='usfs-2022'?Math.max(0,p.canopy_m2||0):0;
-  const trees=Math.min(Math.round(capacity*share/100),Math.floor(Math.max(0,area-knownCanopy)/TREE_M2));
-  const delta=trees*TREE_M2/area*100, cost=trees*COST_TREE;
+  const sc_=scenarioFor(p,share);
+  const capacity=sc_.capacity, trees=sc_.trees, delta=trees*TREE_M2/areaOf(p)*100, cost=sc_.cost_usd;
   document.getElementById('roi-target').textContent=share;
   slider.setAttribute('aria-valuetext',share+' percent of theoretical street capacity');
   document.getElementById('roi-trees').textContent=fInt(trees);
