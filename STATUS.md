@@ -1,5 +1,21 @@
 # CoolEquity — build status & handoff
 
+## September 8, 2026 — scenario export (CE-06) added to the app (Claude)
+
+Two exports in the map, both reproducible, plus a loader: **Export this area** (JSON/CSV, in
+the selected-area panel) and **Export ranked list** / **Scenario (JSON)** / **Load scenario…**
+(under the ranked list). Every export carries the weights in force, population weight, preset
+(if any), planting constants, per-cell source/coverage flags (canopy_source, coverage_frac,
+canopy_quality, ac_src, ac_coverage, access_quality), live rank/score and the pipeline defaults,
+the planting scenario for cells with a set share, and the SHA-256 of the loaded data file
+(computed in-browser at load; "unavailable" on file://). CSV rows repeat the scenario header
+as trailing columns. Loading a JSON export restores weights, population weight, planting
+shares and the selection; it refuses another city or export schema and warns visibly when the
+data fingerprint differs. Nothing is uploaded. Scenario arithmetic moved into `scenarioFor()`
+so the panel and the export share one implementation. Guide topic `#export` added.
+Verified: `node tests/ui-contract.cjs` (new export section), inline-script syntax, browser
+smoke. Same change applied to contra-costa, bakersfield and san-ramon.
+
 ## September 8, 2026 — Bakersfield brought up to the Contra Costa reference build (Claude)
 
 Ported the Contra Costa UI v2 + methods guide + cooling directory and the September 7
