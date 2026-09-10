@@ -1,11 +1,11 @@
 {
-  "residential_before": 3777,
+  "residential_before": 3788,
   "residential_after": 3788,
-  "population_before": 408905,
+  "population_before": 410400,
   "population_after": 410400,
-  "top25_overlap": 22,
-  "median_abs_rank_change": 30.0,
-  "max_abs_rank_change": 824,
+  "top25_overlap": 25,
+  "median_abs_rank_change": 0.0,
+  "max_abs_rank_change": 0,
   "canopy_sources_all": {
     "usfs-2022": 2359,
     "chm-legacy": 1695
