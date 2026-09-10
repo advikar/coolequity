@@ -23,7 +23,7 @@
     font-weight:400;font-style:normal;font-display:swap}
   :root{
     --bg:#0b0f14;--panel:#111720;--panel2:#0d1219;--edge:#1f2a36;--edge2:#2b3947;
-    --txt:#eef3f8;--muted:#93a1b0;--muted2:#67757f;
+    --txt:#eef3f8;--muted:#93a1b0;--muted2:#7a8893;   /* ≥4.5:1 on the panel for small text */
     --accent:#ff7a45;--accent2:#ffb703;--good:#39b98a;--blue:#4c9fce;
     --shadow:0 18px 50px rgba(0,0,0,.55);
     /* The map is light (CARTO positron) so that "deeper = worse" can read at all;
@@ -1632,7 +1632,7 @@ function buildIntro(){
   document.addEventListener('keydown',e=>{
     // Not while the user is typing a city name — Enter there picks from the
     // list, and Escape closes the list, neither of which should launch the map.
-    if(e.target.closest('#picker'))return;
+    if(e.target.closest&&e.target.closest('#picker'))return;
     if(e.key==='Escape'||e.key==='Enter'){const el=document.getElementById('intro');
       if(el&&!el.classList.contains('gone'))dismissIntro();}
   });

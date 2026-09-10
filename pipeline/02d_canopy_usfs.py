@@ -135,7 +135,7 @@ def main():
     with np.errstate(invalid="ignore", divide="ignore"):
         out["canopy_pct"] = np.where(px_tot > 0, px_can / px_tot * 100, np.nan)
         out["row_canopy_pct"] = np.where(row_tot > 0, row_can / row_tot * 100, 0.0)
-    out["canopy_m2"] = (px_can * pix_area_m2).round(0)
+    out["canopy_m2"] = (px_can * pix_area_m2).round(2)   # 2 dp: a single 0.36 m² pixel must not round to 0
     out["row_m2"] = ((row_tot - row_can) * pix_area_m2).clip(min=0).round(0)
 
     out["assessed_m2"] = (px_tot * pix_area_m2).round(2)

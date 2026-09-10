@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CoolEquity — Heat &amp; Canopy Mapping</title>
-<meta name="description" content="Which neighborhoods should a city cool first? Satellite heat and tree canopy scored per block, priced per intervention. Built for Los Angeles, Contra Costa County, Bakersfield and San Ramon, California.">
+<meta name="description" content="Where would new street trees help residents most? Satellite heat, aerial tree cover, census population and walking access to cooling, scored for every neighborhood area. Contra Costa County, Bakersfield and San Ramon, plus a legacy Los Angeles build.">
 <style>
   @font-face{font-family:Inter;src:url(app/vendor/inter-latin.woff2) format('woff2');
     font-weight:100 900;font-display:swap}
   @font-face{font-family:'Instrument Serif';src:url(app/vendor/instrumentserif-latin.woff2) format('woff2');
     font-weight:400;font-display:swap}
   :root{--bg:#080b10;--panel:#0d1219;--edge:#1c2530;--txt:#e8edf4;--muted:#8a93a0;
-    --muted2:#5f6a78;--accent:#ffb703;--accent2:#ff7a45;
+    --muted2:#7a8694;--accent:#ffb703;--accent2:#ff7a45;
     --display:'Instrument Serif',Georgia,serif;
     --sans:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
   *{box-sizing:border-box}
@@ -46,100 +46,99 @@
     font-size:12.5px;color:var(--muted);line-height:1.7;max-width:70ch}
   .note b{color:var(--txt)}
   .note a{color:var(--accent)}
+  .legacy{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:2px 8px;border-radius:20px;background:#1a1f27;color:#b8c2cf;border:1px solid #2b3947;margin-left:8px;vertical-align:middle}
   .foot{margin-top:26px;font-size:10.5px;color:var(--muted2);line-height:1.6;max-width:80ch}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="wordmark"><span class="wdot"></span><span class="wm">Cool<i>Equity</i></span></div>
-  <h1>Where should a city<br>cool down first?</h1>
-  <p class="lede">Satellite surface heat and tree canopy, measured for every block of a city,
-    scored against who lives there, and priced per intervention — how many trees, at what cost,
-    cooling how many people. Four areas are built. Pick one.</p>
-
+  <h1>Where would new trees<br>help residents most?</h1>
+  <p class="lede">Satellite surface heat, aerial tree cover, census population and age, home air
+    conditioning and the walk to a cool place, scored for every neighborhood area of a city —
+    then a planting scenario with tree counts and indicative cost. Three current builds and one
+    legacy build. Pick one.</p>
   <div class="cards">
-    <a class="card" href="app/">
-      <div class="city">Los Angeles</div>
-      <div class="sub">California · H3 res 8</div>
-      <p>The full model, including the 1930s redlining overlay. D-graded blocks run 6.7 °C
-        hotter than A-graded ones today, with a third of the tree canopy.</p>
-      <div class="figs">
-        <div><b>3,008</b><span>blocks</span></div>
-        <div><b>6.5M</b><span>residents</span></div>
-        <div><b>−0.61</b><span>heat ↔ canopy</span></div>
-      </div>
-      <div class="go">Open Los Angeles →</div>
-    </a>
-
     <a class="card" href="contracosta/app/">
       <div class="city">Contra Costa County</div>
-      <div class="sub">California · H3 res 8</div>
-      <p>1.16 million residents, and the clearest result in the project: the poorest quarter
-        of residents live under <b>12.9%</b> measured tree canopy against <b>27.0%</b> for the
-        richest.</p>
+      <div class="sub">California · reference build · 0.3 sq mi areas</div>
+      <p>The reference implementation: 2022 aerial tree cover, ACS 2024 population, Census A/C
+        estimates, routed walking time, a data &amp; methods guide, the county cooling directory
+        and scenario export. Half of residents live in areas under <b>15%</b> tree cover.</p>
       <div class="figs">
-        <div><b>2,695</b><span>blocks</span></div>
+        <div><b>2,697</b><span>areas ranked</span></div>
         <div><b>1.16M</b><span>residents</span></div>
-        <div><b>+0.40</b><span>income ↔ canopy</span></div>
+        <div><b>18%</b><span>avg. tree cover</span></div>
       </div>
       <div class="go">Open Contra Costa →</div>
     </a>
-
     <a class="card" href="bakersfield/app/">
       <div class="city">Bakersfield</div>
-      <div class="sub">California · H3 res 9</div>
-      <p>The severity case, not a gradient. Half its blocks have under <b>3.8%</b> tree canopy
-        and <b>93%</b> of residents live below 15% — a citywide shade deficit under some of the
-        state's hottest summer ground.</p>
+      <div class="sub">California · current build · 0.04 sq mi areas</div>
+      <p>The severity case. Half its areas have under <b>4%</b> tree cover and <b>93%</b> of
+        residents live below 15%, under some of the state's hottest summer ground. Heat is
+        scored here: one valley climate, so hotter really means hotter.</p>
       <div class="figs">
-        <div><b>3,777</b><span>blocks</span></div>
-        <div><b>409k</b><span>residents</span></div>
-        <div><b>49.8&nbsp;°C</b><span>median summer heat</span></div>
+        <div><b>3,788</b><span>areas ranked</span></div>
+        <div><b>410k</b><span>residents</span></div>
+        <div><b>122&nbsp;°F</b><span>median summer surface</span></div>
       </div>
       <div class="go">Open Bakersfield →</div>
     </a>
-
     <a class="card" href="sanramon/app/">
       <div class="city">San Ramon</div>
-      <div class="sub">California · H3 res 9</div>
-      <p>One city inside Contra Costa at seven times the resolution. Canopy and heat couple
-        tightly here (<b>r = −0.60</b>) — and canopy tracks neither income nor housing type.</p>
+      <div class="sub">California · current build · 0.04 sq mi areas</div>
+      <p>One city inside Contra Costa at seven times the resolution. Shade and surface heat
+        track each other closely here (<b>r = −0.60</b>), and nearly every home has A/C, so
+        A/C is not scored.</p>
       <div class="figs">
-        <div><b>419</b><span>blocks</span></div>
-        <div><b>85,569</b><span>residents</span></div>
-        <div><b>−0.60</b><span>heat ↔ canopy</span></div>
+        <div><b>419</b><span>areas ranked</span></div>
+        <div><b>85k</b><span>residents</span></div>
+        <div><b>18%</b><span>avg. tree cover</span></div>
       </div>
       <div class="go">Open San Ramon →</div>
     </a>
+    <a class="card" href="app/">
+      <div class="city">Los Angeles <span class="legacy">Legacy build</span></div>
+      <div class="sub">California · 2025 method · 0.3 sq mi areas</div>
+      <p>The original build, kept as published: satellite greenness stands in for tree cover
+        (it counts lawns), walking time is a straight-line estimate, and there is no guide or
+        export. It keeps the 1930s redlining overlay: D-graded blocks run <b>6.7&nbsp;°C</b>
+        hotter than A-graded ones today.</p>
+      <div class="figs">
+        <div><b>3,008</b><span>areas</span></div>
+        <div><b>6.5M</b><span>residents</span></div>
+        <div><b>−0.61</b><span>heat ↔ greenness</span></div>
+      </div>
+      <div class="go">Open Los Angeles →</div>
+    </a>
   </div>
-
   <div class="note">
-    <b>What is estimated, and what is measured.</b> Surface temperature (Landsat 8/9 thermal)
-    is measured per block. Tree canopy in San Ramon, Contra Costa and Bakersfield is measured
-    from the <b>USFS / CAL FIRE 2022 California Urban Tree Canopy</b> — a 0.6 m aerial
-    classification (2022 NAIP), ground actually under tree cover, so an irrigated lawn does not
-    count as shade and the percentages are absolute, not just a ranking; Los Angeles still uses
-    the older Sentinel-2 NDVI proxy, which counts lawns and overstates canopy (its swap to the
-    aerial layer is the next step). Population comes from the US Census ACS.
-    <b>Air-conditioning access is now measured</b> — US Census LACE (2023) tract estimates — not
-    modelled from income. It is weighted zero in San Ramon, where it is near-universal; it is
-    scored elsewhere. In Contra Costa County <b>surface heat</b> is weighted zero instead: the
-    county spans marine to Delta and 39% of all variance in its surface temperature is explained
-    by position alone, so the income–canopy gap there (raw <b>+0.42</b>, and <b>+0.12</b> after
-    removing where rich and poor neighbourhoods sit) is the honest headline, not the heat map.
-    Walking time to a cooling site is a circuity-adjusted straight line, not a routed street
-    path. Tree costs are planning assumptions, not quotes.
+    <b>What is measured, and what is estimated.</b> Surface temperature (Landsat 8/9 thermal)
+    is measured per area. Tree cover in Contra Costa, Bakersfield and San Ramon comes from the
+    <b>USFS / CAL FIRE 2022 California Urban Tree Canopy</b>, a 0.6 m aerial classification of
+    ground actually under tree crowns; where that assessment is missing, a satellite greenness
+    index stands in and the app says so. Population and age are US Census ACS 2020–2024 five-year
+    estimates allocated into areas; <b>air-conditioning access</b> is the Census LACE 2023
+    tract estimate, weighted zero in San Ramon where it is near-universal. In Contra Costa County
+    <b>surface heat</b> is weighted zero: the county spans marine to Delta, so a hotter area there
+    is mostly a different climate, not a shade problem. <b>Walking time</b> in the three current
+    builds is routed on the OpenStreetMap pedestrian network to mapped libraries, community
+    centers, pools and senior centers, whose hours and cooling status are not verified; the
+    official county cooling directories are listed separately. Tree counts and costs are
+    planning assumptions, not quotes. Every current build carries a
+    <a href="contracosta/app/guide.html">data &amp; methods guide</a> with sources and limits.
     <br><br>
-    Source, pipeline and the full write-up:
-    <a href="https://github.com/advikar/coolequity">github.com/advikar/coolequity</a>.
+    An exploratory planning screen, not a field survey. Source, pipeline and write-up:
+    <a href="https://github.com/advikar/coolequity">github.com/advikar/coolequity</a> ·
+    questions and corrections: <a href="https://github.com/advikar/coolequity/issues">open an issue</a>.
   </div>
-
   <div class="foot">
-    Landsat 8/9 and Sentinel-2 via Microsoft Planetary Computer · US Census ACS 2023 5-year ·
-    OpenStreetMap contributors · HOLC grades from the University of Richmond <i>Mapping
-    Inequality</i> · tree-cooling coefficient from WRI, <i>Cooling Potential of Urban Trees</i> ·
-    H3 grid (Uber) · basemap © CARTO. An independent student project; not affiliated with,
-    nor reviewed by, any city.
+    Landsat 8/9 and Sentinel-2 via Microsoft Planetary Computer · US Census ACS 2020–2024 5-year
+    and LACE 2023 · USFS / CAL FIRE Urban Tree Canopy 2022 · OpenStreetMap contributors · HOLC
+    grades from the University of Richmond <i>Mapping Inequality</i> · tree-cooling coefficient
+    after Krayenhoff et al. (2021) · H3 grid (Uber) · basemap © CARTO. An independent student
+    project; not affiliated with, nor reviewed by, any city. Updated September 10, 2026.
   </div>
 </div>
 </body>

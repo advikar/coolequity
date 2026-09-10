@@ -1,10 +1,16 @@
 {
-  "build_date": "2026-09-07",
+  "build_date": "2026-09-08",
   "city": "Contra Costa County",
   "acs": "2020\u20132024 five-year, block groups",
   "lace": "2023 tract estimates",
   "acs_api": "https://api.census.gov/data/2024/acs/acs5",
   "boundary": "https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_06_bg_500k.zip",
+  "weights": {
+    "heat": 0.0,
+    "green": 0.55,
+    "ac": 0.25,
+    "age65": 0.2
+  },
   "canopy": "USFS/CAL FIRE 2022 aerial; legacy CHM 2009\u20132020; missing canopy retains NDVI for ranking",
   "canopy_coverage_rule": "Scenarios require mapped street capacity; >=99% USFS coverage only enables whole-cell canopy baseline totals",
   "sha256": {

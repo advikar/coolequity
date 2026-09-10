@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'pipeline'))
+import config as C
 def module(name, path):
     spec=importlib.util.spec_from_file_location(name,path)
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
@@ -61,8 +62,8 @@ class DataContracts(unittest.TestCase):
         with self.assertRaises(ValueError): census.aggregate_ac(pd.DataFrame({'h3':['a']}),{})
     def test_export_coverage_and_area(self):
         import json
-        features=json.loads(Path('data/contracosta.geojson').read_text())['features']
-        c=pd.read_csv('data/canopy_contracosta.csv')
+        features=json.loads(Path(f'data/{C.SLUG}.geojson').read_text())['features']
+        c=pd.read_csv(f'data/canopy_{C.SLUG}.csv')
         self.assertFalse(((c.canopy_pct>0)&(c.canopy_m2<=0)).any())
         usfs=c[c.canopy_source=='usfs-2022']
         np.testing.assert_allclose(usfs.canopy_m2,usfs.canopy_pct/100*usfs.assessed_m2,atol=.51)
@@ -70,23 +71,31 @@ class DataContracts(unittest.TestCase):
             p=f['properties']
             self.assertEqual(p['canopy_baseline_ok'],p['canopy_source']=='usfs-2022' and p['coverage_frac']>=.99)
             self.assertEqual(p['scenario_ok'],p['street_m']>0 and p['area_m2']>0)
-            if p['place']=='res': self.assertEqual(p['ac_src'],'lace')
+            if p['place']=='res': self.assertIn(p['ac_src'],('lace','lace-pop'))
             self.assertEqual(p['acs_year'],2024)
 if __name__=='__main__':unittest.main()
 
 class CoolingSources(unittest.TestCase):
     def test_specific_library_exclusions(self):
+        import cooling_sources
         from cooling_sources import eligible_discovery_sites
         def feature(name,kind='library'):
             return {'properties':{'name':name,'kind':kind}}
-        original={'features':[feature('Kensington Branch Library'),feature('El Cerrito Branch Contra Costa County Library'),feature('El Cerrito Community Center','community_centre'),feature('Other Library')]}
-        result=eligible_discovery_sites(original)
+        original={'features':[feature('Excluded Library'),feature('Excluded Library','community_centre'),feature('Other Library')]}
+        saved=cooling_sources.NO_AC_LIBRARIES
+        try:
+            cooling_sources.NO_AC_LIBRARIES={'Excluded Library'}
+            result=eligible_discovery_sites(original)
+        finally:
+            cooling_sources.NO_AC_LIBRARIES=saved
         self.assertEqual(len(result['features']),2)
-        self.assertEqual(len(original['features']),4)
-        self.assertEqual(result['features'][0]['properties']['name'],'El Cerrito Community Center')
+        self.assertEqual(len(original['features']),3)
+        self.assertEqual(result['features'][0]['properties']['kind'],'community_centre')
+        # This branch ships no exclusions: the hook must be a no-op.
+        self.assertEqual(len(eligible_discovery_sites(original)['features']),3)
     def test_official_directory_has_no_invented_live_status(self):
         import json
-        d=json.loads(Path('data/cooling_directory_contracosta.json').read_text())
+        d=json.loads(Path(f'data/cooling_directory_{C.SLUG}.json').read_text())
         self.assertEqual(len(d['sites']),17)
         for s in d['sites']:
             self.assertIsNone(s['opening_hours']);self.assertIsNone(s['coordinates'])

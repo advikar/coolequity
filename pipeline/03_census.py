@@ -117,6 +117,18 @@ def aggregate_ac(inter, lace):
     out["ac_coverage"] = out["ac_covered_homes"] / out["occupied"].replace(0, np.nan)
     full = (out["occupied"] > 0) & (out["ac_coverage"] >= 1 - 1e-9)
     out["ac_meas"] = (100 * out["ac_homes"] / out["occupied"].replace(0, np.nan)).where(full)
+    # Cells whose source block groups report residents but NO occupied homes
+    # (group quarters: dorms, institutions) have no housing denominator at all.
+    # Fall back to the population-weighted tract rate rather than the income
+    # model, and say so: ac_src becomes "lace-pop". Never applied where a
+    # housing denominator exists but is only partly covered.
+    pop_s = d["pop_s"] if "pop_s" in d else (d["pop"] * d["frac"] if "pop" in d else pd.Series(0.0, index=d.index))
+    d["pop_lace"] = pop_s * d["lace_ac"].where(valid)
+    d["pop_cov"] = pop_s.where(valid, 0)
+    pw = d.groupby("h3")[["pop_lace", "pop_cov"]].sum()
+    no_homes = (out["occupied"] <= 0) & (pw["pop_cov"] > 0)
+    out["ac_meas"] = out["ac_meas"].where(~no_homes, pw["pop_lace"] / pw["pop_cov"].replace(0, np.nan))
+    out["ac_pop_fallback"] = no_homes
     return out
 
 
@@ -240,6 +252,21 @@ def area_weight(hexes, bgs, buildings=None, city_buildings=None):
     inter = gpd.overlay(
         hexes[["h3", "geometry"]], bgs, how="intersection", keep_geom_type=True
     )
+    # Clip every piece to the study boundary before measuring it. 01_make_grid
+    # keeps any hex that *intersects* the boundary, so the grid deliberately
+    # overhangs the city -- and an unclipped area weight then hands those hexes a
+    # share of residents who live outside it. Measured on Bakersfield: ~458k
+    # people against an ACS place total of ~408k, a 12% overcount concentrated
+    # on exactly the edge hexes a planner would question first. Contra Costa's
+    # county-derived bbox never overhangs, so this is a no-op there.
+    if C.BOUNDARY_FILE.exists():
+        city = gpd.read_file(C.BOUNDARY_FILE).to_crs(inter.crs).geometry.union_all()
+        before = inter.geometry.area.sum()
+        inter["geometry"] = inter.geometry.intersection(city)
+        inter = inter[~inter.geometry.is_empty]
+        log(f"    clipped pieces to {C.CITY} limits: "
+            f"{before/1e6:,.0f} -> {inter.geometry.area.sum()/1e6:,.0f} km2")
+
     inter["frac"] = inter.geometry.area / inter["bg_area"]
 
     if buildings is not None:
@@ -385,7 +412,9 @@ def main():
     modelled = model_ac_access(out["income"])
     if "ac_meas" in out.columns and out["ac_meas"].notna().any():
         out["ac_est"] = out["ac_meas"].where(out["ac_meas"].notna(), modelled)
-        out["ac_src"] = np.where(out["ac_meas"].notna(), "lace", "income-model")
+        out["ac_src"] = np.where(out["ac_meas"].notna(),
+                                 np.where(out.get("ac_pop_fallback", False), "lace-pop", "lace"),
+                                 "income-model")
         meas_share = 100.0 * (out["ac_src"] == "lace").mean()
     else:
         out["ac_est"] = modelled
