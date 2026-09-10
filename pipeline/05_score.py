@@ -25,7 +25,7 @@ import config as C
 CONTRACT = ["id", "name", "lst", "green", "pop", "pct65", "ac", "holc",
             "access_min", "access_km", "score", "rank", "area_m2", "street_m",
             "canopy_m2", "row_m2", "row_canopy", "veg", "place", "land", "green_src", "canopy_source", "canopy_year", "assessed_m2",
-            "coverage_frac", "canopy_quality", "scenario_ok", "canopy_baseline_ok", "ac_src", "ac_coverage", "acs_year", "access_snap_m", "access_quality"]
+            "coverage_frac", "canopy_quality", "scenario_ok", "canopy_baseline_ok", "ac_src", "ac_coverage", "acs_year", "access_snap_m", "access_quality", "access_src"]
 
 COORD_DP = 5      # ~1 m at this latitude; halves the file the browser downloads
 
@@ -284,6 +284,7 @@ def main():
         "access_km":  df["access_km"].round(2),
         "access_snap_m": df.get("access_snap_m", pd.Series(np.nan,index=df.index)),
         "access_quality": df.get("access_quality", pd.Series("unknown",index=df.index)),
+        "access_src": df.get("access_src", pd.Series("unknown",index=df.index)),
         "score":      df["score"].round(1),
         "rank":       df["rank"],
         "place":      df["place"],
