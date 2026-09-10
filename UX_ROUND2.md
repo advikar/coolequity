@@ -71,13 +71,13 @@ Walking time, residential cells, before → after (ranks and scores unchanged ev
 
 | city | median | max | over 120 min | shorter by >5 min | longer by >5 min | detour-review | straight-line |
 |---|---|---|---|---|---|---|---|
-| Bakersfield | 68.2 → 61.4 min | 273 → 239 | 659 → 429 | 1,137 | 3 | 62 | 40 |
+| Bakersfield | 68.2 → 61.3 min | 273 → 222 | 659 → 424 | 1,142 | 3 | 62 | 45 |
 | San Ramon | 19.1 → 15.8 min | 52 → 46 | 0 → 0 | 65 | 1 | 0 | 0 |
-| Contra Costa | 61.3 → 51.9 min | 352 → 268 | 660 → 457 | 1,234 | 11 | 34 | 20 |
+| Contra Costa | 61.3 → 51.9 min | 352 → 268 | 660 → 457 | 1,235 | 11 | 34 | 21 |
 
 The cell that prompted the report (Bakersfield 528, Seven Oaks) went from 254 to 18
 minutes. The remaining flagged cells are either on the far-west edge where the mapped
-network is a pocket of farm tracks (shipped as straight-line, labelled) or behind a
+network is a pocket of farm tracks — including “2800 Acre Water Bank NE 5”, which read 235 min beside two sites and now shows 38 min as a labelled straight-line estimate — (shipped as straight-line, labelled) or behind a
 real barrier (routed value kept, labelled). The handful that got longer are
 OpenStreetMap edits between the September 6 and 9 downloads, not the method.
 

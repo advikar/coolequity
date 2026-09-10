@@ -1329,7 +1329,7 @@ h3,name,holc,access_min,access_km,street_m,access_src,access_snap_m,access_quali
 882830c523fffff,Woodland Hills Apartment Homes W 2,,53.3,4.27,759.0,routed,257.0,approach-review
 882830c525fffff,Woodland Hills Apartment Homes,,22.7,1.82,7688.0,routed,132.0,approach-review
 882830c527fffff,Woodland Hills Apartment Homes NW,,42.6,3.41,1098.0,routed,324.0,approach-review
-882830c529fffff,Woodland Hills Apartment Homes SW 2,,80.1,6.4,0.0,routed,447.0,detour-review
+882830c529fffff,Woodland Hills Apartment Homes SW 2,,30.8,2.46,0.0,straightline,447.0,detour-review
 882830c52bfffff,Woodland Hills Apartment Homes W 3,,66.4,5.31,0.0,routed,454.0,approach-review
 882830c52dfffff,Woodland Hills Apartment Homes SW,,16.5,1.32,2816.0,routed,245.0,approach-review
 882830c531fffff,Lawlor Estates,,70.8,5.66,3281.0,routed,175.0,approach-review
