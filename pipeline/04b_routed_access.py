@@ -43,11 +43,12 @@ site read 254 min; Contra Costa had 157 cells over 3x the straight line):
 
 What is still implausibly far (routed > DETOUR_RATIO x crow-fly AND more than
 DETOUR_EXTRA_M beyond it) is flagged access_quality="detour-review". If such a
-cell is also more than SNAP_MAX_M from any network node, the walking network does
-not reach it at all (Bakersfield's far-west cells sit in a 12-node pocket of farm
-tracks): the routed figure is then a property of the nearest track, not of the
-cell, so the cell keeps the straight-line estimate and says access_src=
-"straightline". A flagged cell that IS on the network keeps its routed value —
+cell is also more than SNAP_MAX_M from any network node, or the network it joins
+is a fragment (fewer than POCKET_MIN_NODES nodes within POCKET_RADIUS_M of its
+node — Bakersfield's far-west cells sit in a 12-node pocket of farm tracks 150 m
+away), the walking network does not really reach it: the routed figure is a
+property of the nearest track, not of the cell, so the cell keeps the
+straight-line estimate and says access_src="straightline". A flagged cell that IS on the network keeps its routed value —
 that is a real barrier, and the flag tells the reader to check it.
 
 Run:  ../.venv/bin/python 04b_routed_access.py   (after 04 has written overlays)
@@ -70,6 +71,8 @@ SNAP_K = 8                  # candidate network nodes per point; best total wins
 DETOUR_RATIO = 3.0          # flag routed > 3x crow-fly ...
 DETOUR_EXTRA_M = 1500       # ... and more than 1.5 km beyond it
 SNAP_MAX_M = 500            # flagged AND further than this from the network: off-network
+POCKET_RADIUS_M = 2000      # flagged AND fewer than POCKET_MIN_NODES nodes within this
+POCKET_MIN_NODES = 40       # walking distance of the cell's node: a fragment, not a network
 GRAPH_CACHE = C.CACHE / f"walkgraph_{C.SLUG}_v2.graphml"
 
 
@@ -101,11 +104,12 @@ def detour_mask(routed_m, crow_m):
     return ~np.isnan(routed_m) & (routed_m > np.maximum(DETOUR_RATIO * crow_m, crow_m + DETOUR_EXTRA_M))
 
 
-def finalize_access(routed_m, crow_m, snap_m, detour):
+def finalize_access(routed_m, crow_m, snap_m, detour, pocket=None):
     """Decide per hex which estimate ships and how it is labelled.
 
     Returns (access_src, final_m, access_quality):
-      * unreachable, or detour-flagged AND off-network (snap > SNAP_MAX_M):
+      * unreachable, or detour-flagged AND off-network (snap > SNAP_MAX_M, or the
+        cell's node sits in a network fragment — `pocket`):
         straight line x circuity, access_src="straightline";
       * otherwise the routed value, access_src="routed";
       * access_quality: "detour-review" wherever flagged, else "approach-review"
@@ -115,7 +119,8 @@ def finalize_access(routed_m, crow_m, snap_m, detour):
     snap_m = np.asarray(snap_m, dtype=float); detour = np.asarray(detour, dtype=bool)
     straight_m = crow_m * C.CIRCUITY
     unreach = np.isnan(routed_m)
-    offnet = detour & (snap_m > SNAP_MAX_M)
+    pocket = np.zeros_like(detour) if pocket is None else np.asarray(pocket, dtype=bool)
+    offnet = detour & ((snap_m > SNAP_MAX_M) | pocket)
     src = np.where(unreach | offnet, "straightline", "routed")
     final_m = np.where(src == "straightline", straight_m, routed_m)
     # Compared as the rounded metres the CSV carries, so the flag and the number
@@ -177,6 +182,7 @@ def routed_meters(grid, centers_gj):
     # produced it so access_snap_m describes the connection actually used.
     routed_m = np.full(len(cen), np.nan)
     hx_snap = h_d[:, 0].astype(float).copy()          # nearest, for the unreachable
+    best_node = h_i[:, 0].copy()
     for r in range(len(cen)):
         tot = np.array([dist.get(node_ids[ni], np.nan) + sd
                         for sd, ni in zip(h_d[r], h_i[r])], dtype=float)
@@ -184,6 +190,7 @@ def routed_meters(grid, centers_gj):
             j = int(np.nanargmin(tot))
             routed_m[r] = tot[j]
             hx_snap[r] = float(h_d[r][j])
+            best_node[r] = h_i[r][j]
 
     tree = cKDTree(np.column_stack([cpt.x.values, cpt.y.values]))
     crow_m, _ = tree.query(np.column_stack([cen.x.values, cen.y.values]))
@@ -193,12 +200,19 @@ def routed_meters(grid, centers_gj):
     ok = ~np.isnan(routed_m)
     ratio = routed_m[ok] / np.maximum(crow_m[ok], 1.0)
     detour = detour_mask(routed_m, crow_m)
+    # Only flagged hexes need the fragment test: how much network is within
+    # walking reach of the node the hex was joined to?
+    pocket = np.zeros(len(cen), dtype=bool)
+    for r in np.flatnonzero(detour):
+        n_reach = len(nx.single_source_dijkstra_path_length(
+            Gu, node_ids[best_node[r]], weight="length", cutoff=POCKET_RADIUS_M))
+        pocket[r] = n_reach < POCKET_MIN_NODES
     stats = dict(lcc=lcc, reachable=int(ok.sum()), total=int(len(ok)),
                  ratio_med=float(np.median(ratio)) if ok.any() else float("nan"),
                  ratio_min=float(ratio.min()) if ok.any() else float("nan"),
                  ratio_p90=float(np.percentile(ratio, 90)) if ok.any() else float("nan"),
                  ratio_max=float(ratio.max()) if ok.any() else float("nan"),
-                 detour=int(detour.sum()), detour_mask=detour,
+                 detour=int(detour.sum()), detour_mask=detour, pocket_mask=pocket,
                  snap_p95=float(np.percentile(hx_snap, 95)),
                  hex_snap_m=np.asarray(hx_snap,dtype=float).tolist())
     return routed_m, crow_m, stats
@@ -233,7 +247,7 @@ def main():
     # Fall back to the straight-line estimate where the network cannot reach the
     # site, or does not reach the cell (detour-flagged AND off-network).
     snap = np.asarray(st["hex_snap_m"], dtype=float)
-    src, final_m, quality = finalize_access(routed_m, crow_m, snap, st["detour_mask"])
+    src, final_m, quality = finalize_access(routed_m, crow_m, snap, st["detour_mask"], st["pocket_mask"])
     unreach = np.isnan(routed_m)
     offnet = (src == "straightline") & ~unreach
     km = final_m / 1000.0
@@ -241,8 +255,8 @@ def main():
     if unreach.any():
         log(f"  {int(unreach.sum())} hex(es) unreachable on foot — kept the straight-line estimate")
     if offnet.any():
-        log(f"  {int(offnet.sum())} hex(es) detour-flagged and >{SNAP_MAX_M} m from the network — "
-            f"straight-line estimate, flagged detour-review")
+        log(f"  {int(offnet.sum())} hex(es) detour-flagged and off-network (>{SNAP_MAX_M} m snap, or a "
+            f"fragment of <{POCKET_MIN_NODES} nodes within {POCKET_RADIUS_M} m) — straight-line estimate, flagged detour-review")
     kept = int((st["detour_mask"] & ~offnet).sum())
     if kept:
         log(f"  {kept} hex(es) detour-flagged on the network — routed value kept, flagged detour-review")

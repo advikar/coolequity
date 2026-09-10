@@ -674,15 +674,16 @@ further. Fix: no blanket access filter (the walk filter's own `foot!=no` rule is
 what matters), graph re-downloaded to `walkgraph_<slug>_v2.graphml`, each cell and
 site joined to its eight nearest nodes with the best door-to-door total kept, and a
 `detour-review` flag where the route is still >3x the straight line (+1.5 km). A
-flagged cell more than 500 m from any node is off-network: it ships the straight-line
+flagged cell more than 500 m from any node, or joined to a fragment of fewer than 40 nodes
+within 2 km, is off-network: it ships the straight-line
 x circuity estimate and says `access_src="straightline"` (new field in the geojson
 contract). `finalize_access()` / `detour_mask()` are unit-tested.
 
 | city | residential cells | median walk | max walk | >120 min | shorter by >5 min | longer by >5 min | detour-review | straight-line |
 |---|---|---|---|---|---|---|---|---|
-| Bakersfield | 3,788 | 68.2 → 61.4 min | 273 → 239 | 659 → 429 | 1,137 | 3 | 62 | 40 |
+| Bakersfield | 3,788 | 68.2 → 61.3 min | 273 → 222 | 659 → 424 | 1,142 | 3 | 62 | 45 |
 | San Ramon | 419 | 19.1 → 15.8 min | 52 → 46 | 0 → 0 | 65 | 1 | 0 | 0 |
-| Contra Costa | 2,697 | 61.3 → 51.9 min | 352 → 268 | 660 → 457 | 1,234 | 11 | 34 | 20 |
+| Contra Costa | 2,697 | 61.3 → 51.9 min | 352 → 268 | 660 → 457 | 1,235 | 11 | 34 | 21 |
 
 Walking time carries zero weight in every shipped model, so `06_audit_rebuild.py`
 reports max rank change 0 and identical scores in all three cities. The few cells
