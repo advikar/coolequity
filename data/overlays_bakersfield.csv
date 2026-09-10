@@ -491,13 +491,13 @@ h3,name,holc,access_min,access_km,street_m,access_src,access_snap_m,access_quali
 8929ac4c853ffff,Highgate - West Ming Village A SW 7,,40.7,3.25,0.0,straightline,1310.0,detour-review
 8929ac4c857ffff,2800 Acre Water Bank E 4,,43.5,3.48,0.0,straightline,1060.0,detour-review
 8929ac4c85bffff,2800 Acre Water Bank E 8,,44.1,3.53,0.0,routed,1843.0,approach-review
-8929ac4c863ffff,2800 Acre Water Bank NE 3,,235.7,18.86,0.0,routed,215.0,detour-review
-8929ac4c867ffff,Highgate - West Ming Village A W 7,,239.0,19.12,0.0,routed,475.0,detour-review
-8929ac4c86bffff,2800 Acre Water Bank NE 5,,235.1,18.81,0.0,routed,167.0,detour-review
-8929ac4c86fffff,Highgate - West Ming Village A W 6,,236.4,18.91,0.0,routed,268.0,detour-review
+8929ac4c863ffff,2800 Acre Water Bank NE 3,,43.8,3.5,0.0,straightline,215.0,detour-review
+8929ac4c867ffff,Highgate - West Ming Village A W 7,,48.5,3.88,0.0,straightline,475.0,detour-review
+8929ac4c86bffff,2800 Acre Water Bank NE 5,,38.4,3.07,0.0,straightline,167.0,detour-review
+8929ac4c86fffff,Highgate - West Ming Village A W 6,,43.3,3.46,0.0,straightline,268.0,detour-review
 8929ac4c873ffff,2800 Acre Water Bank NE 2,,45.0,3.6,0.0,straightline,535.0,detour-review
 8929ac4c877ffff,2800 Acre Water Bank NE,,49.3,3.94,0.0,straightline,583.0,detour-review
-8929ac4c87bffff,2800 Acre Water Bank NE 4,,237.5,19.0,0.0,routed,358.0,detour-review
+8929ac4c87bffff,2800 Acre Water Bank NE 4,,39.3,3.15,0.0,straightline,358.0,detour-review
 8929ac4c887ffff,2800 Acre Water Bank S 2,,91.5,7.32,0.0,routed,1172.0,approach-review
 8929ac4c88bffff,Highgate - West Ming Village A SW 23,,98.5,7.88,0.0,routed,1736.0,approach-review
 8929ac4c88fffff,Highgate - West Ming Village A SW 28,,96.1,7.69,0.0,routed,1542.0,approach-review

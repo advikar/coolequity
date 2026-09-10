@@ -24,6 +24,9 @@ class DataContracts(unittest.TestCase):
         self.assertEqual(detour.tolist(),[False,False,True,True,False])
         src,final,q=access.finalize_access(routed,crow,snap,detour)
         self.assertEqual(src.tolist(),['routed','straightline','straightline','routed','routed'])
+        # a flagged cell whose network is a fragment is off-network even with a short snap
+        src2,final2,_=access.finalize_access(routed,crow,snap,detour,pocket=[False,False,False,True,False])
+        self.assertEqual(src2[3],'straightline');self.assertAlmostEqual(final2[3],2000*access.C.CIRCUITY)
         self.assertEqual(q.tolist(),['network-estimate','network-estimate','detour-review','detour-review','approach-review'])
         self.assertAlmostEqual(final[1],800*access.C.CIRCUITY);self.assertAlmostEqual(final[2],2000*access.C.CIRCUITY)
         self.assertEqual(final[3],9000.);self.assertEqual(final[0],1000.)
