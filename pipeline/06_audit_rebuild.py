@@ -28,8 +28,10 @@ def main():
     compare['rank_change']=compare.previous_rank-compare.current_rank
     target=C.ROOT/'reports';target.mkdir(exist_ok=True);compare.to_csv(target/'rebuild_cell_changes.csv',index_label='id')
     rows=[]
+    # Sensitivity grid centred on THIS branch's canopy weight (0.25 in Bakersfield,
+    # 0.55 in Contra Costa), never a fixed list that suits one city only.
     W=C.WEIGHTS; rest=1-W['heat']
-    for canopy in [.15,.25,.45]:
+    for canopy in sorted({round(min(rest,W['green']*k),4) for k in (0.65,1.0,1.35)}):
         for ac_share in [.25,.50,.75]:
             weights=(W['heat'],canopy,(rest-canopy)*ac_share,(rest-canopy)*(1-ac_share))
             r=ranked(new,weights);pos=pd.Series(range(1,len(r)+1),index=r.index)

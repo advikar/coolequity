@@ -1,44 +1,39 @@
 # CoolEquity
 
-**Which neighborhoods should a city cool first?** A heat-equity engine that scores
-every hex in a city on satellite heat, tree canopy, population, age and walking
-distance to relief — then prices the intervention.
+**Where would new street trees help residents most?** A planning screen that scores every
+neighborhood area of a city on surface heat, tree cover, population, age, home air conditioning
+and the walk to a cool place, then sizes a street-planting scenario. Exploratory, not a field
+survey; every number carries its source and limits in the in-app guide.
 
-> **This is the `san-ramon` branch.** It runs on **San Ramon, California**: 419
-> populated hexes at H3 resolution 9 (~0.11 km² each) inside the city limits,
-> 85,569 residents — within 0.2% of the ACS place total of 85,734. The Los Angeles build lives on `master` and is
-> untouched by this branch — every artefact here is suffixed `_sanramon`, so the
-> two sets of data files coexist rather than overwrite each other.
+> **This is the `bakersfield` branch: Bakersfield, California.** Every artefact here is suffixed `_bakersfield`, so the
+> city builds coexist. Current state as of **September 10, 2026**:
 
-Every input except the US redlining overlay is global (Landsat, Sentinel-2,
-OpenStreetMap, a population grid), so the same pipeline runs on any city. San
-Ramon is the proof: retargeting was a config change plus four genuinely
-city-specific fixes, all documented below.
+| Build | Branch | Live | Areas ranked | Residents | Tree cover source | Walking time | A/C | Heat weight |
+|---|---|---|---|---|---|---|---|---|
+| Contra Costa County (reference) | `contra-costa` | <https://advikar.github.io/coolequity/contracosta/app/> | 2,697 | 1.16M | USFS/CAL FIRE 2022 aerial; greenness stand-in on 431 areas | routed (OSM pedestrian network) | Census LACE 2023, scored | 0 |
+| Bakersfield | `bakersfield` | <https://advikar.github.io/coolequity/bakersfield/app/> | 3,788 | 410k | USFS/CAL FIRE 2022 aerial | routed | LACE 2023, scored | 0.35 |
+| San Ramon | `san-ramon` | <https://advikar.github.io/coolequity/sanramon/app/> | 419 | 85k | USFS/CAL FIRE 2022 aerial | routed | LACE 2023, not scored | 0.45 |
+| Los Angeles (legacy) | `master` | <https://advikar.github.io/coolequity/app/> | 3,008 | 6.5M | Sentinel-2 greenness proxy | straight line × 1.273 | income model | 0.35 |
 
-**Live: <https://advikar.github.io/coolequity/>**
+All three current builds share one method: ACS 2020–2024 five-year population and age allocated
+into H3 areas, Landsat 8/9 surface temperature, planting scenarios conditional on mapped street
+capacity, a data & methods guide (`app/guide.html`), a county cooling directory
+(`app/cooling.html`) and reproducible scenario export. The live site is assembled from the four
+branches by `deploy.sh`, run from the `contra-costa` checkout; the chooser at the site root is
+`site/index.html` on that branch.
 
-| | |
-|---|---|
-| Chooser | <https://advikar.github.io/coolequity/> |
-| Los Angeles | <https://advikar.github.io/coolequity/app/> |
-| San Ramon | <https://advikar.github.io/coolequity/sanramon/app/> |
+Current documentation for this build: [STATUS.md](STATUS.md) (dated log of what changed and what
+was verified), [FEATURES.md](FEATURES.md), [DATA_QUALITY.md](DATA_QUALITY.md),
+[PRODUCT_READINESS.md](PRODUCT_READINESS.md), [DELIVERY_PLAN.md](DELIVERY_PLAN.md) and
+[HANDOFF.md](HANDOFF.md). The in-app guide is the customer-facing statement of sources and
+methods and takes precedence over older passages below.
 
-Pages serves exactly one branch, and this repo has two cities on two branches, so
-the site is a **build**: `gh-pages` is assembled from `master` and `san-ramon` by
-`./deploy.sh`.
-
-```bash
-./deploy.sh          # rebuild from both branches and publish
-```
-
-**Pushing to `master` or `san-ramon` does not update the site** — run `deploy.sh`.
-Never hand-edit `gh-pages`; the next deploy force-pushes over it. LA deliberately
-keeps `/app/`, the path it had when Pages served `master`, so links already shared
-still resolve. The root chooser is version-controlled at `site/index.html`, and
-only the three data files each app fetches are copied — the rasters, building
-footprints and CSVs stay out of the site.
-
----
+> **History note.** The sections that follow describe how the pipeline is run and how the score
+> is built; they were written across the Los Angeles, San Ramon, Contra Costa and Bakersfield
+> builds and some passages predate the current method (earlier ACS vintages, the straight-line
+> walking estimate, income-modelled A/C, the retired county canopy-equity headline). Where they
+> disagree with the matrix above or the guide, the matrix and the guide are current. Earlier
+> findings are kept in `FINDINGS_CONTRACOSTA.md` and `STATUS.md` as analysis history.
 
 ## Run it
 
@@ -275,10 +270,7 @@ Stated plainly because a judge will ask, and because the UI labels it anyway:
   are real ACS figures spread by area, not measured per hex. They vary smoothly
   across neighbouring hexes and you can see it on the map. Heat and canopy do
   not have this problem — they are 30 m satellite rasters averaged per hex.
-- **Walk time is not routed.** Straight-line distance × 1.273 (= 4/π, the exact
-  expected Manhattan-to-Euclidean ratio over uniform bearings) at 4.8 km/h. The
-  right correction for a gridded city; still an estimate. Say "estimated walking
-  minutes."
+- **Walk time is routed, with flags.** Door-to-door on the OpenStreetMap pedestrian network (private-access streets included, eight-nearest-node snapping) at 4.8 km/h to mapped libraries, community centers, pools and senior centers. Areas the network does not reach show a labelled straight-line × 1.273 estimate; routes over 3× the straight line carry a `detour-review` flag. Hours and cooling status of the mapped places are not verified. Say "estimated walking minutes."
 - **Canopy % is an NDVI proxy**, NDVI 0.05–0.65 scaled to 0–45%. Vegetation, not
   strictly tree crown.
 - **1 uninhabited hex is dropped**, so the map has real holes over the bay,
