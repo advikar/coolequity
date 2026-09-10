@@ -702,3 +702,24 @@ units in force, and plain start-screen stats (avg. tree cover is population-weig
 over aerial-assessed cells). Guide topics for walking access, presets and using the
 map updated. `tests/ui-contract.cjs` now checks every info button has a card and
 every card a guide topic. Verified in the browser at desktop and 375 px widths.
+
+## Audit and release record — September 10, 2026 (Claude)
+
+Live site audited against branch heads after the September 9 deploy (gh-pages `9edda56`):
+app, guide and data byte-identical to source for all three current cities; every referenced
+asset returns 200; no console or network errors; `?flat=1` makes zero off-host requests; live
+score parity with the geojson within 0.05; all 65 tabbable controls labelled; popovers open on
+keyboard focus and close on Escape; exports run. Findings fixed in this commit: secondary text
+colour raised from 3.8:1 to 4.9:1 contrast; an unguarded key handler on the start screen. Not
+changed, reported for a decision: a large share of ranked areas hold very few residents
+(Bakersfield 1,605 of 3,788 under 20; Contra Costa 727 of 2,697), a census-allocation question
+that affects how much a tiny cell should count, not the walking layer.
+
+Catch-up on the delivery plan: pipeline drift back-ported to `contra-costa` (boundary clip,
+population-weighted A/C fallback, canopy-area precision, config-driven audit and tests; no
+data change, audit max rank change 0); audit sensitivity grid now centres on each branch's
+canopy weight; README reconciled on all four branches with one city/version matrix and the
+walking bullet corrected; site chooser rewritten with current, verified figures and Los Angeles
+labelled a legacy build (CE-02, CE-09). Release hashes: contra-costa `833469a`, bakersfield
+`2e6281e`, san-ramon `2d788fc` served by gh-pages `9edda56`; previous gh-pages `30f7bd8` is
+the rollback (CE-10).

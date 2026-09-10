@@ -21,97 +21,97 @@
     {
       "weights": [
         0.45,
-        0.15,
-        0.1,
-        0.30000000000000004
+        0.2145,
+        0.083875,
+        0.251625
       ],
-      "top25_overlap": 19,
-      "median_abs_rank_change": 30.0,
-      "max_abs_rank_change": 140
+      "top25_overlap": 21,
+      "median_abs_rank_change": 19.0,
+      "max_abs_rank_change": 104
     },
     {
       "weights": [
         0.45,
-        0.15,
-        0.2,
-        0.2
+        0.2145,
+        0.16775,
+        0.16775
+      ],
+      "top25_overlap": 17,
+      "median_abs_rank_change": 27.0,
+      "max_abs_rank_change": 211
+    },
+    {
+      "weights": [
+        0.45,
+        0.2145,
+        0.251625,
+        0.083875
       ],
       "top25_overlap": 13,
-      "median_abs_rank_change": 37.0,
-      "max_abs_rank_change": 244
+      "median_abs_rank_change": 35.0,
+      "max_abs_rank_change": 262
     },
     {
       "weights": [
         0.45,
-        0.15,
-        0.30000000000000004,
-        0.1
+        0.33,
+        0.05500000000000001,
+        0.16500000000000004
       ],
-      "top25_overlap": 10,
-      "median_abs_rank_change": 47.0,
-      "max_abs_rank_change": 277
+      "top25_overlap": 24,
+      "median_abs_rank_change": 7.0,
+      "max_abs_rank_change": 60
     },
     {
       "weights": [
         0.45,
-        0.25,
-        0.07500000000000001,
-        0.22500000000000003
+        0.33,
+        0.11000000000000001,
+        0.11000000000000001
       ],
       "top25_overlap": 21,
       "median_abs_rank_change": 14.0,
-      "max_abs_rank_change": 88
+      "max_abs_rank_change": 120
     },
     {
       "weights": [
         0.45,
-        0.25,
-        0.15000000000000002,
-        0.15000000000000002
+        0.33,
+        0.16500000000000004,
+        0.05500000000000001
       ],
-      "top25_overlap": 18,
-      "median_abs_rank_change": 21.0,
-      "max_abs_rank_change": 183
+      "top25_overlap": 19,
+      "median_abs_rank_change": 19.0,
+      "max_abs_rank_change": 187
     },
     {
       "weights": [
         0.45,
-        0.25,
-        0.22500000000000003,
-        0.07500000000000001
-      ],
-      "top25_overlap": 15,
-      "median_abs_rank_change": 29.0,
-      "max_abs_rank_change": 250
-    },
-    {
-      "weights": [
-        0.45,
-        0.45,
-        0.02500000000000001,
-        0.07500000000000002
+        0.4455,
+        0.02612500000000001,
+        0.07837500000000003
       ],
       "top25_overlap": 23,
       "median_abs_rank_change": 8.0,
-      "max_abs_rank_change": 95
+      "max_abs_rank_change": 92
     },
     {
       "weights": [
         0.45,
-        0.45,
-        0.05000000000000002,
-        0.05000000000000002
+        0.4455,
+        0.05225000000000002,
+        0.05225000000000002
       ],
       "top25_overlap": 22,
       "median_abs_rank_change": 9.0,
-      "max_abs_rank_change": 101
+      "max_abs_rank_change": 99
     },
     {
       "weights": [
         0.45,
-        0.45,
-        0.07500000000000002,
-        0.02500000000000001
+        0.4455,
+        0.07837500000000003,
+        0.02612500000000001
       ],
       "top25_overlap": 22,
       "median_abs_rank_change": 10.0,
