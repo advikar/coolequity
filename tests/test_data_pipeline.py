@@ -12,7 +12,21 @@ def module(name, path):
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 canopy=module('canopy','pipeline/02d_canopy_usfs.py')
 census=module('census','pipeline/03_census.py')
+access=module('access','pipeline/04b_routed_access.py')
 class DataContracts(unittest.TestCase):
+    def test_walk_access_fallback_rules(self):
+        # 0 ordinary routed; 1 unreachable; 2 detour + off-network; 3 detour on the
+        # network (barrier); 4 ordinary with a long snap.
+        routed=np.array([1000.,np.nan,9000.,9000.,1200.])
+        crow=np.array([800.,800.,2000.,2000.,1000.])
+        snap=np.array([50.,50.,600.,120.,140.])
+        detour=access.detour_mask(routed,crow)
+        self.assertEqual(detour.tolist(),[False,False,True,True,False])
+        src,final,q=access.finalize_access(routed,crow,snap,detour)
+        self.assertEqual(src.tolist(),['routed','straightline','straightline','routed','routed'])
+        self.assertEqual(q.tolist(),['network-estimate','network-estimate','detour-review','detour-review','approach-review'])
+        self.assertAlmostEqual(final[1],800*access.C.CIRCUITY);self.assertAlmostEqual(final[2],2000*access.C.CIRCUITY)
+        self.assertEqual(final[3],9000.);self.assertEqual(final[0],1000.)
     def test_fallback_is_atomic_and_aligned(self):
         out=pd.DataFrame({'h3':['a','b','c'],'canopy_pct':[0,np.nan,np.nan],
             'canopy_m2':[0,0,0],'row_m2':[1,0,0],'row_canopy_pct':[0,0,0],

@@ -661,3 +661,43 @@ force.
 - Nothing off-host except CARTO's basemap: MapLibre, both typefaces and all data
   are local. Re-audit with `?flat=1` after any front-end change — that path must
   stay at **zero** external requests.
+
+## UX round 2 and walk-time correction — September 9, 2026 (Claude)
+
+**Walking time (data).** A first-time user noticed Bakersfield cells a short walk
+from several cooling sites reading 200+ minutes. Cause: `04b_routed_access.py`
+downloaded the pedestrian graph with osmnx's default `access!=private` filter, which
+drops every street inside gated and private subdivisions; a populated cell with no
+network inside it snapped ~500 m to a farm track that reached town by a 26 km loop,
+and single-nearest-node snapping picked isolated paths over streets a few metres
+further. Fix: no blanket access filter (the walk filter's own `foot!=no` rule is
+what matters), graph re-downloaded to `walkgraph_<slug>_v2.graphml`, each cell and
+site joined to its eight nearest nodes with the best door-to-door total kept, and a
+`detour-review` flag where the route is still >3x the straight line (+1.5 km). A
+flagged cell more than 500 m from any node is off-network: it ships the straight-line
+x circuity estimate and says `access_src="straightline"` (new field in the geojson
+contract). `finalize_access()` / `detour_mask()` are unit-tested.
+
+| city | residential cells | median walk | max walk | >120 min | shorter by >5 min | longer by >5 min | detour-review | straight-line |
+|---|---|---|---|---|---|---|---|---|
+| Bakersfield | 3,788 | 68.2 → 61.4 min | 273 → 239 | 659 → 429 | 1,137 | 3 | 62 | 40 |
+| San Ramon | 419 | 19.1 → 15.8 min | 52 → 46 | 0 → 0 | 65 | 1 | 0 | 0 |
+| Contra Costa | 2,697 | 61.3 → 51.9 min | 352 → 268 | 660 → 457 | 1,234 | 11 | 34 | 20 |
+
+Walking time carries zero weight in every shipped model, so `06_audit_rebuild.py`
+reports max rank change 0 and identical scores in all three cities. The few cells
+that got longer are fresh OpenStreetMap edits between the September 6 and 9 downloads.
+
+**App (all three cities).** Plain-language pass and a numbered hierarchy in Explore
+(1 What matters most · 2 Color the map by · 3 Places to cool off, with the walking-
+time overlay moved under the places it measures), bigger section titles, a city
+dropdown in the corner of the start screen and header (chip row and "Compare local
+priorities" line removed), °F/mi default, session persistence (weights and layer
+survive a reload; home keeps them; a new tab starts clean), a Reset map button,
+collapsible Priority areas, per-row ▲▼ movement chips and a "ranking updated" line
+whenever the mix is not the recommended one, popover cards on every "i" button
+with a link to the guide topic, simpler How-to-use steps with the area size in the
+units in force, and plain start-screen stats (avg. tree cover is population-weighted
+over aerial-assessed cells). Guide topics for walking access, presets and using the
+map updated. `tests/ui-contract.cjs` now checks every info button has a card and
+every card a guide topic. Verified in the browser at desktop and 375 px widths.

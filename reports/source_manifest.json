@@ -17,9 +17,9 @@
     "acs_sanramon.csv": "bc5dfd8e771c355ce0f9d0252aef36cf537b17b3a89ad9257b026908ded33f43",
     "census_sanramon.csv": "fececc0776f1695f2d78bc0ff4fb516454cfe332449a64a4a3ac9be5859fcbf1",
     "canopy_sanramon.csv": "c438dc80fc9e638a218cfdc4051103723e86904143fd30ea251b4dc2198ae1cf",
-    "sanramon.geojson": "044745b81c616c847da87ffa7d7b87277405cbd84a85cfdaef8879fe0620c53d",
+    "sanramon.geojson": "1cfc8360dce1657318aaa06dbdea4011417bc0e0c3f526be9ffd170d3f128df5",
     "centers_sanramon.geojson": "93cb2d672bfecf350a006edbd91c859a35600b9e46bbdff814717ae2c9c720ad",
-    "overlays_sanramon.csv": "5b5071490f98330d69bfe092d9cd2733e486aaf4269a619b206a33934fd06944",
+    "overlays_sanramon.csv": "05a2e1f54eeb54103193f7d80a191d2a1cfe5f12af95e77ccb1ecbb130dff806",
     "cooling_directory_sanramon.json": "dd3462f0638b1c17221a9a6fece10ea227e36a87804997019fec612b2d65c632"
   }
 }

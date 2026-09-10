@@ -78,4 +78,12 @@ const directory=fs.readFileSync('app/cooling.html','utf8');for(const m of direct
   ex.old={...header,export_schema:0};assert.equal(vm.runInContext('loadScenario(old).ok',ex),false);
   assert.equal(vm.runInContext('plantingShares.get(cellP.id)',ex),50);
   console.log('PASS: scenario export builder, CSV shape, and reload acceptance/refusal.');
+  // UX round 2: every info button has a popover card and every card points at a real guide topic.
+  const tips=vm.runInContext('Object.keys(TIPS)',ex);
+  for(const k of tips)assert(ids.has(k),'popover without guide topic '+k);
+  for(const m of html.matchAll(/class="info-link" href="guide\.html#([a-z0-9-]+)"/g))assert(tips.includes(m[1]),'info button without popover '+m[1]);
+  for(const k of ['lst','green','veg','pop','pct65','ac','access'])assert(tips.includes(k),'metric without popover '+k);
+  for(const id of ['city-pick','city-nav','map-reset','rank-toggle','rank-change','coach-area','tg-access'])assert(html.includes(`id="${id}"`),'missing control '+id);
+  assert(html.includes("let UNITS='imp'"));assert(!html.includes('sw-hint'));
+  console.log('PASS: popover coverage, guide links and wayfinding controls.');
 }
