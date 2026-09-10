@@ -1,5 +1,11 @@
 # CoolEquity
 
+> **Legacy build (Los Angeles, `master`).** This branch is kept as originally published: satellite
+> greenness stands in for tree cover, walking time is a straight-line estimate, A/C is modelled
+> from income, and there is no data & methods guide or scenario export. The current method lives
+> on the `contra-costa` (reference), `bakersfield` and `san-ramon` branches; start at the site
+> chooser <https://advikar.github.io/coolequity/>. Noted September 10, 2026.
+
 **Which neighborhoods should a city cool first?** A heat-equity engine that scores
 every ~0.8 km² hex in a city on satellite heat, tree canopy, population, age and
 walking distance to relief — then prices the intervention. Shown here on Los
