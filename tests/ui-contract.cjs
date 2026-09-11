@@ -70,7 +70,7 @@ const directory=fs.readFileSync('app/cooling.html','utf8');for(const m of direct
   if(cell.properties.scenario_ok){assert.equal(rec.planting_share,50);assert(rec.trees>=0);assert.equal(rec.cost_usd,rec.trees*500);}
   ex.recs=res.slice(0,5).map(f=>vm.runInContext('cellRecord',ex)(f.properties));ex.header=header;
   const csv=vm.runInContext('toCsv(recs,header)',ex).split('\r\n').filter(Boolean);
-  assert.equal(csv.length,6);const cols=csv[0].split(',');assert(cols.includes('w_green')&&cols.includes('dataset_sha256'));
+  assert.equal(csv.length,6);const cols=csv[0].split(',');assert(cols.includes('weight_fewer_trees')&&cols.includes('dataset_sha256'));
   for(const line of csv.slice(1))assert.equal(line.split(',').length,cols.length,'CSV column count');
   ex.doc={...header,kind:'ranked-list',cells:ex.recs};
   assert.equal(vm.runInContext('loadScenario(doc).ok',ex),true);
@@ -83,7 +83,7 @@ const directory=fs.readFileSync('app/cooling.html','utf8');for(const m of direct
   for(const k of tips)assert(ids.has(k),'popover without guide topic '+k);
   for(const m of html.matchAll(/class="info-link" href="guide\.html#([a-z0-9-]+)"/g))assert(tips.includes(m[1]),'info button without popover '+m[1]);
   for(const k of ['lst','green','veg','pop','pct65','ac','access'])assert(tips.includes(k),'metric without popover '+k);
-  for(const id of ['city-pick','city-nav','map-reset','rank-toggle','rank-change','coach-area','tg-access'])assert(html.includes(`id="${id}"`),'missing control '+id);
+  for(const id of ['city-pick','city-nav','map-reset','rankwrap','sec-export','leave','legend','rank-change','coach-area','tg-access'])assert(html.includes(`id="${id}"`),'missing control '+id);
   assert(html.includes("let UNITS='imp'"));assert(!html.includes('sw-hint'));
   console.log('PASS: popover coverage, guide links and wayfinding controls.');
 }
