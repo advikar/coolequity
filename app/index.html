@@ -786,7 +786,7 @@
           <span id="w-dnote" hidden></span>
         </button>
         <div id="wadv" hidden>
-          <p class="wexp">Shares always total 100%, so raising one lowers the others. The list and map update as you drag. <a href="guide.html#weights" target="ce-guide">How this works ↗</a></p>
+          <p class="wexp">Each slider is a share of the ranking. The shares always add up to 100%, so raising one lowers the others. “Count people more” is separate: at 0% an area is judged on its conditions alone; the higher you set it, the more an area with many residents moves ahead of one with few. <a class="method-link" href="guide.html#weights" target="ce-guide">How this works ↗</a></p>
           <div id="w-rows"></div>
           <div class="wfoot"><span id="w-pop">weighted by population</span>
             <button id="w-reset" disabled>Reset to recommended</button></div>
@@ -1800,6 +1800,7 @@ function wireLeave(){
  * guide anchor the button already points at, so a button with no card falls
  * back to opening the guide, and the contract test checks every key exists. */
 const TIPS={
+  popweight:{t:'Count people more',d:'Decides how much the number of residents matters. At 0%, an area is judged only on its conditions, so a hot, bare area with 12 residents can rank above a slightly better one with 3,000. As you raise it, areas with more people move up the list. At 100%, an area with almost no residents scores near zero however bad its conditions. The recommended 45% makes the most-populated area count about 1.8 times the least. The line under the sliders always states the multiplier in force.'},
   weights:{t:'What matters most',d:'Choose what the ranking should reward. Presets are ready-made mixes; “Fine-tune” lets you set each share yourself. The map and the list re-rank immediately.'},
   display:{t:'Color the map by',d:'Switch what the colors show, one measure at a time. Darker always means more need. Changing the color does not change the ranking.'},
   access:{t:'Places to cool off & walking time',d:'Libraries, community centers, pools and senior centers from OpenStreetMap, and the estimated minutes on foot from each area to the nearest one along real streets and paths. Hours and air conditioning are not verified.'},
@@ -2385,7 +2386,7 @@ function buildWeights(){
     </div>`).join('')+`
     <div class="wrow">
       <div class="wtop"><span class="wsw" style="background:${POPU[7]}"></span>
-        <span class="wnm" style="--sw:${POPU[7]}">Count people more</span>
+        <span class="wnm" style="--sw:${POPU[7]}">Count people more <a class="info-link" href="guide.html#popweight" target="ce-guide" aria-label="How counting people more works">i</a></span>
         <span class="wval" id="wv-pop" style="color:${lift(POPU[7])}">–</span></div>
       <input type="range" id="ws-pop" min="0" max="100" step="1"
         style="--sl:${lift(POPU[7])}" aria-label="Count people more"/>
