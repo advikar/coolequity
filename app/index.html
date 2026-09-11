@@ -181,11 +181,20 @@
   @keyframes rankflash{from{background:#1c2a24}to{background:transparent}}
   #rank.flash{animation:rankflash .9s ease-out}
   /* Priority areas can be folded away. */
-  .rankhead{display:flex;align-items:center;gap:6px}
-  .rankbtn{flex:1;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:var(--txt);font:700 13.5px var(--sans);cursor:pointer;text-align:left}
-  .rankbtn .dchev{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;transition:transform .18s;transform:rotate(90deg)}
-  #rankwrap.closed .rankbtn .dchev{transform:none}
-  #rankwrap.closed .rank-tools,#rankwrap.closed #rank,#rankwrap.closed .rank-pages,#rankwrap.closed #list-export{display:none}
+  /* Every sidebar section folds the same way: one header row (chevron + step +
+     title + info + status), one body. Open/closed is remembered per browser. */
+  .fold{padding:0}
+  .fhead{display:flex;align-items:center;gap:6px;padding:13px 20px 13px 14px}
+  .fbtn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:var(--txt);font:700 13.5px var(--sans);cursor:pointer;text-align:left;letter-spacing:-.005em}
+  .fbtn .dchev{width:13px;height:13px;flex:none;stroke:currentColor;fill:none;stroke-width:2.4;transition:transform .18s;transform:rotate(90deg)}
+  .fold.closed .fbtn .dchev{transform:none}
+  .fbtn .step{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:7px;background:#1d2732;color:var(--accent2);font-size:11.5px;font-weight:700;flex:none}
+  .fhead .cnt,.fhead .wstate{flex:none}
+  .fbody{padding:0 20px 15px}
+  .fold.closed .fbody{display:none}
+  .fold.closed .fhead{padding-bottom:13px}
+  #rank{padding:4px 12px 10px}
+  .rank-pages{padding:8px 20px 14px}
   /* Map reset sits with the basemap switch. */
   .mapctl{display:flex;gap:6px;align-items:center}
   .mapbtn{font:600 10.5px var(--sans);color:var(--txt);background:var(--panel);border:1px solid var(--edge2);border-radius:8px;padding:6px 10px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);white-space:nowrap}
@@ -276,9 +285,13 @@
   .bd td.p{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt);font-weight:650;padding-left:10px;width:44px}
   .bd tr.sum td{border-top:1px solid var(--edge);padding-top:6px;color:var(--txt)}
   .bd .eq{font-size:10px;color:var(--muted2);margin-top:8px;line-height:1.5;font-family:var(--mono)}
+  /* The colour scale sits on the map it describes, bottom-left, always visible. */
+  #legend{position:absolute;left:14px;bottom:26px;z-index:5;width:232px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:11px;padding:10px 12px 9px}
+  #legend .lbl{font-size:12px;margin:0 0 6px}
   .legend .bar{height:12px;border-radius:3px;margin:2px 0 6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
   .legend .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-  .legend .cap{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+  .legend .cap{font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  #legend .method-link{font-size:11px;margin-top:6px}
   /* The direction of the ramp is the single thing a reader gets wrong on a
      choropleth, so it is stated in words under the bar, on the correct side. */
   .legend .dir{display:flex;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
@@ -422,8 +435,20 @@
   #detail:not(.show){visibility:hidden}
   #detail .x,#coach .cx{background:none;border:0;color:var(--txt);min-width:32px;min-height:32px;font-size:22px;cursor:pointer}
   .roi-note,.roi-feas,.cap{font-size:12px;line-height:1.6}
-  .export{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 20px 6px;padding-top:12px;border-top:1px solid var(--edge)}
-  .roi .export{margin:14px 0 0}
+  .export{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0}
+  .roi .export{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--edge)}
+  .export .lbl{flex-basis:100%;margin:0 0 6px;font-size:12.5px}
+  .export .hint.flash{animation:rankflash 1.2s ease-out}
+  /* Save-before-leaving prompt */
+  #leave{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:rgba(5,8,12,.62);backdrop-filter:blur(3px)}
+  #leave[hidden]{display:none}
+  .leave-card{width:min(420px,calc(100% - 32px));background:#0d1219;border:1px solid var(--edge2);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+  .leave-card h3{margin:0 0 6px;font-size:16px}
+  .leave-card p{margin:0 0 16px;font-size:12.5px;color:var(--muted);line-height:1.55}
+  .leave-card .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+  .leave-card button{font:600 12px var(--sans);border-radius:8px;padding:9px 13px;cursor:pointer;border:1px solid #3e4d5e;background:#1b2733;color:var(--txt)}
+  .leave-card button.primary{background:linear-gradient(135deg,#ffb703,#ff7a45);color:#0b0f14;border:0}
+  .leave-card button.quiet{background:none;border-color:transparent;color:var(--muted)}
   .export .lbl{flex-basis:100%;margin:0 0 6px;font-size:12.5px}
   #coach h4{cursor:move;user-select:none;-webkit-user-select:none;touch-action:none;padding-right:28px;border-radius:6px}
   #coach h4:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -442,14 +467,15 @@
     #app{display:flex;flex-direction:column;height:100dvh}
     #panel{width:100%;height:48%;flex:none}
     #panel .brand{padding:10px 14px}
-    #panel .brand p,#takeaway-sec,#legend-cap{display:none}
-    .legend{padding-top:10px;padding-bottom:10px}
+    #panel .brand p,#takeaway-sec,#legend-cap,#legend .method-link{display:none}
+    #legend{width:190px;left:8px;bottom:24px;padding:8px 10px}
     .brandtop #units{margin-left:auto}.helpnav{margin-top:8px}
     #intro-city{position:static;margin:14px 24px 0}
     #mapwrap{flex:1;min-height:0;width:100%}
     #detail{width:100%;height:100dvh;z-index:45}
     #chip{max-width:calc(100% - 28px);font-size:10px;white-space:normal}
     .mapctl{top:58px}
+    .fhead{padding:10px 14px 10px 10px}.fbody{padding:0 14px 12px}
     .intro-card{padding:24px;width:100%;max-height:100dvh;overflow:auto}
     .intro-card h1{font-size:34px}.istats{flex-wrap:wrap}
     #coach{top:8px;max-height:calc(100% - 16px);overflow:auto}
@@ -513,8 +539,13 @@
         <div class="takeaway" id="takeaway"></div>
       </div>
 
-      <div class="section adv-only" id="weights">
-        <p class="lbl"><span class="ltxt"><span class="step">1</span>What matters most <a class="info-link" href="guide.html#weights" target="ce-guide" aria-label="About what matters most">i</a></span> <span class="wstate" id="w-state">recommended</span></p>
+      <section class="section fold adv-only" id="weights" data-fold="weights">
+        <div class="fhead">
+          <button type="button" class="fbtn" aria-expanded="true" aria-controls="weights-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg><span class="step">1</span>What matters most</button>
+          <a class="info-link" href="guide.html#weights" target="ce-guide" aria-label="About what matters most">i</a>
+          <span class="wstate" id="w-state">recommended</span>
+        </div>
+        <div class="fbody" id="weights-body">
         <p class="hint lead">Pick a focus. The map and the list re-rank right away.</p>
         <div class="presets" id="presets"></div>
         <div class="pwhy" id="w-why"></div>
@@ -529,10 +560,15 @@
           <div class="wfoot"><span id="w-pop">weighted by population</span>
             <button id="w-reset" disabled>Reset</button></div>
         </div>
-      </div>
+        </div>
+      </section>
+      <section class="section fold adv-only" id="sec-layers" data-fold="sec-layers">
+        <div class="fhead">
+          <button type="button" class="fbtn" aria-expanded="true" aria-controls="sec-layers-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg><span class="step">2</span>Color the map by</button>
+          <a class="info-link" href="guide.html#display" target="ce-guide" aria-label="About map colors">i</a>
 
-      <div class="section adv-only">
-        <p class="lbl"><span class="ltxt"><span class="step">2</span>Color the map by <a class="info-link" href="guide.html#display" target="ce-guide" aria-label="About map colors">i</a></span></p>
+        </div>
+        <div class="fbody" id="sec-layers-body">
         <p class="hint lead">One measure at a time. Darker always means more need. The ranking does not change.</p>
         <div class="layers" id="layers">
           <button class="layer active" data-k="score"><b>Priority</b><span>overall need</span></button>
@@ -551,10 +587,15 @@
           <div class="sw"></div>
           <div><div class="tt">Redlining (1930s) <span class="tag us">US only</span></div><div class="ts">historical lending grades vs. today's heat</div></div>
         </button>
-      </div>
-
-      <div class="section adv-only">
-        <p class="lbl"><span class="ltxt"><span class="step">3</span>Places to cool off <a class="info-link" href="guide.html#access" target="ce-guide" aria-label="About places to cool off">i</a></span> <span class="cnt" id="ct-n">—</span></p>
+        </div>
+      </section>
+      <section class="section fold adv-only" id="sec-sites" data-fold="sec-sites">
+        <div class="fhead">
+          <button type="button" class="fbtn" aria-expanded="true" aria-controls="sec-sites-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg><span class="step">3</span>Places to cool off</button>
+          <a class="info-link" href="guide.html#access" target="ce-guide" aria-label="About places to cool off">i</a>
+          <span class="cnt" id="ct-n">—</span>
+        </div>
+        <div class="fbody" id="sec-sites-body">
         <p class="hint lead">Libraries, community centers, pools and senior centers on the map, and how far each area is from one on foot.</p>
         <button type="button" class="toggle" id="tg-access" data-layer="access">
           <div class="sw"></div>
@@ -574,44 +615,39 @@
           <p class="hint">Locations come from OpenStreetMap. Opening hours, fees and whether a place is an official cooling center are not verified. Filters change the dots on the map; walking estimates stay the same.</p>
           <div id="kinds"></div>
         </div>
-      </div>
-
-      <div class="section legend">
-        <p class="lbl sub" id="legend-title">Priority score</p>
-        <div class="bar" id="legend-bar"></div>
-        <div class="ends"><span id="legend-lo">low</span><span id="legend-hi">high</span></div>
-        <div class="dir" id="legend-dir">↑ more need for cooling</div>
-        <div class="holc-key" id="holc-key" style="display:none">
-          <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
-          <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
         </div>
-        <div class="cap" id="legend-cap"></div><a class="method-link" id="legend-info" href="guide.html#score" target="ce-guide">What this color scale means ↗</a>
-      </div>
-
-      <div id="rankwrap">
-        <div class="section" style="border-bottom:none;padding-bottom:4px">
-          <div class="rankhead">
-            <button type="button" class="rankbtn" id="rank-toggle" aria-expanded="true" aria-controls="rank-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>Priority areas</button>
-            <a class="info-link" href="guide.html#score" target="ce-guide" aria-label="About the ranked list">i</a>
-            <span class="cnt" id="rank-n"></span>
-          </div>
-          <div class="rank-tools">
-            <label class="rank-label" for="rank-search">Find an area</label><input id="rank-search" type="search" placeholder="Search by place name or cell number…" autocomplete="off"/>
-            <p id="rank-count" role="status"></p>
-            <p id="rank-change" hidden></p>
-          </div>
+      </section>
+      <section class="section fold" id="rankwrap" data-fold="rankwrap">
+        <div class="fhead">
+          <button type="button" class="fbtn" aria-expanded="true" aria-controls="rankwrap-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>Priority areas</button>
+          <a class="info-link" href="guide.html#score" target="ce-guide" aria-label="About the ranked list">i</a>
+          <span class="cnt" id="rank-n"></span>
         </div>
-        <div id="rank"></div><div class="rank-pages"><button id="rank-prev" type="button">Previous</button><button id="rank-next" type="button">Next 25</button></div>
-        <div class="export" id="list-export" aria-label="Export or load a scenario">
-          <p class="lbl">Export &amp; share <a class="info-link" href="guide.html#export" target="ce-guide" aria-label="About exporting and loading scenarios">i</a></p>
-          <button type="button" id="exp-list-csv">Export ranked list (CSV)</button>
-          <button type="button" id="exp-list-json">Scenario (JSON)</button>
-          <button type="button" id="exp-load">Load scenario…</button>
+        <div class="fbody" id="rankwrap-body" style="padding:0">
+          <div class="rank-tools" style="padding:0 20px">
+          <label class="rank-label" for="rank-search">Find an area</label><input id="rank-search" type="search" placeholder="Search by place name or cell number…" autocomplete="off"/>
+          <p id="rank-count" role="status"></p>
+          <p id="rank-change" hidden></p>
+          </div>
+          <div id="rank"></div><div class="rank-pages"><button id="rank-prev" type="button">Previous</button><button id="rank-next" type="button">Next 25</button></div>
+        </div>
+      </section>
+      <section class="section fold " id="sec-export" data-fold="sec-export">
+        <div class="fhead">
+          <button type="button" class="fbtn" aria-expanded="true" aria-controls="sec-export-body"><svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>Export &amp; share</button>
+          <a class="info-link" href="guide.html#export" target="ce-guide" aria-label="About saving and sharing scenarios">i</a>
+
+        </div>
+        <div class="fbody" id="sec-export-body">
+        <div class="export" id="list-export" aria-label="Save, share or open a scenario">
+          <button type="button" id="exp-list-json">Save scenario (JSON)</button>
+          <button type="button" id="exp-list-csv">Spreadsheet (CSV)</button>
+          <button type="button" id="exp-load">Open a saved scenario…</button>
           <input type="file" id="exp-file" accept="application/json,.json" hidden>
-          <p class="hint" id="exp-status" role="status">Files carry the weights in force, planting shares and the data version, so a colleague can reload the same view.</p>
+          <p class="hint" id="exp-status" role="status">A scenario file reopens this exact view: your mix of priorities, planting shares and the selected area. The spreadsheet lists every ranked area with plain column names. <a href="guide.html#export-fields" target="ce-guide">Column key ↗</a></p>
         </div>
-      </div>
-
+        </div>
+      </section>
       <div class="foot"><b id="foot-scale" style="color:var(--muted)"></b>
         <a class="method-link" href="guide.html#geography" target="ce-guide">About these cells &amp; sources ↗</a></div>
     </div>
@@ -622,6 +658,17 @@
     <!-- Placeholders, not numbers: boot() fills these from the data. A hardcoded
          count here would keep reading as true on the one screen where it isn't —
          when the data failed to load. -->
+    <div class="legend" id="legend">
+        <p class="lbl sub" id="legend-title">Priority score</p>
+        <div class="bar" id="legend-bar"></div>
+        <div class="ends"><span id="legend-lo">low</span><span id="legend-hi">high</span></div>
+        <div class="dir" id="legend-dir">↑ more need for cooling</div>
+        <div class="holc-key" id="holc-key" style="display:none">
+          <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
+          <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
+        </div>
+        <div class="cap" id="legend-cap"></div><a class="method-link" id="legend-info" href="guide.html#score" target="ce-guide">What this color scale means ↗</a>
+    </div>
     <div id="chip" class="float">Bakersfield · <b id="chip-n">loading…</b> · <b id="chip-layer">Heat &amp; canopy priority</b></div>
     <div class="mapctl" id="mapctl"><button type="button" class="mapbtn" id="map-reset" title="Zoom out and go back to the default view">⟲ Reset map</button><div class="seg" id="basemap" role="group" aria-label="Basemap" hidden>
       <button data-b="map" class="on" type="button">Map</button><button data-b="sat" type="button">Satellite</button>
@@ -638,6 +685,13 @@
     </div>
   </div>
 
+  <div id="leave" hidden role="dialog" aria-modal="true" aria-labelledby="leave-h">
+    <div class="leave-card">
+      <h3 id="leave-h">Save your scenario before leaving?</h3>
+      <p id="leave-p">You changed the priorities or set planting shares. A scenario file lets you or a colleague reopen this exact view later.</p>
+      <div class="acts"><button type="button" class="quiet" id="leave-stay">Stay</button><button type="button" id="leave-go">Leave without saving</button><button type="button" class="primary" id="leave-save">Save scenario &amp; leave</button></div>
+    </div>
+  </div>
   <aside id="detail" inert aria-label="Selected area">
     <div class="dhead">
       <div class="badge" id="d-badge">1</div>
@@ -671,9 +725,9 @@
         <a class="method-link" href="guide.html#cost" target="ce-guide">Costs, assumptions &amp; limits ↗</a>
         <div class="export" id="d-export" aria-label="Export this area">
           <p class="lbl">Export this area <a class="info-link" href="guide.html#export-area" target="ce-guide" aria-label="About exporting a selected area">i</a></p>
-          <button type="button" id="exp-cell-json">Export this area (JSON)</button>
-          <button type="button" id="exp-cell-csv">CSV</button>
-          <p class="hint">Its metrics and sources, the weights in force, this planting scenario and the data version.</p>
+          <button type="button" id="exp-cell-json">Save this area (JSON)</button>
+          <button type="button" id="exp-cell-csv">Spreadsheet row (CSV)</button>
+          <p class="hint" id="exp-cell-status">Its numbers and sources, the weights in force, this planting scenario and the data version. <a href="guide.html#export-fields" target="ce-guide">Column key ↗</a></p>
         </div>
       </div>
     </div>
@@ -1147,40 +1201,95 @@ function cellRecord(p){
     planting_share:scn?scn.share:null, trees:scn?scn.trees:null, canopy_gain_points:scn?scn.canopy_gain_points:null,
     cost_usd:scn?scn.cost_usd:null, cooling_c:scn?scn.cooling_c:null, future_canopy_pct:scn?scn.future_canopy_pct:null};
 }
+/** Plain column names for people, internal keys for the reload path. The JSON
+ *  keeps the internal keys (loadScenario reads them) and carries this key. */
+const FIELD_KEY={
+  id:['cell_id','Stable number of the hexagon area'],
+  name:['area_name','Nearest mapped place name'],
+  place:['area_type','res = residents ranked; activity = developed, no residents; empty = undeveloped'],
+  rank:['rank','Rank under the priorities in this file (1 = most need)'],
+  score:['priority_score_0_100','Priority score under these priorities, relative within the study area'],
+  rank_default:['rank_recommended_mix','Rank under the recommended mix shipped with the data'],
+  score_default:['score_recommended_mix','Score under the recommended mix'],
+  lst_c:['surface_heat_c','Summer land-surface temperature, °C (satellite)'],
+  canopy_pct:['tree_cover_pct','Tree cover, % of assessed land (or greenness index where tree_cover_source_type = ndvi)'],
+  green_src:['tree_cover_source_type','canopy = aerial assessment; ndvi = satellite greenness stand-in'],
+  canopy_source:['tree_cover_dataset','usfs-2022 aerial classification or chm-legacy height model'],
+  canopy_year:['tree_cover_year','Year of the tree-cover dataset'],
+  coverage_frac:['tree_cover_assessed_fraction','Share of the area the aerial assessment covers (0–1)'],
+  canopy_quality:['tree_cover_quality','full, partial or coverage-unknown'],
+  canopy_m2:['tree_cover_m2','Assessed tree crown area, m²'],
+  assessed_m2:['assessed_area_m2','Land the assessment covers, m²'],
+  pop:['residents','Estimated residents (ACS, allocated into the area)'],
+  pct65:['residents_65_plus_pct','Estimated share of residents aged 65+, %'],
+  ac_pct:['homes_with_ac_pct','Estimated share of homes with air conditioning, %'],
+  ac_src:['ac_source','lace = Census LACE; lace-pop = population-weighted LACE; income-model = fallback estimate'],
+  ac_coverage:['ac_coverage_fraction','Share of homes with a LACE estimate (0–1)'],
+  acs_year:['census_acs_year','ACS five-year vintage'],
+  access_min:['walk_to_cooling_min','Estimated walking minutes to the nearest mapped cool place'],
+  access_km:['walk_to_cooling_km','Estimated walking distance, km'],
+  access_quality:['walk_quality_flag','network-estimate, approach-review (>100 m off-network approach) or detour-review (route far longer than the straight line)'],
+  access_snap_m:['walk_network_connection_m','Straight-line metres from the area centre to the walking network'],
+  area_m2:['area_m2','Area of the hexagon, m²'],
+  street_m:['plantable_street_m','Mapped street centreline available for planting, m'],
+  scenario_ok:['planting_scenario_available','true when mapped street capacity exists'],
+  canopy_baseline_ok:['tree_cover_baseline_complete','true when the aerial assessment covers ≥99% of the area'],
+  land:['land_cover','Dominant land cover (ESA WorldCover) for undeveloped areas'],
+  holc:['redlining_grade','1930s HOLC grade A–D where a map exists'],
+  planting_share:['planting_share_pct','Share of street capacity planted in this scenario, %'],
+  trees:['scenario_trees','Trees in this scenario'],
+  canopy_gain_points:['scenario_tree_cover_gain_points','Added tree cover at maturity, percentage points'],
+  cost_usd:['scenario_cost_usd','Indicative cost at $500 per tree'],
+  cooling_c:['scenario_air_cooling_c','Illustrative summer air cooling at maturity, °C'],
+  future_canopy_pct:['scenario_future_tree_cover_pct','Tree cover at maturity, % (only when the baseline is complete)'],
+  city:['city','City slug'],exported_at:['exported_at','Export time (ISO 8601)'],dataset_sha256:['dataset_sha256','Fingerprint of the data file'],
+  dataset_version:['dataset_version','Data version tag'],dataset_acs_year:['dataset_acs_year','ACS vintage of the data file'],preset:['preset','Preset in force, or custom'],
+  population_weight:['population_weight','How strongly population counts (0–1)'],
+  w_heat:['weight_hotter_ground','Share of the ranking given to hotter ground'],w_green:['weight_fewer_trees','Share given to fewer trees'],
+  w_ac:['weight_homes_without_ac','Share given to homes without A/C'],w_age65:['weight_older_residents','Share given to older residents'],
+  w_access:['weight_far_from_cooling','Share given to distance from cooling'],
+};
+const csvName=k=>(FIELD_KEY[k]||[k])[0];
 function csvCell(v){if(v==null)return '';const t=typeof v==='boolean'?(v?'true':'false'):String(v);return /[",\n\r]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
 /** CSV: one row per cell; the scenario header is repeated as trailing columns
  *  so a row can never be separated from the weights that produced its rank. */
 function toCsv(records,header){
   const hcols={city:header.city_slug, exported_at:header.exported_at, dataset_sha256:header.dataset.sha256, dataset_version:header.dataset.version_tag,
-    acs_year:header.dataset.acs_year, preset:header.preset||'custom', population_weight:header.population_weight,
+    dataset_acs_year:header.dataset.acs_year, preset:header.preset||'custom', population_weight:header.population_weight,
     ...Object.fromEntries(Object.entries(header.weights).map(([k,v])=>['w_'+k,v]))};
   const cols=[...EXPORT_FIELDS,...Object.keys(hcols)];
-  const lines=[cols.join(',')];
+  const lines=[cols.map(csvName).join(',')];
   for(const rec of records)lines.push(cols.map(c=>csvCell(c in rec?rec[c]:hcols[c])).join(','));
   return lines.join('\r\n')+'\r\n';
 }
 function download(name,text,type){
   const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';document.body.appendChild(a);a.click();
+  setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},4000);   // keep the anchor alive until the browser has taken the file
+  return name;
 }
 const stamp=()=>new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-function exportStatus(msg,warn){const el=document.getElementById('exp-status');if(!el)return;el.textContent=msg;el.classList.toggle('warn',!!warn);}
+function exportStatus(msg,warn,id){const el=document.getElementById(id||'exp-status');if(!el)return;el.textContent=msg;el.classList.toggle('warn',!!warn);
+  el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
 function exportCell(kind){
   if(selId==null)return;
   const f=HEX.features.find(x=>x.properties.id===selId);if(!f)return;
   const header=exportHeader(), rec=cellRecord(f.properties);
   const base=`coolequity-${CITY_SLUG}-area-${rec.id}-${stamp()}`;
-  if(kind==='csv')download(base+'.csv',toCsv([rec],header),'text/csv');
-  else download(base+'.json',JSON.stringify({...header,kind:'area',selected:rec},null,1),'application/json');
+  try{
+    if(kind==='csv'){download(base+'.csv',toCsv([rec],header),'text/csv');exportStatus(`Saved ${base}.csv to your downloads: one spreadsheet row for ${rec.name}.`,false,'exp-cell-status');}
+    else{download(base+'.json',JSON.stringify({...header,field_key:FIELD_KEY,kind:'area',selected:rec},null,1),'application/json');exportStatus(`Saved ${base}.json to your downloads. Open it later with “Open a saved scenario…” to return to this area with these priorities.`,false,'exp-cell-status');}
+  }catch(e){exportStatus('Your browser blocked the download. Allow downloads for this site and try again.',true,'exp-cell-status');}
 }
 function exportList(kind){
   const header=exportHeader();
   const recs=LIVE.order.map(f=>cellRecord(f.properties));
   const base=`coolequity-${CITY_SLUG}-ranked-${stamp()}`;
-  if(kind==='csv')download(base+'.csv',toCsv(recs,header),'text/csv');
-  else download(base+'.json',JSON.stringify({...header,kind:'ranked-list',selected_id:selId,cells:recs},null,1),'application/json');
-  exportStatus(`Exported ${recs.length.toLocaleString()} ranked areas with the weights in force.`);
+  try{
+    if(kind==='csv'){download(base+'.csv',toCsv(recs,header),'text/csv');exportStatus(`Saved ${base}.csv to your downloads: ${recs.length.toLocaleString()} ranked areas, one row each, with the weights that produced the ranking. Column key in the guide.`);}
+    else{download(base+'.json',JSON.stringify({...header,field_key:FIELD_KEY,kind:'ranked-list',selected_id:selId,cells:recs},null,1),'application/json');exportStatus(`Saved ${base}.json to your downloads. Open it later with “Open a saved scenario…” to return to this exact view, or send it to a colleague.`);}
+    return true;
+  }catch(e){exportStatus('Your browser blocked the download. Allow downloads for this site and try again.',true);return false;}
 }
 /** Reload a JSON export. Refuses another city or export schema; warns when the
  *  data file differs (results may not reproduce); restores weights, population
@@ -1269,6 +1378,47 @@ function resetMap(){
   const rs=document.getElementById('rank-search');if(rs&&rs.value){rs.value='';rankPage=0;buildRank();}
   if(!document.getElementById('detail').inert)document.getElementById('d-close').click();
   if(map)fitData(map);
+}
+
+/* ================================================================ folding sections
+ * One behaviour for every sidebar section. State is remembered per browser so a
+ * planner who always folds "Places to cool off" finds it folded next time. */
+function wireFolds(){
+  let saved={};try{saved=JSON.parse(localStorage.getItem('ce-folds')||'{}')||{};}catch(_){}
+  document.querySelectorAll('.fold').forEach(sec=>{
+    const btn=sec.querySelector('.fbtn'),key=sec.dataset.fold;if(!btn)return;
+    const set=closed=>{sec.classList.toggle('closed',closed);btn.setAttribute('aria-expanded',!closed);};
+    set(!!saved[key]);
+    btn.onclick=()=>{const closed=!sec.classList.contains('closed');set(closed);saved[key]=closed;try{localStorage.setItem('ce-folds',JSON.stringify(saved));}catch(_){}};
+  });
+}
+
+/* ================================================================ leaving
+ * Weights and planting shares live in this tab's session, so closing the tab
+ * loses them. Offer the scenario file before the start screen or a tab close. */
+function isDirty(){return !isDefaultW()||[...plantingShares.values()].some(v=>v>0);}
+let leaving=false;
+function goHome(){
+  // Keep ?flat=1 (it is a rehearsal mode, not a destination) and drop ?go /
+  // ?data, both of which exist precisely to skip the screen we are going to.
+  // The session keeps its weights and layer: going home is not a reset.
+  leaving=true;saveSession({onMap:false});
+  const q=new URLSearchParams(location.search);
+  q.delete('go');q.delete('data');
+  location.href=location.pathname+(q.toString()?'?'+q:'');
+}
+function askBeforeLeaving(go){
+  if(!isDirty()){go();return;}
+  const box=document.getElementById('leave');if(!box){go();return;}
+  box.hidden=false;document.getElementById('leave-save').focus();
+  const close=()=>{box.hidden=true;document.getElementById('go-home').focus();};
+  document.getElementById('leave-stay').onclick=close;
+  document.getElementById('leave-go').onclick=()=>{box.hidden=true;go();};
+  document.getElementById('leave-save').onclick=()=>{if(exportList('json')){box.hidden=true;setTimeout(go,600);}};
+}
+function wireLeave(){
+  document.getElementById('leave').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();document.getElementById('leave-stay').click();}});
+  addEventListener('beforeunload',e=>{if(leaving||!ON_MAP||!isDirty())return;e.preventDefault();e.returnValue='';});
 }
 
 /* ================================================================ info popovers
@@ -1611,13 +1761,15 @@ function buildIntro(){
 
   document.getElementById('ifine').innerHTML='A planning screen, not a field survey. Tree cover is the population-weighted average where an aerial assessment exists; places to cool off are mapped, not verified. Census ACS 2024. <a href="guide.html#overview" target="ce-guide">Data &amp; methods ↗</a>';
 
-  document.getElementById('intro-go').onclick=dismissIntro;
+  // Entering from the start screen always begins in Simple; a reload of an open
+  // map keeps whichever mode was in use.
+  document.getElementById('intro-go').onclick=()=>{setMode('simple');dismissIntro();};
   document.addEventListener('keydown',e=>{
     // Not while the user is typing a city name — Enter there picks from the
     // list, and Escape closes the list, neither of which should launch the map.
     if(e.target.closest&&e.target.closest('#picker'))return;
     if(e.key==='Escape'||e.key==='Enter'){const el=document.getElementById('intro');
-      if(el&&!el.classList.contains('gone'))dismissIntro();}
+      if(el&&!el.classList.contains('gone')){setMode('simple');dismissIntro();}}
   });
   drawIntroMap();
   addEventListener('resize',drawIntroMap);
@@ -1858,18 +2010,9 @@ function setUnits(u){
 }
 
 function wireUI(){
-  document.getElementById('go-home').onclick=()=>{
-    // Keep ?flat=1 (it is a rehearsal mode, not a destination) and drop ?go /
-    // ?data, both of which exist precisely to skip the screen we are going to.
-    // The session keeps its weights and layer: going home is not a reset.
-    saveSession({onMap:false});
-    const q=new URLSearchParams(location.search);
-    q.delete('go');q.delete('data');
-    location.href=location.pathname+(q.toString()?'?'+q:'');
-  };
+  document.getElementById('go-home').onclick=()=>askBeforeLeaving(goHome);
   document.getElementById('map-reset').onclick=resetMap;
-  const rt=document.getElementById('rank-toggle'),rw=document.getElementById('rankwrap');
-  rt.onclick=()=>{const closed=rw.classList.toggle('closed');rt.setAttribute('aria-expanded',!closed);};
+  wireFolds();wireLeave();
   wireTips();
   document.getElementById('units').addEventListener('click',e=>{
     const b=e.target.closest('button');if(b)setUnits(b.dataset.u);

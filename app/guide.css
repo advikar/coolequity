@@ -9,3 +9,8 @@
 .technical>summary{padding:11px 34px 11px 12px;font-size:12px;color:#ffcc86}
 .technical>summary::after{right:12px;top:7px;font-size:19px}
 .technical>div{font-size:13px;padding:0 12px 14px;line-height:1.65}
+
+.table-wrap{overflow-x:auto;margin:12px 0}
+table.fields{border-collapse:collapse;font-size:13px;width:100%}
+table.fields th,table.fields td{text-align:left;vertical-align:top;padding:6px 10px;border-bottom:1px solid rgba(128,140,160,.25)}
+table.fields code{font-size:12px}
