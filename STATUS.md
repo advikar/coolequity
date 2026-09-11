@@ -723,3 +723,15 @@ walking bullet corrected; site chooser rewritten with current, verified figures 
 labelled a legacy build (CE-02, CE-09). Release hashes: contra-costa `833469a`, bakersfield
 `2e6281e`, san-ramon `2d788fc` served by gh-pages `9edda56`; previous gh-pages `30f7bd8` is
 the rollback (CE-10).
+
+### Legend, reset and low-signal pass — September 11, 2026 (Claude)
+
+Color scale floats on the map with an "i" popover and a minimise control (remembered per
+browser); caption text removed. "Reset zoom" refits the view; "Reset map" restores every
+original setting (recommended mix, no planting shares, Priority colors, all places, street
+basemap, nothing selected) and asks to save a scenario first when work would be lost.
+Scenario files now carry raw slider positions so a reload restores the sliders exactly, not
+only the normalised model. A low-signal note under the presets and in the ranked list says
+when the mix rests on an input that barely varies here (Bakersfield A/C: 96.5–100%), and the
+Priority legend states that it is a relative ranking, not a measurement. Verified in the
+browser on Bakersfield; contract tests 5/5 on all three branches.

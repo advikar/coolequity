@@ -172,6 +172,11 @@
   .tip a{display:inline-block;margin-top:8px;color:#ffd28c;font-weight:600;text-decoration:none;font-size:11.5px}
   .tip a:hover{text-decoration:underline;text-underline-offset:3px}
   .tip[hidden]{display:none}
+  /* Low-signal note: the mix rests on an input that barely varies here. */
+  .signal{font-size:11px;line-height:1.5;margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#221609;border:1px solid #4a3520;color:#ffd28c}
+  .signal[hidden]{display:none}
+  #legend .lrel{font-size:10px;color:var(--muted);margin-top:5px}
+  #legend .lrel[hidden]{display:none}
   /* Ranked list: how far each area moved against the recommended mix. */
   .row .mv{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:1px;font-variant-numeric:tabular-nums}
   .mv.up{color:#6ee7a8;background:#0f2019}.mv.dn{color:#ffb4a2;background:#2a1410}.mv.eq{color:var(--muted2);background:#151c25}
@@ -555,6 +560,7 @@
         <p class="hint lead">Pick a focus. The map and the list re-rank right away.</p>
         <div class="presets" id="presets"></div>
         <div class="pwhy" id="w-why"></div>
+        <p class="signal" id="w-signal" hidden></p>
         <button class="disc" id="w-disc" type="button" aria-expanded="false" aria-controls="wadv">
           <svg class="dchev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
           Fine-tune the mix yourself
@@ -633,7 +639,8 @@
           <div class="rank-tools" style="padding:0 20px">
           <label class="rank-label" for="rank-search">Find an area</label><input id="rank-search" type="search" placeholder="Search by place name or cell number…" autocomplete="off"/>
           <p id="rank-count" role="status"></p>
-          <p id="rank-change" hidden></p>
+            <p id="rank-change" hidden></p>
+          <p class="signal" id="rank-signal" hidden></p>
           </div>
           <div id="rank"></div><div class="rank-pages"><button id="rank-prev" type="button">Previous</button><button id="rank-next" type="button">Next 25</button></div>
         </div>
@@ -669,6 +676,7 @@
         <div class="bar" id="legend-bar"></div>
         <div class="ends"><span id="legend-lo">low</span><span id="legend-hi">high</span></div>
         <div class="dir" id="legend-dir">↑ more need for cooling</div>
+        <div class="lrel" id="legend-rel">Relative ranking within this area</div>
         <div class="holc-key" id="holc-key" style="display:none">
           <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
           <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
@@ -1388,13 +1396,14 @@ function saveSession(patch){
  *  nothing selected, no search, zoomed to the whole area. Asked first when
  *  priorities or planting shares would be lost (see askBeforeLeaving). */
 function resetMap(){
+  // Close the area first: re-rendering it would write its planting share back.
+  if(!document.getElementById('detail').inert)document.getElementById('d-close').click();
   plantingShares.clear();
   applyPreset('default');
   holcOn=false;accessOn=false;syncToggles();setLayer('score');
   kindOn=new Set(KIND_KEYS.filter(k=>document.querySelector(`.kind[data-k="${k}"]`)));syncKinds();
   if(document.querySelector('#basemap button.on')?.dataset.b==='sat')setBasemap('map');
   const rs=document.getElementById('rank-search');if(rs&&rs.value){rs.value='';rankPage=0;buildRank();}
-  if(!document.getElementById('detail').inert)document.getElementById('d-close').click();
   if(map)fitData(map);
 }
 /** The color scale can be tucked away; the choice is remembered per browser. */
@@ -1738,6 +1747,7 @@ function setLayer(k){
   document.getElementById('chip-layer').textContent=L.title;
   const holcKey=document.getElementById('holc-key'),bar=document.getElementById('legend-bar');
   const dir=document.getElementById('legend-dir');
+  const rel=document.getElementById('legend-rel');if(rel){rel.hidden=k!=='score';rel.textContent='Relative ranking within '+CITY_NAME+' · not a measurement';}
   const lc=document.getElementById('legend-cap');if(lc)lc.textContent=L.cap;
   document.getElementById('legend-info').href='guide.html#'+k;
   if(k==='holc'){holcKey.style.display='flex';bar.style.display='none';dir.style.display='none';
@@ -1977,6 +1987,24 @@ function matchPreset(){
   })||null;
 }
 
+/* A ranking stretches whatever spread an input has across the whole colour
+ * ramp. When the mix rests mostly on an input that barely varies here (A/C in
+ * Bakersfield: 96.5–100% across ranked areas), the order separates tiny
+ * differences and should be read as a weak signal. Spans are the scoring
+ * bounds (p2–p98) the ranking actually uses. */
+const SIGNAL_MIN={lst:3,green:8,ac:8,pct65:5,access_min:10};
+const SIGNAL_NAME={heat:'Hotter ground',green:'Fewer trees',ac:'Homes without A/C',age65:'Older residents',access:'Far from cooling'};
+function lowSignal(W){
+  for(const w of W_INPUTS){
+    if(!(W[w.k]>=0.5)||!svals[w.prop])continue;
+    const [lo,hi]=svals[w.prop],span=hi-lo;
+    if(span>=SIGNAL_MIN[w.prop])continue;
+    const f=w.prop==='lst'?fTemp:v=>v.toFixed(0)+(w.prop==='access_min'?' min':'%');
+    return `${SIGNAL_NAME[w.k]} varies little in ${CITY_NAME} (${f(lo)} to ${f(hi)} across most areas), so this ranking separates small differences. Treat the order as a weak signal.`;
+  }
+  return null;
+}
+
 /** One entry point for "the weights changed", so the map, the ranked list, the
  *  legend copy and any open detail panel can never show three different models.
  *  Fixed bug 12 was exactly this class of failure at a smaller scale. */
@@ -1991,6 +2019,8 @@ function applyWeights(){
     POPW<0.02 ? 'population ignored — every area counts equally'
   : POPW>0.98 ? 'the emptiest area scores zero whatever its need'
   : `the most-populated area counts ${(1/(1-POPW)).toFixed(1)}× the least`;
+  const sig=lowSignal(W);
+  for(const id of ['w-signal','rank-signal']){const el=document.getElementById(id);if(!el)continue;el.hidden=!sig;if(sig)el.textContent=sig;}
   const st=document.getElementById('w-state');
   const pre=matchPreset();
   st.textContent=def?'recommended':pre?pre.name.toLowerCase():'your mix';
