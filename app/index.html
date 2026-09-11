@@ -287,7 +287,13 @@
   .bd .eq{font-size:10px;color:var(--muted2);margin-top:8px;line-height:1.5;font-family:var(--mono)}
   /* The colour scale sits on the map it describes, bottom-left, always visible. */
   #legend{position:absolute;left:14px;bottom:26px;z-index:5;width:232px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:11px;padding:10px 12px 9px}
-  #legend .lbl{font-size:12px;margin:0 0 6px}
+  #legend .lbl{font-size:12px;margin:0;flex:1}
+  #legend .lhead{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+  #legend .lmin{background:none;border:0;color:var(--muted);font:700 15px/1 var(--sans);cursor:pointer;padding:0 4px;border-radius:5px}
+  #legend .lmin:hover{color:var(--txt);background:#1d2732}
+  #legend[hidden]{display:none}
+  .lshow{left:14px;bottom:26px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--edge);border-radius:9px;color:var(--txt);font:600 11px var(--sans);padding:7px 10px;cursor:pointer}
+  .lshow[hidden]{display:none}
   .legend .bar{height:12px;border-radius:3px;margin:2px 0 6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
   .legend .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
   .legend .cap{font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -467,7 +473,7 @@
     #app{display:flex;flex-direction:column;height:100dvh}
     #panel{width:100%;height:48%;flex:none}
     #panel .brand{padding:10px 14px}
-    #panel .brand p,#takeaway-sec,#legend-cap,#legend .method-link{display:none}
+    #panel .brand p,#takeaway-sec{display:none}
     #legend{width:190px;left:8px;bottom:24px;padding:8px 10px}
     .brandtop #units{margin-left:auto}.helpnav{margin-top:8px}
     #intro-city{position:static;margin:14px 24px 0}
@@ -659,7 +665,7 @@
          count here would keep reading as true on the one screen where it isn't —
          when the data failed to load. -->
     <div class="legend" id="legend">
-        <p class="lbl sub" id="legend-title">Priority score</p>
+        <div class="lhead"><p class="lbl sub" id="legend-title">Priority score</p><a class="info-link" id="legend-info" href="guide.html#score" target="ce-guide" aria-label="What this color scale means">i</a><button type="button" class="lmin" id="legend-min" title="Hide the color scale" aria-label="Hide the color scale">–</button></div>
         <div class="bar" id="legend-bar"></div>
         <div class="ends"><span id="legend-lo">low</span><span id="legend-hi">high</span></div>
         <div class="dir" id="legend-dir">↑ more need for cooling</div>
@@ -667,10 +673,10 @@
           <div style="background:#6ea966">A</div><div style="background:#6a9fb5">B</div>
           <div style="background:#c9b458">C</div><div style="background:#c0603f">D</div>
         </div>
-        <div class="cap" id="legend-cap"></div><a class="method-link" id="legend-info" href="guide.html#score" target="ce-guide">What this color scale means ↗</a>
     </div>
+    <button type="button" class="float lshow" id="legend-show" hidden title="Show the color scale">Color scale ▴</button>
     <div id="chip" class="float">San Ramon · <b id="chip-n">loading…</b> · <b id="chip-layer">Heat &amp; canopy priority</b></div>
-    <div class="mapctl" id="mapctl"><button type="button" class="mapbtn" id="map-reset" title="Zoom out and go back to the default view">⟲ Reset map</button><div class="seg" id="basemap" role="group" aria-label="Basemap" hidden>
+    <div class="mapctl" id="mapctl"><button type="button" class="mapbtn" id="map-zoom" title="Zoom back out to the whole study area">⤢ Reset zoom</button><button type="button" class="mapbtn" id="map-reset" title="Back to the map's original settings: recommended mix, Priority colors, all places shown, nothing selected">⟲ Reset map</button><div class="seg" id="basemap" role="group" aria-label="Basemap" hidden>
       <button data-b="map" class="on" type="button">Map</button><button data-b="sat" type="button">Satellite</button>
     </div></div>
     <div id="coach" hidden>
@@ -1182,6 +1188,9 @@ function exportHeader(){
       cells:HEX.features.length, ranked_cells:LIVE.order.length, norm:HEX.norm||null},
     weights:W_INPUTS.reduce((o,{k})=>(o[k]=+W[k].toFixed(4),o),{}),
     population_weight:POPW, preset:currentPresetId(), default_weights:isDefaultW(),
+    // The sliders as set (they need not sum to 100); `weights` above is the
+    // normalised model. Reloading restores the slider positions exactly.
+    weights_raw:W_INPUTS.reduce((o,{k})=>(o[k]=+(W_RAW[k]||0).toFixed(4),o),{}),
     planting_assumptions:{tree_spacing_m:TREE_SPACING_M, crown_m2_per_tree:TREE_M2, cost_per_tree_usd:COST_TREE, cooling_c_per_10_canopy_points:0.3},
     notes:EXPORT_NOTES,
   };
@@ -1303,7 +1312,8 @@ function loadScenario(doc){
   const w=doc.weights||{};
   if(!W_INPUTS.every(({k})=>typeof w[k]==='number'&&isFinite(w[k])&&w[k]>=0))return {ok:false,msg:'Scenario weights are missing or invalid. Not loaded.'};
   if(typeof doc.population_weight!=='number'||doc.population_weight<0||doc.population_weight>1)return {ok:false,msg:'Population weight is missing or invalid. Not loaded.'};
-  W_RAW=W_INPUTS.reduce((o,{k})=>(o[k]=w[k],o),{});POPW=doc.population_weight;
+  const raw=doc.weights_raw&&W_INPUTS.every(({k})=>typeof doc.weights_raw[k]==='number'&&isFinite(doc.weights_raw[k])&&doc.weights_raw[k]>=0)?doc.weights_raw:w;
+  W_RAW=W_INPUTS.reduce((o,{k})=>(o[k]=raw[k],o),{});POPW=doc.population_weight;
   W_INPUTS.forEach(x=>{const el=document.getElementById('ws-'+x.k);if(el)el.value=Math.round(W_RAW[x.k]*100);});
   const pe=document.getElementById('ws-pop');if(pe)pe.value=Math.round(POPW*100);
   plantingShares.clear();
@@ -1373,13 +1383,28 @@ function saveSession(patch){
   }catch(_){}
 }
 
-/** Back to the default view: zoomed out, Priority layer, nothing selected, no
- *  search. Weights are left alone — they have their own Reset. */
+/** Back to the map's original settings: recommended mix, no planting shares,
+ *  Priority colors, overlays off, every kind of place shown, street basemap,
+ *  nothing selected, no search, zoomed to the whole area. Asked first when
+ *  priorities or planting shares would be lost (see askBeforeLeaving). */
 function resetMap(){
+  plantingShares.clear();
+  applyPreset('default');
   holcOn=false;accessOn=false;syncToggles();setLayer('score');
+  kindOn=new Set(KIND_KEYS.filter(k=>document.querySelector(`.kind[data-k="${k}"]`)));syncKinds();
+  if(document.querySelector('#basemap button.on')?.dataset.b==='sat')setBasemap('map');
   const rs=document.getElementById('rank-search');if(rs&&rs.value){rs.value='';rankPage=0;buildRank();}
   if(!document.getElementById('detail').inert)document.getElementById('d-close').click();
   if(map)fitData(map);
+}
+/** The color scale can be tucked away; the choice is remembered per browser. */
+function wireLegend(){
+  const lg=document.getElementById('legend'),show=document.getElementById('legend-show');if(!lg||!show)return;
+  const set=min=>{lg.hidden=min;show.hidden=!min;try{localStorage.setItem('ce-legend',min?'min':'open');}catch(_){}};
+  let min=false;try{min=localStorage.getItem('ce-legend')==='min';}catch(_){}
+  set(min);
+  document.getElementById('legend-min').onclick=()=>{set(true);show.focus();};
+  show.onclick=()=>{set(false);document.getElementById('legend-min').focus();};
 }
 
 /* ================================================================ folding sections
@@ -1409,9 +1434,16 @@ function goHome(){
   q.delete('go');q.delete('data');
   location.href=location.pathname+(q.toString()?'?'+q:'');
 }
-function askBeforeLeaving(go){
+function askBeforeLeaving(go,why){
   if(!isDirty()){go();return;}
   const box=document.getElementById('leave');if(!box){go();return;}
+  const reset=why==='reset';
+  document.getElementById('leave-h').textContent=reset?'Reset the map?':'Save your scenario before leaving?';
+  document.getElementById('leave-p').textContent=reset
+    ?'This clears your mix of priorities and planting shares and returns every setting to its original state. Save a scenario file first if you want to come back to this view.'
+    :'You changed the priorities or set planting shares. A scenario file lets you or a colleague reopen this exact view later.';
+  document.getElementById('leave-go').textContent=reset?'Reset without saving':'Leave without saving';
+  document.getElementById('leave-save').textContent=reset?'Save scenario & reset':'Save scenario & leave';
   box.hidden=false;document.getElementById('leave-save').focus();
   const close=()=>{box.hidden=true;document.getElementById('go-home').focus();};
   document.getElementById('leave-stay').onclick=close;
@@ -1706,7 +1738,7 @@ function setLayer(k){
   document.getElementById('chip-layer').textContent=L.title;
   const holcKey=document.getElementById('holc-key'),bar=document.getElementById('legend-bar');
   const dir=document.getElementById('legend-dir');
-  document.getElementById('legend-cap').textContent=L.cap;
+  const lc=document.getElementById('legend-cap');if(lc)lc.textContent=L.cap;
   document.getElementById('legend-info').href='guide.html#'+k;
   if(k==='holc'){holcKey.style.display='flex';bar.style.display='none';dir.style.display='none';
     document.getElementById('legend-lo').textContent='“best”';
@@ -2013,7 +2045,9 @@ function setUnits(u){
 
 function wireUI(){
   document.getElementById('go-home').onclick=()=>askBeforeLeaving(goHome);
-  document.getElementById('map-reset').onclick=resetMap;
+  document.getElementById('map-zoom').onclick=()=>{if(map)fitData(map);};
+  document.getElementById('map-reset').onclick=()=>askBeforeLeaving(resetMap,'reset');
+  wireLegend();
   wireFolds();wireLeave();
   wireTips();
   document.getElementById('units').addEventListener('click',e=>{

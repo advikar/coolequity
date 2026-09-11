@@ -45,7 +45,7 @@ const directory=fs.readFileSync('app/cooling.html','utf8');for(const m of direct
 // carries the weights, and a reload of its own JSON is accepted while a foreign
 // city or schema is refused.
 {
-  const ex={HEX:data,LIVE:{score:new Map(),rank:new Map(),order:[]},POPW:.45,W_INPUTS:[{k:'heat'},{k:'green'},{k:'ac'},{k:'age65'},{k:'access'}],
+  const ex={HEX:data,LIVE:{score:new Map(),rank:new Map(),order:[]},POPW:.45,W_RAW:{heat:.2,green:.5,ac:.2,age65:.1,access:0},W_INPUTS:[{k:'heat'},{k:'green'},{k:'ac'},{k:'age65'},{k:'access'}],
     CITY_NAV:[{slug:'x',name:'X'}],THIS_CITY:'x',CITY_SLUG:'x',DATA_URL:'../data/x.geojson?v=t',TREE_SPACING_M:10,TREE_M2:40,COST_TREE:500,
     nameOf:p=>p.name,areaOf:p=>p.area_m2,isDefaultW:()=>true,matchPreset:()=>({id:'default'}),selId:null,
     document:{getElementById:()=>null,createElement:()=>({click(){},remove(){},style:{}}),body:{appendChild(){}}},
@@ -83,7 +83,7 @@ const directory=fs.readFileSync('app/cooling.html','utf8');for(const m of direct
   for(const k of tips)assert(ids.has(k),'popover without guide topic '+k);
   for(const m of html.matchAll(/class="info-link" href="guide\.html#([a-z0-9-]+)"/g))assert(tips.includes(m[1]),'info button without popover '+m[1]);
   for(const k of ['lst','green','veg','pop','pct65','ac','access'])assert(tips.includes(k),'metric without popover '+k);
-  for(const id of ['city-pick','city-nav','map-reset','rankwrap','sec-export','leave','legend','rank-change','coach-area','tg-access'])assert(html.includes(`id="${id}"`),'missing control '+id);
+  for(const id of ['city-pick','city-nav','map-reset','map-zoom','legend-min','legend-show','rankwrap','sec-export','leave','legend','rank-change','coach-area','tg-access'])assert(html.includes(`id="${id}"`),'missing control '+id);
   assert(html.includes("let UNITS='imp'"));assert(!html.includes('sw-hint'));
   console.log('PASS: popover coverage, guide links and wayfinding controls.');
 }
