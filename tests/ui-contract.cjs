@@ -6,7 +6,7 @@ for(const m of html.replace(/<!--[\s\S]*?-->/g,'').matchAll(/<script(?:\s[^>]*)?
 new vm.Script(fs.readFileSync('app/guide.js','utf8'));
 const ids=new Set([...guide.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
 for(const m of html.matchAll(/guide\.html#([a-z0-9-]+)["']/g))assert(ids.has(m[1]),'Missing guide anchor '+m[1]);
-for(const id of ['lst','green','pop','pct65','ac','access','score','holc','planting','cost','weights','export','export-area'])assert(ids.has(id));
+for(const id of ['lst','green','pop','pct65','ac','access','score','holc','planting','cost','weights','export','export-area','popweight'])assert(ids.has(id));
 const data=JSON.parse(fs.readFileSync('data/bakersfield.geojson','utf8'));
 const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',value:25,disabled:false,setAttribute(){}});return nodes.get(id);};
 const ctx={document:{getElementById:node},TREE_SPACING_M:10,TREE_M2:40,COST_TREE:500,areaOf:p=>p.area_m2,fInt:n=>Math.round(n).toLocaleString('en-US'),fTempD:v=>v.toFixed(2)+' C'};
