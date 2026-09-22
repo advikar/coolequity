@@ -938,3 +938,47 @@ Still open from the audit: a real-phone session, printed briefing pagination, an
 pass, a non-GitHub contact route, a free-text custom cost scope, and serializing layer/filter/
 sort state in scenario files. This checkout (`coolequity`, per-city branches) is not the
 deployed source and was not changed beyond this note.
+
+### September 21, 2026 — post-fix accuracy and UI re-audit
+
+Audited the newer deployed `advikar/coolequity-app` repository at `86201f6` and live
+coolequity.org across all five study areas. All 8,435 default ranks, 43,440 scenario
+cases and 45 Python tests pass; the complete suite fails because the latest committed
+analytics setting is `YOUR-CODE`. Remote CI confirms failure; the preceding release
+remains live. Downloaded 56 live assets successfully and matched the city assets to
+source (accounting for analytics injection). Found double age smoothing in the rank
+sensitivity pipeline, missing cost/survival/imported-share save protection, light-mode
+contrast and modal-focus defects, stale export dictionaries and comparison wording.
+Phone emulation at an observed 390×844 works but is crowded. Chrome briefing generated;
+printed pagination remains unverified after print-preview automation stalled.
+
+Detailed findings, proposed copy/layout and acceptance checks:
+`reports/REVIEW_READINESS_REAUDIT_2026-09-21.md`; machine-readable observations in the
+companion evidence JSON. No product, pipeline, data or city branches changed; no deploy.
+
+### September 22, 2026 — re-audit fixes deployed
+
+Every finding in `reports/REVIEW_READINESS_REAUDIT_2026-09-21.md` was re-verified against
+source and live before editing (the double smoothing was reproduced on all five datasets;
+the 1.64:1 contrast recomputed; the missing focus loop and save gaps confirmed in code).
+Fixed and deployed in `advikar/coolequity-app` commit `4c3b229` (CI, deploy and a
+release-stamped smoke check passed; the live chooser now carries `ce-release 4c3b229`):
+
+- Finding 1: `site/goatcounter.txt` is `coolequity` (the account exists now); the smoke
+  job fails unless the live chooser carries the deployed commit.
+- Finding 2: `05b_stability.py` starts from the raw census age share and smooths once,
+  aborting if that does not reproduce the published share; all five builds re-run and
+  every guide's stability numbers refreshed; `dataVersion` `20260921-stability`.
+  Point ranks unchanged.
+- Finding 3: save warning compares a signature (weights, population weight, shares the
+  user moved or a file supplied, cost, survival) against the last saved/loaded state.
+- Findings 4–5: light-mode `.why` at 6.4:1 and dark ink on field-status pills; both
+  modals keep Tab inside and return focus to the opening control.
+- Finding 6: guide column keys are generated from the exporter's `FIELD_KEY`
+  (`scripts/sync_column_key.py`, checked by the suite).
+- Finding 7, 9, 10: compare-table band labelled "(rec. mix)"; briefing lede names the
+  inputs that carry weight and no page count is promised; analytics tag skipped under
+  `?flat=1`; privacy sentence states what GoatCounter records and links its policy.
+
+Left open: finding 8 (layout rearrangement) and the wording table (rename presets, score
+terms), a physical-phone pass, and printed-PDF checks with 0/1/6 shortlisted areas.
