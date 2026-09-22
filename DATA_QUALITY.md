@@ -402,3 +402,7 @@ census-tract **air** temperature (degree-hours/day, 2 m, urban-minus-upwind-rura
 ### Validation — September 8, 2026
 
 Current Contra Costa export supports 1,832 residential conditional scenarios; 788 residential cells qualify for displaying a canopy baseline and future total. Removing the two county-identified libraries without A/C and rebuilding access changed 21 cells’ walking estimates. Seven Python tests and 11,436 scenario checks passed. These checks verify implementation consistency, not field accuracy or planting feasibility. County source check date remains September 7, 2026.
+
+### Live release verified — September 8, 2026
+
+The public Contra Costa site now serves source commit `96963b1` through generated gh-pages build `7c8e415`. Live map, guide HTML/CSS/JS, cooling directory, hex data and cooling-site data returned HTTP 200 and matched the committed source byte-for-byte. Browser verification confirmed the updated landing page and loaded statistics. This supersedes earlier unpublished-status notes for that source revision. No product behavior or other city source branch changed during this verification; no repeat deployment was needed.

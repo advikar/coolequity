@@ -1,0 +1,95 @@
+{
+  "contracosta": {
+    "app_sha256": "426a6a6cfb6eab6ee3c9a3b8655418d19e374b487003fa597a02bfa458382d34",
+    "data_sha256": "1550a1d410a0779826fb78d775a987fb52a1a30f4c4e5b55789342711a615ac0",
+    "ranked": 2697,
+    "population": 1164921,
+    "proxy_cells": 5,
+    "full_aerial_baseline": 794,
+    "canopy_quality": {
+      "lidar": 126,
+      "partial": 442,
+      "calibrated": 1330,
+      "full": 794,
+      "below-threshold": 5
+    },
+    "walk_quality": {
+      "approach-review": 2238,
+      "network-estimate": 425,
+      "detour-review": 34
+    }
+  },
+  "bakersfield": {
+    "app_sha256": "426a6a6cfb6eab6ee3c9a3b8655418d19e374b487003fa597a02bfa458382d34",
+    "data_sha256": "fca0ad0678e7395337c2ba921a8f76b43419ce5f8272ee99b9fdf5e3ae7201a5",
+    "ranked": 3767,
+    "population": 410446,
+    "proxy_cells": 62,
+    "full_aerial_baseline": 1959,
+    "canopy_quality": {
+      "coverage-unknown": 1459,
+      "below-threshold": 62,
+      "partial": 287,
+      "full": 1959
+    },
+    "walk_quality": {
+      "approach-review": 2889,
+      "network-estimate": 816,
+      "detour-review": 62
+    }
+  },
+  "sanramon": {
+    "app_sha256": "426a6a6cfb6eab6ee3c9a3b8655418d19e374b487003fa597a02bfa458382d34",
+    "data_sha256": "225e55173858c8e249ddfd3fa5c727afb6a3afa8c4ada4970eeffc4398ccebaa",
+    "ranked": 419,
+    "population": 85444,
+    "proxy_cells": 0,
+    "full_aerial_baseline": 356,
+    "canopy_quality": {
+      "partial": 53,
+      "full": 356,
+      "coverage-unknown": 2,
+      "lidar": 8
+    },
+    "walk_quality": {
+      "approach-review": 239,
+      "network-estimate": 180
+    }
+  },
+  "westcc": {
+    "app_sha256": "426a6a6cfb6eab6ee3c9a3b8655418d19e374b487003fa597a02bfa458382d34",
+    "data_sha256": "8204648ced70b39622730dfffeca335931b3c877bb58357666ed8ac934bb1acc",
+    "ranked": 982,
+    "population": 271620,
+    "proxy_cells": 1,
+    "full_aerial_baseline": 818,
+    "canopy_quality": {
+      "lidar": 7,
+      "partial": 149,
+      "full": 825,
+      "below-threshold": 1
+    },
+    "walk_quality": {
+      "network-estimate": 460,
+      "approach-review": 516,
+      "detour-review": 6
+    }
+  },
+  "pittsburg": {
+    "app_sha256": "426a6a6cfb6eab6ee3c9a3b8655418d19e374b487003fa597a02bfa458382d34",
+    "data_sha256": "a2c8d4e5e2ea3925520d6e11ff864c34ce3f782e44f5fe39201fca0e83dff00b",
+    "ranked": 570,
+    "population": 89581,
+    "proxy_cells": 0,
+    "full_aerial_baseline": 398,
+    "canopy_quality": {
+      "partial": 104,
+      "full": 450,
+      "lidar": 16
+    },
+    "walk_quality": {
+      "approach-review": 395,
+      "network-estimate": 175
+    }
+  }
+}

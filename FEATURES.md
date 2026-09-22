@@ -190,3 +190,7 @@ Two of this session's own edits shipped syntax errors that made the **SR and LA 
 ### Validation — September 8, 2026
 
 Contra Costa branch only: seven Python tests and 11,436 scenario checks passed, including partial-baseline behavior and capacity bounds. Browser checks confirmed the conditional scenario and searchable 17-location county directory; the final directory layout was visually inspected. Changes remain local and unpublished.
+
+### Live release verified — September 8, 2026
+
+The public Contra Costa site now serves source commit `96963b1` through generated gh-pages build `7c8e415`. Live map, guide HTML/CSS/JS, cooling directory, hex data and cooling-site data returned HTTP 200 and matched the committed source byte-for-byte. Browser verification confirmed the updated landing page and loaded statistics. This supersedes earlier unpublished-status notes for that source revision. No product behavior or other city source branch changed during this verification; no repeat deployment was needed.

@@ -893,3 +893,48 @@ propagation and full surface-model development. No public deployment has occurre
 ### Verification complete — September 8, 2026
 
 Contra Costa branch: seven Python tests, 11,436 scenario checks, JavaScript/guide contract checks, and git whitespace checks passed. Browser checks covered a partial-canopy scenario and the searchable county directory; final directory styling was visually verified. FEATURES.md and DATA_QUALITY.md reflect the current behavior. Work is uncommitted and unpublished; the remaining production-readiness work listed above is still open.
+
+### Live release verified — September 8, 2026
+
+The public Contra Costa site now serves source commit `96963b1` through generated gh-pages build `7c8e415`. Live map, guide HTML/CSS/JS, cooling directory, hex data and cooling-site data returned HTTP 200 and matched the committed source byte-for-byte. Browser verification confirmed the updated landing page and loaded statistics. This supersedes earlier unpublished-status notes for that source revision. No product behavior or other city source branch changed during this verification; no repeat deployment was needed.
+
+### September 13, 2026 — professional audit and canopy-source investigation
+
+Added `reports/PROFESSIONAL_AUDIT_2026-09-13.md` covering the live three-city audit,
+verified local screening sources, canopy-gap interpretation and prioritized public-data
+recovery options. Checked public availability of four legacy canopy tiles associated with
+all 431 proxy-only county residential cell centroids and sampled twelve small raster
+windows; these establish recovery leads, not validated replacement cell percentages.
+Identified the uncached Discovery Bay urban canopy package and a partial-county 2022
+USGS lidar source. No app, pipeline, dataset or city-branch behavior changed; no deployment.
+
+### September 21, 2026 — live outreach-readiness audit
+
+Audited coolequity.org across Contra Costa County, Bakersfield, San Ramon, West Contra Costa,
+and Pittsburg & Bay Point. All five builds loaded; all 8,435 residential default ranks reproduced
+from deployed code/data and 43,440 sampled scenario cases passed basic arithmetic invariants.
+See reports/OUTREACH_READINESS_AUDIT_2026-09-21.md and its evidence manifest for current
+findings, scope, and limits. Ready for BWSI teacher review and exploratory official outreach;
+CSV semantics, scenario/field-note handoff and briefing/source consistency need correction
+before operational pilot use. No product, pipeline, dataset or city branches changed; no deployment.
+
+### September 21, 2026 — audit fixes deployed
+
+Findings 1–6 and the sharing and map-fit items of the September 21 audit were fixed in the
+deployed repository (`advikar/coolequity-app`, commit `efacd64` on `main`; CI test, deploy
+and smoke jobs passed; live site checked at coolequity.org after deploy). Change list in
+that repository's `cities/contracosta/FEATURES.md`, September 21 entry. Summary: unique CSV
+headers with `study_area_slug` and the planting assumptions on every row; greenness stand-ins
+export on the displayed 0–100 index; scenario files restore field checks (file record wins only
+when local is empty or older; kept records are counted) and the shortlist; cost scope travels
+with the price through detail, exports and briefing; briefing sources counted from the data and
+the population method read from each city config; model text states the actual clipping bounds
+and the bounded population factor; rank bands described as sensitivity ranges; share links keep
+slider precision, honor the access/HOLC overlays and carry a data fingerprint with a stale-link
+warning; map fit reserves panel width only while the panel is open; guide and chooser copy
+drift corrected; data version tags updated; chooser About / feedback / privacy section added.
+
+Still open from the audit: a real-phone session, printed briefing pagination, an accessibility
+pass, a non-GitHub contact route, a free-text custom cost scope, and serializing layer/filter/
+sort state in scenario files. This checkout (`coolequity`, per-city branches) is not the
+deployed source and was not changed beyond this note.
