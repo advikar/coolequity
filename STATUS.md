@@ -982,3 +982,12 @@ release-stamped smoke check passed; the live chooser now carries `ce-release 4c3
 
 Left open: finding 8 (layout rearrangement) and the wording table (rename presets, score
 terms), a physical-phone pass, and printed-PDF checks with 0/1/6 shortlisted areas.
+
+### September 22, 2026 — finding 8 and wording, minimal pass deployed
+
+`advikar/coolequity-app` commit `11aa9ea`: phones open on the list; the priorities section
+starts folded so the first ranked areas are on screen at 1280×720; labels that misdescribed
+what they do renamed (Fewest trees, Aerial coverage ≥99%, Printable briefing, All ranked
+areas (CSV), Population), guides updated. Headline, "Recommended mix" and the walk labels
+kept. No data or scoring changed. Still open: physical-phone and printed-PDF passes, a
+contact route for forwarded recipients (needs an address from the owner).
