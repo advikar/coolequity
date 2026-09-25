@@ -991,3 +991,51 @@ what they do renamed (Fewest trees, Aerial coverage ≥99%, Printable briefing, 
 areas (CSV), Population), guides updated. Headline, "Recommended mix" and the walk labels
 kept. No data or scoring changed. Still open: physical-phone and printed-PDF passes, a
 contact route for forwarded recipients (needs an address from the owner).
+
+### September 24–25, 2026 — fresh live outreach audit
+
+Audited live release `8ec3539` and the adjacent deployed-source `coolequity-app`
+repository across all five study areas. All-city tests and build pass: 8,435 default
+ranks, 43,440 scenario cases, 45 Python tests and synchronized export dictionaries.
+Retrieved 56 live assets; city assets match source allowing for analytics injection.
+Confirmed a mobile-homepage layout regression, boundary-inconsistent street capacity
+and jurisdiction assignment, and single-area export incorrectly clearing the global
+unsaved-scenario flag. The continuation found shortlist export omits default planting
+figures for areas not opened in detail; export also omits the routed/straight-line flag.
+Recorded overlapping population totals, overstrong cooling and benefit labels, guide
+contradictions, briefing qualification gaps and privacy copy. The contact address now
+exists on the chooser. Mobile map list/detail and the sampled cost-only reset warning,
+keyboard loop and light-mode explanation contrast work. Physical phones and final PDF
+pagination remain unverified. Broad outreach should wait for the identified corrections;
+guided exploratory feedback remains reasonable. See `reports/OUTREACH_AUDIT_2026-09-24.md`
+and its evidence JSON. No product, pipeline, dataset or city branch changed; no deploy.
+
+### September 25, 2026 — audit fixes in coolequity-app (not yet committed or deployed)
+
+Reviewed `reports/OUTREACH_AUDIT_2026-09-24.md` and fixed the software and data findings in
+`coolequity-app`; wording (6, 12) and the analytics sentence (10) were left as the owner's call.
+Finding 1: `04_overlays.py --streets-only` now clips streets to the study boundary and
+`04d_jurisdiction.py` labels each cell by the place covering most of its land inside the
+boundary (unincorporated land competes equally); overlays, jurisdiction, score and stability
+re-run for all five builds. Ranks, rank bands, residential counts and geometry are unchanged;
+street capacity, `scenario_ok`, city labels and some activity/empty labels changed on edge
+cells. County cells 517 and 2174 now show no capacity and no Oakland/Dublin label; the county
+city filter no longer lists Oakland, Berkeley, Albany or Dublin. Finding 2: the phone homepage
+stacks in one column (checked at 390 and 360 px). Finding 3: a one-area save only clears the
+unsaved flag when no other area's share was edited. Finding 4: the chooser says 1.6M residents
+with the overlap explained. Finding 13: starred areas export the 25% default the shortlist shows,
+and exports carry `walk_method`. New regression tests cover the export contracts and edge-cell
+boundary consistency; `scripts/test.sh` passes. Still open: guide count drift (8), briefing
+row flags (7), printed-PDF and physical-phone checks.
+
+Later the same day: the data carries `inside_frac` (share of each hexagon inside the study
+boundary); the detail panel and briefing explain a missing scenario as "streets lie outside
+the study boundary" versus "no eligible street mapped" (finding 1 follow-up). Finding 7:
+briefing rows flag partial, height-model, lidar and greenness tree-cover sources; the map
+snapshot states its layer, city filter and zoom, and the top-25 table states it ignores map
+filters. Finding 8: guide counts for facilities, routing/fallback/approach flags and cell
+classes are generated from the data by `scripts/sync_guide_facts.py` (checked in `test.sh`);
+population normalisation text now matches `05_score.py`; guide headers say "Project methods
+last updated September 25, 2026 (not independently reviewed)"; the map intro says the
+tree-cover average pools aerial, height-model and lidar sources. Homepage still says
+"Current release: September 22, 2026"; update it when this is deployed.

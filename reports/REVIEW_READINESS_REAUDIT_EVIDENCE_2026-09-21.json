@@ -1,0 +1,540 @@
+{
+  "audit_date_local": "2026-09-21",
+  "source_repository": "advikar/coolequity-app",
+  "head": "86201f6b70bbe68af30fa4cef60682f599d1f594",
+  "head_ci": "failure",
+  "preceding_success": "a89da99fcfc87735277a06b4567e0d5e08fa8cf8",
+  "checks": {
+    "residential_rank_parity": 8435,
+    "scenario_cases": 43440,
+    "python_tests_passed": 45,
+    "full_suite": "failed at analytics build configuration",
+    "phone_viewport": {
+      "width": 390,
+      "height": 844,
+      "observed_document_width": 390
+    },
+    "light_theme_contrast": 1.6401786705832238,
+    "cost_only_reset_warning": false,
+    "imported_share_dirty": false,
+    "modal_focus_escaped": true,
+    "printed_pdf_verified": false
+  },
+  "live_assets": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 11160,
+      "sha256": "e8ecbde2e7195c7b90ef7dbf78fb5ba0f5168a8525cb7a4ffd87ef74e6da5b90",
+      "local_match": false,
+      "without_analytics_match": false
+    },
+    {
+      "path": "contracosta/app/index.html",
+      "status": 200,
+      "bytes": 260738,
+      "sha256": "4c6be75665d2f834fadedf75b0b2d23a8b5c59d0116cc55d45eb733e45e27188",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/guide.html",
+      "status": 200,
+      "bytes": 53814,
+      "sha256": "84200866173cd45e1318f072e10dbbfefc1a70834d5d35f3caa4bc351ab36327",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/guide.js",
+      "status": 200,
+      "bytes": 1890,
+      "sha256": "dc276a41508d778806568f26b4f395e182d6a40435acee0b681a8a994792ce81",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/guide.css",
+      "status": 200,
+      "bytes": 5317,
+      "sha256": "8a7294a57198b2ddc492442a42bf97616ec05a31c736c2ace14ae25662785ff5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/cooling.html",
+      "status": 200,
+      "bytes": 5560,
+      "sha256": "a0781f81949f8b3b3610853669f4d9dd8b70e4f0030117c9570e859ddaedaada",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/city.js",
+      "status": 200,
+      "bytes": 4890,
+      "sha256": "e5d6e86f93a579cc7332a6b4469c93b94cf150686e81554bcd1e55cdddade92e",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/app/cities.js",
+      "status": 200,
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/data/contracosta.geojson",
+      "status": 200,
+      "bytes": 2977438,
+      "sha256": "1550a1d410a0779826fb78d775a987fb52a1a30f4c4e5b55789342711a615ac0",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/data/centers_contracosta.geojson",
+      "status": 200,
+      "bytes": 81345,
+      "sha256": "3e819503fd5c7ff04aee635447cf866928054e6d6da04564f24f07fd05ede268",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/data/boundary_contracosta.geojson",
+      "status": 200,
+      "bytes": 97070,
+      "sha256": "2d0d796e19ffb4e9ccdcdd68b7115b35ef9dc561b708d2a57505ce958007334a",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "contracosta/data/designated_contracosta.geojson",
+      "status": 200,
+      "bytes": 11028,
+      "sha256": "a9e0ff8d846ca3c9d8633a821a5843478237d73f8ab6330f3cb23bbe4d935137",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/index.html",
+      "status": 200,
+      "bytes": 260738,
+      "sha256": "4c6be75665d2f834fadedf75b0b2d23a8b5c59d0116cc55d45eb733e45e27188",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/guide.html",
+      "status": 200,
+      "bytes": 54121,
+      "sha256": "5dabba65d1b314cea73ecc1678e4b6a0b21bb400e5455e68e52ed8b6fb372f3d",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/guide.js",
+      "status": 200,
+      "bytes": 1890,
+      "sha256": "dc276a41508d778806568f26b4f395e182d6a40435acee0b681a8a994792ce81",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/guide.css",
+      "status": 200,
+      "bytes": 5317,
+      "sha256": "8a7294a57198b2ddc492442a42bf97616ec05a31c736c2ace14ae25662785ff5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/cooling.html",
+      "status": 200,
+      "bytes": 4476,
+      "sha256": "7901478e66487494f3077c43a7abc9fb325ecc8ae514492e8e0b475d9d45e62b",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/city.js",
+      "status": 200,
+      "bytes": 3793,
+      "sha256": "28177fc7e3600adb39977fe3e3bb44856de669ac11dbf018ed86c81c65a694c8",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/app/cities.js",
+      "status": 200,
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/data/bakersfield.geojson",
+      "status": 200,
+      "bytes": 4231268,
+      "sha256": "fca0ad0678e7395337c2ba921a8f76b43419ce5f8272ee99b9fdf5e3ae7201a5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/data/centers_bakersfield.geojson",
+      "status": 200,
+      "bytes": 6510,
+      "sha256": "4aac472dc1ed669fe3f92f028b5e53a7217c76de24f6cda7efa9b5a44edc19ff",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/data/boundary_bakersfield.geojson",
+      "status": 200,
+      "bytes": 213313,
+      "sha256": "cb62b52578112689d9a9911d79747c7e4185c0ac51e402a4fa53b59f0cf3d5e8",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "bakersfield/data/designated_bakersfield.geojson",
+      "status": 200,
+      "bytes": 6695,
+      "sha256": "beb9926fdb71da687194c84e3be6e7bc3d50d3cdd4727caacb7f75d0c6073159",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/index.html",
+      "status": 200,
+      "bytes": 260738,
+      "sha256": "4c6be75665d2f834fadedf75b0b2d23a8b5c59d0116cc55d45eb733e45e27188",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/guide.html",
+      "status": 200,
+      "bytes": 53876,
+      "sha256": "e4a76ec96a5f1fabd962fdaf73075b0c5312e2fb11fdad95a88df1543dc4249b",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/guide.js",
+      "status": 200,
+      "bytes": 1890,
+      "sha256": "dc276a41508d778806568f26b4f395e182d6a40435acee0b681a8a994792ce81",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/guide.css",
+      "status": 200,
+      "bytes": 5317,
+      "sha256": "8a7294a57198b2ddc492442a42bf97616ec05a31c736c2ace14ae25662785ff5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/cooling.html",
+      "status": 200,
+      "bytes": 5664,
+      "sha256": "396070fc8aba583de287fd4ea7ccf6c040077281ff6a59b992acbe05e6fba9bd",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/city.js",
+      "status": 200,
+      "bytes": 3788,
+      "sha256": "d02106f8094de9dc55166a4496a7417f08a1d0ea8c4c945b3786cb51de40cae4",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/app/cities.js",
+      "status": 200,
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/data/sanramon.geojson",
+      "status": 200,
+      "bytes": 561485,
+      "sha256": "225e55173858c8e249ddfd3fa5c727afb6a3afa8c4ada4970eeffc4398ccebaa",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/data/centers_sanramon.geojson",
+      "status": 200,
+      "bytes": 4148,
+      "sha256": "93cb2d672bfecf350a006edbd91c859a35600b9e46bbdff814717ae2c9c720ad",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/data/boundary_sanramon.geojson",
+      "status": 200,
+      "bytes": 27373,
+      "sha256": "078794e6f278cc5502e48a012ad03e2b370da6c514201f7944231c3984f9f70d",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "sanramon/data/designated_sanramon.geojson",
+      "status": 200,
+      "bytes": 11401,
+      "sha256": "e52ad471d211c7ef977256b8015dae3f7170f20e21a6db6da46af2df53e127c4",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/index.html",
+      "status": 200,
+      "bytes": 260738,
+      "sha256": "4c6be75665d2f834fadedf75b0b2d23a8b5c59d0116cc55d45eb733e45e27188",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/guide.html",
+      "status": 200,
+      "bytes": 57398,
+      "sha256": "eceeb646b12e4280b62516064b3a3da15b58123f005cd2269903f833ba9e0f31",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/guide.js",
+      "status": 200,
+      "bytes": 1890,
+      "sha256": "dc276a41508d778806568f26b4f395e182d6a40435acee0b681a8a994792ce81",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/guide.css",
+      "status": 200,
+      "bytes": 5317,
+      "sha256": "8a7294a57198b2ddc492442a42bf97616ec05a31c736c2ace14ae25662785ff5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/cooling.html",
+      "status": 200,
+      "bytes": 5560,
+      "sha256": "a0781f81949f8b3b3610853669f4d9dd8b70e4f0030117c9570e859ddaedaada",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/city.js",
+      "status": 200,
+      "bytes": 3833,
+      "sha256": "bd57423c9546235858c51d44f958d8d8fb1000e8bd248654f7c26471cd880d01",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/app/cities.js",
+      "status": 200,
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/data/westcc.geojson",
+      "status": 200,
+      "bytes": 2759960,
+      "sha256": "8204648ced70b39622730dfffeca335931b3c877bb58357666ed8ac934bb1acc",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/data/centers_westcc.geojson",
+      "status": 200,
+      "bytes": 6711,
+      "sha256": "32d6b3f827cee0d8a82859f0b79175622108640a61a11787a4c51b386b647e9a",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/data/boundary_westcc.geojson",
+      "status": 200,
+      "bytes": 65765,
+      "sha256": "3cd5a16ee7e347f2295fb4435401e00a59abe3f1dfb64cb7d540c8b42bff154b",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "westcc/data/designated_westcc.geojson",
+      "status": 200,
+      "bytes": 11349,
+      "sha256": "07c8172b14d3fcc51f662fc1b082fbe9582ea4d38806d1e3c401f5f848d8b537",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/index.html",
+      "status": 200,
+      "bytes": 260738,
+      "sha256": "4c6be75665d2f834fadedf75b0b2d23a8b5c59d0116cc55d45eb733e45e27188",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/guide.html",
+      "status": 200,
+      "bytes": 59178,
+      "sha256": "313db7666128df728fba5b8a0a6de27d773dfd14c3662cfd4203db8b1f9a0872",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/guide.js",
+      "status": 200,
+      "bytes": 1890,
+      "sha256": "dc276a41508d778806568f26b4f395e182d6a40435acee0b681a8a994792ce81",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/guide.css",
+      "status": 200,
+      "bytes": 5317,
+      "sha256": "8a7294a57198b2ddc492442a42bf97616ec05a31c736c2ace14ae25662785ff5",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/cooling.html",
+      "status": 200,
+      "bytes": 5651,
+      "sha256": "895b4d014a014b51b6729a5b60a5222eca19c5e428dfd8d02e5a378cbd1e4cb1",
+      "local_match": false,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/city.js",
+      "status": 200,
+      "bytes": 3861,
+      "sha256": "6e8779117d36b3e2deccd8a72af50d7136eb044127f942b605af40c0d5c3f51e",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/app/cities.js",
+      "status": 200,
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/data/pittsburg.geojson",
+      "status": 200,
+      "bytes": 782759,
+      "sha256": "a2c8d4e5e2ea3925520d6e11ff864c34ce3f782e44f5fe39201fca0e83dff00b",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/data/centers_pittsburg.geojson",
+      "status": 200,
+      "bytes": 1314,
+      "sha256": "3617918b7d867e7206a54834f5f0daea7ba4d4314f83f918ea4e5b475b0833ff",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/data/boundary_pittsburg.geojson",
+      "status": 200,
+      "bytes": 31253,
+      "sha256": "c564ed0337c4389f97e0dacace11f269c97ba544128f73ff3b19344651818d85",
+      "local_match": true,
+      "without_analytics_match": true
+    },
+    {
+      "path": "pittsburg/data/designated_pittsburg.geojson",
+      "status": 200,
+      "bytes": 11370,
+      "sha256": "d2dcf85c42d3260763581e49621dbc99a6a9e502b3caa12ac151195917f22fd0",
+      "local_match": true,
+      "without_analytics_match": true
+    }
+  ],
+  "isolated_second_smoothing_diagnostic": [
+    {
+      "city": "contracosta",
+      "baseline_matches": true,
+      "ranks_changed_by_extra_smoothing": 2460,
+      "max_rank_change": 412,
+      "median_rank_change": 8.0,
+      "example": {
+        "id": 1017,
+        "population": 311,
+        "published_age_share": 63.8,
+        "twice_smoothed_age_share": 52.37877366874941
+      }
+    },
+    {
+      "city": "bakersfield",
+      "baseline_matches": true,
+      "ranks_changed_by_extra_smoothing": 3668,
+      "max_rank_change": 953,
+      "median_rank_change": 24.0,
+      "example": {
+        "id": 2559,
+        "population": 107,
+        "published_age_share": 43.2,
+        "twice_smoothed_age_share": 27.685186151103547
+      }
+    },
+    {
+      "city": "sanramon",
+      "baseline_matches": true,
+      "ranks_changed_by_extra_smoothing": 378,
+      "max_rank_change": 58,
+      "median_rank_change": 4.0,
+      "example": {
+        "id": 192,
+        "population": 68,
+        "published_age_share": 33.1,
+        "twice_smoothed_age_share": 20.53754402772298
+      }
+    },
+    {
+      "city": "westcc",
+      "baseline_matches": true,
+      "ranks_changed_by_extra_smoothing": 924,
+      "max_rank_change": 72,
+      "median_rank_change": 8.0,
+      "example": {
+        "id": 2527,
+        "population": 140,
+        "published_age_share": 33.6,
+        "twice_smoothed_age_share": 26.39491124242201
+      }
+    },
+    {
+      "city": "pittsburg",
+      "baseline_matches": true,
+      "ranks_changed_by_extra_smoothing": 532,
+      "max_rank_change": 125,
+      "median_rank_change": 6.0,
+      "example": {
+        "id": 725,
+        "population": 78,
+        "published_age_share": 20.5,
+        "twice_smoothed_age_share": 16.166938301648788
+      }
+    }
+  ]
+}

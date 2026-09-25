@@ -1,0 +1,816 @@
+{
+  "audited_local_date": "2026-09-24",
+  "audited_utc_date": "2026-09-25",
+  "release": "8ec3539574f036e8563e3713582b2723733abe3d",
+  "assets": [
+    {
+      "path": "/",
+      "bytes": 18759,
+      "sha256": "6ee7f5f2a2f23ceaf3e6fe5212b32a0f0967ed65b035315517338127aa77fb22",
+      "matches_local": false
+    },
+    {
+      "path": "contracosta/app/index.html",
+      "bytes": 268878,
+      "sha256": "7e10920cbba6b95d78c111ecf25686c06f300641567e8fbe0460a3d2e929a28f",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/guide.html",
+      "bytes": 56717,
+      "sha256": "d04ebd4c7804ea6ed036b31a2c115a3b7935bdac915d0a3368df121aca5040bb",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/cooling.html",
+      "bytes": 5694,
+      "sha256": "e60984b3f54fb1148c82792d8cea7fce0019f33bab43574f754144dad8ffe15b",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/city.js",
+      "bytes": 4909,
+      "sha256": "52f4c50ccb8f0818afa2e8cd014370811d782a49c38f3c81a530981b48e72539",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/cities.js",
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/guide.js",
+      "bytes": 2750,
+      "sha256": "3c9cbb0799c72c8113aabd28aa9f264a366fb8d422cf4232336c9bba91ba23ed",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/app/guide.css",
+      "bytes": 6155,
+      "sha256": "b43bb01a9728d0c51bef0196ee38ad80165786543c3ee1d58ba4cba27f959ca0",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/data/contracosta.geojson",
+      "bytes": 2977508,
+      "sha256": "1b61119cee8c78fed19ec742c597ce1a72e57b0670cfdee587428d362cf0e7a5",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/data/centers_contracosta.geojson",
+      "bytes": 81345,
+      "sha256": "3e819503fd5c7ff04aee635447cf866928054e6d6da04564f24f07fd05ede268",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/data/boundary_contracosta.geojson",
+      "bytes": 97070,
+      "sha256": "2d0d796e19ffb4e9ccdcdd68b7115b35ef9dc561b708d2a57505ce958007334a",
+      "matches_local": true
+    },
+    {
+      "path": "contracosta/data/designated_contracosta.geojson",
+      "bytes": 11028,
+      "sha256": "a9e0ff8d846ca3c9d8633a821a5843478237d73f8ab6330f3cb23bbe4d935137",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/index.html",
+      "bytes": 268878,
+      "sha256": "7e10920cbba6b95d78c111ecf25686c06f300641567e8fbe0460a3d2e929a28f",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/guide.html",
+      "bytes": 57024,
+      "sha256": "03ac3c5d6589fd92b3d3e679deac05ba254647c87798722b8692a92490ce32c7",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/cooling.html",
+      "bytes": 4610,
+      "sha256": "66d7869fd40f5b222af4782b50b08dcc5f3030246dd8356574f398ae031ca43c",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/city.js",
+      "bytes": 3806,
+      "sha256": "9ad71a9acbc5384ad134487857785211d687fe561723f86ef3c82bed6e849be0",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/cities.js",
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/guide.js",
+      "bytes": 2750,
+      "sha256": "3c9cbb0799c72c8113aabd28aa9f264a366fb8d422cf4232336c9bba91ba23ed",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/app/guide.css",
+      "bytes": 6155,
+      "sha256": "b43bb01a9728d0c51bef0196ee38ad80165786543c3ee1d58ba4cba27f959ca0",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/data/bakersfield.geojson",
+      "bytes": 4231377,
+      "sha256": "455e5fa47616079e92b03ddb933fd19af48481e87bdc76c078ec34758f975730",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/data/centers_bakersfield.geojson",
+      "bytes": 6510,
+      "sha256": "4aac472dc1ed669fe3f92f028b5e53a7217c76de24f6cda7efa9b5a44edc19ff",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/data/boundary_bakersfield.geojson",
+      "bytes": 213313,
+      "sha256": "cb62b52578112689d9a9911d79747c7e4185c0ac51e402a4fa53b59f0cf3d5e8",
+      "matches_local": true
+    },
+    {
+      "path": "bakersfield/data/designated_bakersfield.geojson",
+      "bytes": 6695,
+      "sha256": "beb9926fdb71da687194c84e3be6e7bc3d50d3cdd4727caacb7f75d0c6073159",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/index.html",
+      "bytes": 268878,
+      "sha256": "7e10920cbba6b95d78c111ecf25686c06f300641567e8fbe0460a3d2e929a28f",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/guide.html",
+      "bytes": 56779,
+      "sha256": "69ce0ce20cc4fd3642d4bbf2b390ba2f6b566a76a6e6b51db894f02428445009",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/cooling.html",
+      "bytes": 5798,
+      "sha256": "7e80c8105335951ee2d6cc2c8d42d6a4763b24a360933e96fb286d56ce5ec88c",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/city.js",
+      "bytes": 3801,
+      "sha256": "bc5457eb38e75f32243faf3bbe1f140f6c78382d868ca133e36f34b3791a1541",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/cities.js",
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/guide.js",
+      "bytes": 2750,
+      "sha256": "3c9cbb0799c72c8113aabd28aa9f264a366fb8d422cf4232336c9bba91ba23ed",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/app/guide.css",
+      "bytes": 6155,
+      "sha256": "b43bb01a9728d0c51bef0196ee38ad80165786543c3ee1d58ba4cba27f959ca0",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/data/sanramon.geojson",
+      "bytes": 561563,
+      "sha256": "ddb03f2ba38b4f078c8f10b07084761a1a0e95b1b01aac8f6573d73ccf715586",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/data/centers_sanramon.geojson",
+      "bytes": 4148,
+      "sha256": "93cb2d672bfecf350a006edbd91c859a35600b9e46bbdff814717ae2c9c720ad",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/data/boundary_sanramon.geojson",
+      "bytes": 27373,
+      "sha256": "078794e6f278cc5502e48a012ad03e2b370da6c514201f7944231c3984f9f70d",
+      "matches_local": true
+    },
+    {
+      "path": "sanramon/data/designated_sanramon.geojson",
+      "bytes": 11401,
+      "sha256": "e52ad471d211c7ef977256b8015dae3f7170f20e21a6db6da46af2df53e127c4",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/index.html",
+      "bytes": 268878,
+      "sha256": "7e10920cbba6b95d78c111ecf25686c06f300641567e8fbe0460a3d2e929a28f",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/guide.html",
+      "bytes": 60301,
+      "sha256": "8f68c08ad729b664b19b117be4b2093a8d4d9e925d8c3a43424e10b36475cde0",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/cooling.html",
+      "bytes": 5694,
+      "sha256": "e60984b3f54fb1148c82792d8cea7fce0019f33bab43574f754144dad8ffe15b",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/city.js",
+      "bytes": 3849,
+      "sha256": "3003a67fa9b2bba0586594d4d9ce9fc68a03a40e9ff26e1a42c61d52f01373fa",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/cities.js",
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/guide.js",
+      "bytes": 2750,
+      "sha256": "3c9cbb0799c72c8113aabd28aa9f264a366fb8d422cf4232336c9bba91ba23ed",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/app/guide.css",
+      "bytes": 6155,
+      "sha256": "b43bb01a9728d0c51bef0196ee38ad80165786543c3ee1d58ba4cba27f959ca0",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/data/westcc.geojson",
+      "bytes": 2760031,
+      "sha256": "8c18a3eea4853b1f24ee31a84808dcdf78be66f6bd569d7a8e5e7f5b8dfdd701",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/data/centers_westcc.geojson",
+      "bytes": 6711,
+      "sha256": "32d6b3f827cee0d8a82859f0b79175622108640a61a11787a4c51b386b647e9a",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/data/boundary_westcc.geojson",
+      "bytes": 65765,
+      "sha256": "3cd5a16ee7e347f2295fb4435401e00a59abe3f1dfb64cb7d540c8b42bff154b",
+      "matches_local": true
+    },
+    {
+      "path": "westcc/data/designated_westcc.geojson",
+      "bytes": 11349,
+      "sha256": "07c8172b14d3fcc51f662fc1b082fbe9582ea4d38806d1e3c401f5f848d8b537",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/index.html",
+      "bytes": 268878,
+      "sha256": "7e10920cbba6b95d78c111ecf25686c06f300641567e8fbe0460a3d2e929a28f",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/guide.html",
+      "bytes": 62081,
+      "sha256": "dba13bb049b34c910631a70d07bc56a58369e71e57f5335521a13c64f8c55404",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/cooling.html",
+      "bytes": 5785,
+      "sha256": "330192029d9ebb5a500a3da5f4e6ed33e8aca131541806685f758e7f8f7c6f03",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/city.js",
+      "bytes": 3883,
+      "sha256": "9a0eb18b5be17afee1b5482d6ecf419f73c2e830573dda04bd61fad5a57245e4",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/cities.js",
+      "bytes": 640,
+      "sha256": "caea309ad17a0d2271f9670e2b3a0e833fffa3326294db4ca476fd76523c7c79",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/guide.js",
+      "bytes": 2750,
+      "sha256": "3c9cbb0799c72c8113aabd28aa9f264a366fb8d422cf4232336c9bba91ba23ed",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/app/guide.css",
+      "bytes": 6155,
+      "sha256": "b43bb01a9728d0c51bef0196ee38ad80165786543c3ee1d58ba4cba27f959ca0",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/data/pittsburg.geojson",
+      "bytes": 782824,
+      "sha256": "b11ca761e09e73d6cb6baa514b84ac4aaedbff2c80ea6be527601f461526a750",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/data/centers_pittsburg.geojson",
+      "bytes": 1314,
+      "sha256": "3617918b7d867e7206a54834f5f0daea7ba4d4314f83f918ea4e5b475b0833ff",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/data/boundary_pittsburg.geojson",
+      "bytes": 31253,
+      "sha256": "c564ed0337c4389f97e0dacace11f269c97ba544128f73ff3b19344651818d85",
+      "matches_local": true
+    },
+    {
+      "path": "pittsburg/data/designated_pittsburg.geojson",
+      "bytes": 11370,
+      "sha256": "d2dcf85c42d3260763581e49621dbc99a6a9e502b3caa12ac151195917f22fd0",
+      "matches_local": true
+    }
+  ],
+  "data_checks": {
+    "contracosta": {
+      "ranked": 2697,
+      "pop": 1164921,
+      "sources": {
+        "lidar-2020": 126,
+        "usfs-2022": 1241,
+        "chm-legacy": 1330
+      },
+      "walk_sources": {
+        "routed": 2676,
+        "straightline": 21
+      },
+      "walk_quality": {
+        "approach-review": 2238,
+        "network-estimate": 425,
+        "detour-review": 34
+      },
+      "centers": 486,
+      "outside_centroid_ranked": 108,
+      "outside_centroid_pop": 4190,
+      "outside_cities": {
+        "Unincorporated": 89,
+        "Oakland": 10,
+        "Berkeley": 2,
+        "Albany": 4,
+        "Dublin": 3
+      },
+      "ndvi": 5,
+      "foreign_cities": [
+        {
+          "id": 517,
+          "name": "Piedmont Pines",
+          "city": "Oakland",
+          "pop": 27,
+          "rank": 2284.0,
+          "street_m": 9770
+        },
+        {
+          "id": 523,
+          "name": "Piedmont Pines NE",
+          "city": "Oakland",
+          "pop": 60,
+          "rank": 2367.0,
+          "street_m": 8281
+        },
+        {
+          "id": 525,
+          "name": "Wilder SW 2",
+          "city": "Oakland",
+          "pop": 60,
+          "rank": 2442.0,
+          "street_m": 6177
+        },
+        {
+          "id": 526,
+          "name": "Parkwoods Condominiums SE",
+          "city": "Oakland",
+          "pop": 81,
+          "rank": 2415.0,
+          "street_m": 4440
+        },
+        {
+          "id": 529,
+          "name": "Piedmont Pines N",
+          "city": "Oakland",
+          "pop": 79,
+          "rank": 2383.0,
+          "street_m": 7590
+        },
+        {
+          "id": 534,
+          "name": "Panoramic Hill",
+          "city": "Oakland",
+          "pop": 26,
+          "rank": 2404.0,
+          "street_m": 1032
+        },
+        {
+          "id": 538,
+          "name": "Parkwoods Condominiums N 2",
+          "city": "Oakland",
+          "pop": 43,
+          "rank": 2569.0,
+          "street_m": 2536
+        },
+        {
+          "id": 539,
+          "name": "La Loma Park",
+          "city": "Berkeley",
+          "pop": 16,
+          "rank": 2343.0,
+          "street_m": 9979
+        },
+        {
+          "id": 543,
+          "name": "La Loma Park SE",
+          "city": "Oakland",
+          "pop": 19,
+          "rank": 2123.0,
+          "street_m": 4599
+        },
+        {
+          "id": 544,
+          "name": "Parkwoods Condominiums",
+          "city": "Oakland",
+          "pop": 40,
+          "rank": 2390.0,
+          "street_m": 4084
+        },
+        {
+          "id": 545,
+          "name": "Parkwoods Condominiums N",
+          "city": "Oakland",
+          "pop": 13,
+          "rank": 2445.0,
+          "street_m": 4096
+        },
+        {
+          "id": 834,
+          "name": "Albany Hill Park",
+          "city": "Albany",
+          "pop": 1444,
+          "rank": 126.0,
+          "street_m": 6321
+        },
+        {
+          "id": 858,
+          "name": "Albany Hill W",
+          "city": "Albany",
+          "pop": 3,
+          "rank": 425.0,
+          "street_m": 0
+        },
+        {
+          "id": 860,
+          "name": "Albany Hill",
+          "city": "Albany",
+          "pop": 68,
+          "rank": 350.0,
+          "street_m": 437
+        },
+        {
+          "id": 863,
+          "name": "Thousand Oaks",
+          "city": "Berkeley",
+          "pop": 2,
+          "rank": 2055.0,
+          "street_m": 12563
+        },
+        {
+          "id": 866,
+          "name": "Thousand Oaks W",
+          "city": "Albany",
+          "pop": 61,
+          "rank": 593.0,
+          "street_m": 13332
+        },
+        {
+          "id": 2030,
+          "name": "Tassajara Hills",
+          "city": "Dublin",
+          "pop": 2,
+          "rank": 1368.0,
+          "street_m": 4348
+        },
+        {
+          "id": 2174,
+          "name": "Wallis Ranch",
+          "city": "Dublin",
+          "pop": 60,
+          "rank": 1444.0,
+          "street_m": 4880
+        },
+        {
+          "id": 2176,
+          "name": "The Enclave",
+          "city": "Dublin",
+          "pop": 12,
+          "rank": 1941.0,
+          "street_m": 3587
+        }
+      ]
+    },
+    "bakersfield": {
+      "ranked": 3767,
+      "pop": 410446,
+      "sources": {
+        "chm-legacy": 1459,
+        "usfs-2022": 2308
+      },
+      "walk_sources": {
+        "routed": 3722,
+        "straightline": 45
+      },
+      "walk_quality": {
+        "approach-review": 2889,
+        "network-estimate": 816,
+        "detour-review": 62
+      },
+      "centers": 39,
+      "outside_centroid_ranked": 433,
+      "outside_centroid_pop": 12515,
+      "outside_cities": {
+        "Unincorporated": 215,
+        "Greenfield": 10,
+        "Pumpkin Center": 9,
+        "El Adobe": 3,
+        "Rosedale": 45,
+        "Old River": 1,
+        "Greenacres": 19,
+        "Potomac Park": 7,
+        "Hillcrest": 4,
+        "La Cresta": 11,
+        "East Bakersfield": 6,
+        "Cottonwood": 8,
+        "Casa Loma": 6,
+        "East Niles": 18,
+        "Fairfax": 4,
+        "Oildale": 7,
+        "Bakersfield Country Club": 4,
+        "Goodmanville": 7,
+        "Rexland Acres": 9,
+        "Old Stine": 10,
+        "Olde Stockdale": 6,
+        "Benton Park": 9,
+        "Shafter": 12,
+        "Tarina": 3
+      },
+      "ndvi": 62
+    },
+    "sanramon": {
+      "ranked": 419,
+      "pop": 85444,
+      "sources": {
+        "usfs-2022": 409,
+        "chm-legacy": 2,
+        "lidar-2020": 8
+      },
+      "walk_sources": {
+        "routed": 419
+      },
+      "walk_quality": {
+        "approach-review": 239,
+        "network-estimate": 180
+      },
+      "centers": 25,
+      "outside_centroid_ranked": 27,
+      "outside_centroid_pop": 1704,
+      "outside_cities": {
+        "Unincorporated": 12,
+        "Dublin": 5,
+        "Norris Canyon": 2,
+        "Danville": 8
+      },
+      "ndvi": 0
+    },
+    "westcc": {
+      "ranked": 982,
+      "pop": 271620,
+      "sources": {
+        "lidar-2020": 7,
+        "usfs-2022": 968,
+        "chm-legacy": 7
+      },
+      "walk_sources": {
+        "routed": 982
+      },
+      "walk_quality": {
+        "network-estimate": 460,
+        "approach-review": 516,
+        "detour-review": 6
+      },
+      "centers": 39,
+      "outside_centroid_ranked": 19,
+      "outside_centroid_pop": 1366,
+      "outside_cities": {
+        "Unincorporated": 16,
+        "Albany": 2,
+        "Berkeley": 1
+      },
+      "ndvi": 1
+    },
+    "pittsburg": {
+      "ranked": 570,
+      "pop": 89581,
+      "sources": {
+        "usfs-2022": 502,
+        "chm-legacy": 52,
+        "lidar-2020": 16
+      },
+      "walk_sources": {
+        "routed": 570
+      },
+      "walk_quality": {
+        "approach-review": 395,
+        "network-estimate": 175
+      },
+      "centers": 8,
+      "outside_centroid_ranked": 49,
+      "outside_centroid_pop": 625,
+      "outside_cities": {
+        "Unincorporated": 31,
+        "Concord": 9,
+        "Antioch": 9
+      },
+      "ndvi": 0
+    }
+  },
+  "boundary_samples": [
+    {
+      "study": "contracosta",
+      "id": 834,
+      "name": "Albany Hill Park",
+      "city": "Albany",
+      "rank": 126,
+      "population": 1444,
+      "area_inside_pct": 39.44,
+      "published_street_m": 6321,
+      "recalculated_street_m": 6328,
+      "street_inside_m": 3610,
+      "street_outside_pct": 42.9
+    },
+    {
+      "study": "contracosta",
+      "id": 517,
+      "name": "Piedmont Pines",
+      "city": "Oakland",
+      "rank": 2284,
+      "population": 27,
+      "area_inside_pct": 19.47,
+      "published_street_m": 9770,
+      "recalculated_street_m": 9771,
+      "street_inside_m": 0,
+      "street_outside_pct": 100.0
+    },
+    {
+      "study": "contracosta",
+      "id": 2174,
+      "name": "Wallis Ranch",
+      "city": "Dublin",
+      "rank": 1444,
+      "population": 60,
+      "area_inside_pct": 47.24,
+      "published_street_m": 4880,
+      "recalculated_street_m": 4882,
+      "street_inside_m": 0,
+      "street_outside_pct": 100.0
+    },
+    {
+      "study": "bakersfield",
+      "id": 1515,
+      "name": "Bakersfield E 45",
+      "city": "East Bakersfield",
+      "rank": 73,
+      "population": 446,
+      "area_inside_pct": 44.35,
+      "published_street_m": 1848,
+      "recalculated_street_m": 1846,
+      "street_inside_m": 881,
+      "street_outside_pct": 52.3
+    },
+    {
+      "study": "bakersfield",
+      "id": 2225,
+      "name": "Village at Lakeside E 11",
+      "city": "Rexland Acres",
+      "rank": 147,
+      "population": 230,
+      "area_inside_pct": 46.57,
+      "published_street_m": 249,
+      "recalculated_street_m": 248,
+      "street_inside_m": 113,
+      "street_outside_pct": 54.7
+    },
+    {
+      "study": "sanramon",
+      "id": 192,
+      "name": "Amador Lakes Apartments",
+      "city": "Dublin",
+      "rank": 102,
+      "population": 68,
+      "area_inside_pct": 31.0,
+      "published_street_m": 840,
+      "recalculated_street_m": 839,
+      "street_inside_m": 309,
+      "street_outside_pct": 63.2
+    },
+    {
+      "study": "sanramon",
+      "id": 350,
+      "name": "Canyon Crest NE",
+      "city": "Danville",
+      "rank": 118,
+      "population": 20,
+      "area_inside_pct": 32.18,
+      "published_street_m": 34,
+      "recalculated_street_m": 34,
+      "street_inside_m": 34,
+      "street_outside_pct": 0.0
+    }
+  ],
+  "tests": {
+    "ranked_cells": 8435,
+    "scenario_cases": 43440,
+    "python_tests": 45,
+    "column_dictionaries": "passed",
+    "build": "passed"
+  },
+  "partial_save_reproduction": {
+    "method": "isolated execution of actual scenarioSig, markSaved, isDirty and exportCell with stubbed file/DOM dependencies",
+    "edited_shares": {
+      "1": 40,
+      "2": 80
+    },
+    "exported_area": 1,
+    "dirty_before": true,
+    "dirty_after": false,
+    "area_2_in_file": false
+  },
+  "browser": {
+    "cities_loaded": [
+      "contracosta",
+      "bakersfield",
+      "sanramon",
+      "westcc",
+      "pittsburg"
+    ],
+    "mobile_viewport": [
+      390,
+      844
+    ],
+    "mobile_home_document_width": 390,
+    "mobile_home_defect": "study selector and hero remain side by side; main content compressed to right column",
+    "county_mobile_list_detail": "visually inspected",
+    "cost_reset_warning": "passed Pittsburg cost-only edit",
+    "modal_tab_wrap": "last button to Stay, focus remains in dialog",
+    "briefing": "Bakersfield HTML with one existing shortlist inspected; actual PDF pagination unverified after print automation stalled",
+    "physical_phone": false,
+    "county_briefing_html_table": {
+      "width_px": 704,
+      "available_content_width_px": 704,
+      "shortlist_count": 0,
+      "rows_with_header": 26
+    },
+    "light_explanation_colors": {
+      "foreground": [
+        138,
+        75,
+        0
+      ],
+      "background": [
+        246,
+        248,
+        250
+      ],
+      "font_px": 12.5
+    },
+    "final_console_sample": "no captured error/warning entries"
+  },
+  "product_changes": false,
+  "deployed": false,
+  "continued_local_date": "2026-09-25",
+  "shortlist_export_reproduction": {
+    "method": "actual cellRecord and scenarioFor functions isolated with live county area 641 and empty plantingShares",
+    "displayed_default_share": 25,
+    "displayed_trees": 513,
+    "displayed_cost_usd": 256500,
+    "exported_planting_share": null,
+    "exported_trees": null,
+    "exported_cost_usd": null,
+    "access_src_missing_from_export": true
+  }
+}
