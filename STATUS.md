@@ -1039,3 +1039,17 @@ population normalisation text now matches `05_score.py`; guide headers say "Proj
 last updated September 25, 2026 (not independently reviewed)"; the map intro says the
 tree-cover average pools aerial, height-model and lidar sources. Homepage still says
 "Current release: September 22, 2026"; update it when this is deployed.
+
+### September 26, 2026 — remaining audit items
+
+Homepage is one generic page (no study-area select, no per-city figures); each start
+screen computes residents, ranked areas, share under 15% tree cover, population-weighted
+median summer surface temperature and share over a 15-minute walk from a mapped cool
+place. Contact address on every app page, briefing and export. Printed Letter briefings
+verified with headless Chrome for 0, 1, 3 (city filter) and 6 shortlisted areas, a long
+field note, a partial cell and an edge cell; the map is capped and the table compacted so
+each block prints on the sheets it lays out; nothing clips. Guides state the stability
+run's overlap-weighted allocation (finding 9). Left as is on purpose: the cooling and
+benefit wording (5, 6), cost-preset naming (11; the "planting only" scope already travels
+with every total) and terminology unification (12). Not done: a physical-phone and
+screen-reader pass. All deployed from coolequity-app main.
