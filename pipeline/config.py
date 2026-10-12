@@ -251,6 +251,20 @@ CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 # 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the
 # undeveloped/empty hexes, replacing the lst/veg/canopy heuristic in classify_land.
 WORLDCOVER_CSV = DATA / f"worldcover_{SLUG}.csv"
+# 04c -> 05 and the app: council wards / supervisorial districts.
+WARDS_FILE = DATA / f"wards_{SLUG}.geojson"          # boundaries, normalised
+WARDS_CSV = DATA / f"wards_{SLUG}.csv"               # hexagon -> ward
+WARDS_SUMMARY_CSV = DATA / f"wards_summary_{SLUG}.csv"
+# The city's own GIS service: the four council districts (by-district elections
+# since 2020; lines redrawn after the 2020 census). Member names are whatever
+# the service says on the day 04c runs; the district number is the stable label.
+WARDS = dict(
+    service="https://gis.sanramon.ca.gov/server/rest/services/Infrastructure/City_Council_Districts/MapServer/0",
+    fields=dict(id="DistrictName", name="DistrictName", member="CouncilMember", url="WebPageBio"),
+    label="District {n}", outside="Outside the city",
+    what="City council districts", publisher="City of San Ramon GIS",
+    adopted="2022 redistricting after the 2020 census (by-district elections since November 2020)",
+)
 LST_TIF = DATA / f"lst_{SLUG}.tif"               # 02 composite cache, committed
 NDVI_TIF = DATA / f"ndvi_{SLUG}.tif"             # 02 composite cache, committed
 SAT_CSV = DATA / f"satellite_{SLUG}.csv"

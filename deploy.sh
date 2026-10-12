@@ -64,20 +64,20 @@ done
 
 # --- San Ramon (san-ramon) ---
 git archive san-ramon app/ | tar -x -C "$BUILD/sanramon"
-for f in sanramon.geojson centers_sanramon.geojson boundary_sanramon.geojson; do
-  git show "san-ramon:data/$f" > "$BUILD/sanramon/data/$f"
+for f in sanramon.geojson centers_sanramon.geojson boundary_sanramon.geojson wards_sanramon.geojson; do
+  git show "san-ramon:data/$f" > "$BUILD/sanramon/data/$f" 2>/dev/null || rm -f "$BUILD/sanramon/data/$f"
 done
 
 # --- Contra Costa County (contra-costa) ---
 git archive contra-costa app/ | tar -x -C "$BUILD/contracosta"
-for f in contracosta.geojson centers_contracosta.geojson boundary_contracosta.geojson; do
-  git show "contra-costa:data/$f" > "$BUILD/contracosta/data/$f"
+for f in contracosta.geojson centers_contracosta.geojson boundary_contracosta.geojson wards_contracosta.geojson; do
+  git show "contra-costa:data/$f" > "$BUILD/contracosta/data/$f" 2>/dev/null || rm -f "$BUILD/contracosta/data/$f"
 done
 
 # --- Bakersfield (bakersfield) ---
 git archive bakersfield app/ | tar -x -C "$BUILD/bakersfield"
-for f in bakersfield.geojson centers_bakersfield.geojson boundary_bakersfield.geojson; do
-  git show "bakersfield:data/$f" > "$BUILD/bakersfield/data/$f"
+for f in bakersfield.geojson centers_bakersfield.geojson boundary_bakersfield.geojson wards_bakersfield.geojson; do
+  git show "bakersfield:data/$f" > "$BUILD/bakersfield/data/$f" 2>/dev/null || rm -f "$BUILD/bakersfield/data/$f"
 done
 
 # .nojekyll: Pages runs Jekyll by default and Jekyll drops underscore-prefixed
