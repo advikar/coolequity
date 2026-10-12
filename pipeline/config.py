@@ -257,6 +257,20 @@ CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 # 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the
 # undeveloped/empty hexes, replacing the lst/veg/canopy heuristic in classify_land.
 WORLDCOVER_CSV = DATA / f"worldcover_{SLUG}.csv"
+# 04c -> 05 and the app: council wards / supervisorial districts.
+WARDS_FILE = DATA / f"wards_{SLUG}.geojson"          # boundaries, normalised
+WARDS_CSV = DATA / f"wards_{SLUG}.csv"               # hexagon -> ward
+WARDS_SUMMARY_CSV = DATA / f"wards_summary_{SLUG}.csv"
+# The county's own GIS service: the five supervisorial districts from the
+# 2021 redistricting (adopted November 23, 2021). Supervisor names are whatever
+# the service says on the day 04c runs; the district number is the stable label.
+WARDS = dict(
+    service="https://gis.cccounty.us/arcgis/rest/services/BOS_District_Labels/MapServer/0",
+    fields=dict(id="SUP_DIST", name="SUP_DIST", member="SUP_NAME", url="URL"),
+    label="District {n}", outside="Outside the county",
+    what="Supervisorial districts", publisher="Contra Costa County GIS",
+    adopted="2021 redistricting, adopted November 23, 2021",
+)
 
 # How far outside BBOX 02b pulls buildings. 03 divides a block group's residents
 # by that block group's TOTAL housing, so any block group straddling the bbox
