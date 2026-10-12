@@ -1,0 +1,9 @@
+ward_id,ward_name,member,areas,residents,residents_65plus,mean_need_0_100,areas_in_top_100,tree_cover_pct_pop_weighted,mean_surface_heat_c,plantable_street_km,tree_positions_upper_bound
+1,Ward 1,Eric Arias,527,56004,5336,49.4,23,5.9,48.7,253.6,50725
+2,Ward 2,Andrae Gonzales,277,60607,6281,63.5,54,8.3,50.5,343.5,68699
+3,Ward 3,Ken Weir,817,52463,7214,49.2,10,7.8,51.3,369.5,73891
+4,Ward 4,Bob Smith,537,57033,6397,37.3,0,9.6,47.2,385.7,77139
+5,Ward 5,Larry Koman,715,54872,6732,39.1,0,8.9,47.6,476.5,95309
+6,Ward 6,Zach Bashirtash,219,59815,7283,54.0,11,11.2,49.0,288.7,57734
+7,Ward 7,Manpreet Kaur,290,57555,4952,51.6,0,5.3,49.7,304.5,60893
+,Unincorporated (Kern County),,406,12051,1299,40.9,2,8.2,49.4,267.6,53519

@@ -241,6 +241,21 @@ CANOPY_CSV = DATA / f"canopy_{SLUG}.csv"
 # 02e -> 05: authoritative land cover (ESA WorldCover 2021, 10 m) for the
 # undeveloped/empty hexes, replacing the lst/veg/canopy heuristic in classify_land.
 WORLDCOVER_CSV = DATA / f"worldcover_{SLUG}.csv"
+# 04c -> 05 and the app: council wards / supervisorial districts.
+WARDS_FILE = DATA / f"wards_{SLUG}.geojson"          # boundaries, normalised
+WARDS_CSV = DATA / f"wards_{SLUG}.csv"               # hexagon -> ward
+WARDS_SUMMARY_CSV = DATA / f"wards_summary_{SLUG}.csv"
+# The city's own GIS service. Boundaries are the 2022 redistricting map (council
+# map 5B, the "Unity Map"), first used for the November 2022 election. Member
+# names are whatever the service says on the day 04c runs; the ward number is
+# the stable label.
+WARDS = dict(
+    service="https://gis.bakersfieldcity.us/webmaps/rest/services/General/Boundary/MapServer/5",
+    fields=dict(id="WARD_ID", name="FEAT_NAME", member="MEMBER", url="LINK"),
+    label="Ward {n}", outside="Unincorporated (Kern County)",
+    what="Council wards", publisher="City of Bakersfield GIS Office",
+    adopted="2022 redistricting, council map 5B (Unity Map)",
+)
 
 # --- when dasymetric placement is allowed at all -------------------------------
 # Splitting a block group's residents by building floor area only beats splitting
